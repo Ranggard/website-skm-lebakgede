@@ -1,0 +1,332 @@
+{
+  "pbtResults": {},
+  "executionHistory": {
+    "1. Initialize project structure with Next.js and TypeScript": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051740329
+      },
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051753329
+      }
+    ],
+    "2. Configure build tooling and dependency management": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741059
+      }
+    ],
+    "3. Set up testing framework and CI/CD pipeline": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741231
+      }
+    ],
+    "4. Create application configuration and constants": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741299
+      }
+    ],
+    "5. Create backend abstraction layer and interfaces": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741384
+      }
+    ],
+    "6. Implement backend factory and runtime selection": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741448
+      }
+    ],
+    "7. Implement shared API endpoint structure (Next.js)": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741566
+      }
+    ],
+    "8. Create Google Apps Script scaffold and deployment setup": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741628
+      }
+    ],
+    "9. Implement Google Sheets backend: form submission": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741729
+      }
+    ],
+    "10. Set up Google Sheets data storage": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741810
+      }
+    ],
+    "11. Implement Google Apps Script form validation and row insertion": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741897
+      }
+    ],
+    "12. Implement Google Sheets backend: analytics queries": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051741981
+      }
+    ],
+    "13. Implement Google Sheets backend: data export": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742099
+      }
+    ],
+    "14. Implement Google Sheets backend: authentication": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742165
+      }
+    ],
+    "15. Set up Supabase project and database schema": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742228
+      }
+    ],
+    "16. Configure Supabase row-level security (RLS) policies": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742319
+      }
+    ],
+    "17. Implement Supabase backend: form submission": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742433
+      }
+    ],
+    "18. Implement Supabase backend: analytics queries": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742514
+      }
+    ],
+    "19. Implement Supabase backend: data export": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742584
+      }
+    ],
+    "20. Implement Supabase authentication": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742745
+      }
+    ],
+    "21. Create responsive page layout and navigation": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742825
+      }
+    ],
+    "22. Implement SKM form component": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051742928
+      }
+    ],
+    "23. Implement respondent information collection": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743009
+      }
+    ],
+    "24. Implement form submission and confirmation flow": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743087
+      }
+    ],
+    "25. Implement form error handling and user feedback": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743174
+      }
+    ],
+    "26. Make form fully responsive for mobile, tablet, desktop": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743263
+      }
+    ],
+    "27. Create admin login page": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743388
+      }
+    ],
+    "28. Implement admin authentication state management": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743476
+      }
+    ],
+    "29. Create dashboard header with controls": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743587
+      }
+    ],
+    "30. Implement overall satisfaction metrics and cards": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743728
+      }
+    ],
+    "31. Implement satisfaction distribution pie chart": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743819
+      }
+    ],
+    "32. Implement response trend line chart": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743875
+      }
+    ],
+    "33. Implement satisfaction by category bar chart": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051743952
+      }
+    ],
+    "34. Implement recent responses table": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744031
+      }
+    ],
+    "35. Implement CSV export functionality": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744108
+      }
+    ],
+    "36. Implement Excel export functionality": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744177
+      }
+    ],
+    "37. Implement print-friendly report generation": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744265
+      }
+    ],
+    "38. Create unit tests for form validation and submission": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744352
+      }
+    ],
+    "39. Create integration tests for backend submission flow": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744430
+      }
+    ],
+    "40. Create property tests for dashboard accuracy and data integrity": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744519
+      }
+    ],
+    "41. Deploy frontend to Vercel": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744605
+      }
+    ],
+    "42. Deploy frontend to Netlify (alternative)": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744715
+      }
+    ],
+    "43. Performance optimization and caching": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744867
+      }
+    ],
+    "44. Final cross-browser and device testing": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051744967
+      }
+    ],
+    "45. Create deployment and setup documentation": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051745040
+      }
+    ],
+    "46. Create user and admin guides": [
+      {
+        "executionId": "64f8f083-c13a-4e6b-b2b1-4bbf0bb6ce30",
+        "chatSessionId": "sess_3927d888-6e7a-4114-9e39-7d1f3d2abf0c",
+        "timestamp": 1792051745110
+      }
+    ]
+  }
+}
