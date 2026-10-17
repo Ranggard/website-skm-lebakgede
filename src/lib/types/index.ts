@@ -24,7 +24,7 @@ export type {
   QuestionnaireResponse,
   AnalyticsData,
   FormState,
-  SubmitResponse,
+  SubmitResponse as QuestionnaireSubmitResponse,
   ApiError,
 } from './questionnaire'
 

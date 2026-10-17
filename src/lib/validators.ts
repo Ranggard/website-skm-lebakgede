@@ -73,8 +73,8 @@ export function validateQuestionnaireResponse(data: unknown) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const details: Record<string, string> = {}
-      error.errors.forEach((err) => {
-        const path = err.path.join('.')
+      ;((error as any).issues || (error as any).errors || []).forEach((err: any) => {
+        const path = Array.isArray(err.path) ? err.path.join('.') : String(err.path || '')
         details[path] = err.message
       })
       return {
@@ -99,8 +99,8 @@ export function validateAnalyticsQuery(data: unknown) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const details: Record<string, string> = {}
-      error.errors.forEach((err) => {
-        const path = err.path.join('.')
+      ;((error as any).issues || (error as any).errors || []).forEach((err: any) => {
+        const path = Array.isArray(err.path) ? err.path.join('.') : String(err.path || '')
         details[path] = err.message
       })
       return {
@@ -125,8 +125,8 @@ export function validateExportQuery(data: unknown) {
   } catch (error) {
     if (error instanceof z.ZodError) {
       const details: Record<string, string> = {}
-      error.errors.forEach((err) => {
-        const path = err.path.join('.')
+      ;((error as any).issues || (error as any).errors || []).forEach((err: any) => {
+        const path = Array.isArray(err.path) ? err.path.join('.') : String(err.path || '')
         details[path] = err.message
       })
       return {

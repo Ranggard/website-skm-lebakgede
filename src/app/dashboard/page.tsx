@@ -10,7 +10,6 @@ import {
   YAxis,
   CartesianGrid,
   Tooltip as RechartsTooltip,
-  Legend as RechartsLegend,
   ReferenceLine,
   Cell,
   RadarChart,
