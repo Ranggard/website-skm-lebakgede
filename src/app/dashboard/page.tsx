@@ -173,6 +173,9 @@ export default function DashboardPage() {
   const [error, setError] = useState<string | null>(null)
   const [analytics, setAnalytics] = useState<AnalyticsData | null>(null)
 
+  // Sub-menu Tab Control (Ringkasan, Grafik, Responden, Saran, Semua)
+  const [activeTab, setActiveTab] = useState<'ringkasan' | 'grafik' | 'responden' | 'saran' | 'all'>('ringkasan')
+
   // Chart Controls & SSR Hydration Guard
   const [activeChartView, setActiveChartView] = useState<'bar' | 'radar' | 'progress'>('bar')
   const [isMounted, setIsMounted] = useState(false)
@@ -927,9 +930,55 @@ export default function DashboardPage() {
         </div>
       </header>
 
+      {/* Sticky Sub-Menu Tab Bar (Mobile & Desktop) */}
+      <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/90 shadow-sm print:hidden">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
+          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+            {[
+              { id: 'ringkasan', label: 'Ringkasan IKM', icon: '📊', count: null },
+              { id: 'grafik', label: 'Grafik Analisis', icon: '📈', count: '9 Unsur' },
+              { id: 'responden', label: 'Data Responden', icon: '📋', count: filteredResponses.length },
+              { id: 'saran', label: 'Saran Warga', icon: '💬', count: allResponses.filter((r) => r.saran && r.saran !== '-' && r.saran.trim().length > 1).length },
+              { id: 'all', label: 'Semua', icon: '📑', count: null },
+            ].map((tab) => (
+              <button
+                key={tab.id}
+                type="button"
+                onClick={() => {
+                  setActiveTab(tab.id as any)
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
+                  activeTab === tab.id
+                    ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-600/20'
+                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/90'
+                }`}
+              >
+                <span>{tab.icon}</span>
+                <span>{tab.label}</span>
+                {tab.count !== null && (
+                  <span
+                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                      activeTab === tab.id
+                        ? 'bg-white/25 text-white'
+                        : 'bg-gray-200 text-gray-700'
+                    }`}
+                  >
+                    {tab.count}
+                  </span>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+      </nav>
+
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
-        {/* Banner Quick Actions & Export Bar */}
+        {/* TAB 1: RINGKASAN IKM */}
+        {(activeTab === 'ringkasan' || activeTab === 'all') && (
+          <div className="space-y-6 fade-in">
+            {/* Banner Quick Actions & Export Bar */}
         <div className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
           <div>
             <span className="bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
@@ -1057,6 +1106,48 @@ export default function DashboardPage() {
           </div>
         </section>
 
+        {/* Quick Action Navigation on Ringkasan */}
+        {activeTab === 'ringkasan' && (
+          <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
+            <div className="flex items-center gap-3">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-lg">
+                💡
+              </div>
+              <div>
+                <h4 className="text-sm font-bold text-gray-900">Eksplorasi Detail Dashboard</h4>
+                <p className="text-xs text-gray-500">Pilih sub-menu untuk melihat visualisasi grafik 9 unsur pelayanan atau telusuri data kuesioner warga.</p>
+              </div>
+            </div>
+            <div className="flex items-center gap-2 w-full sm:w-auto">
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('grafik')
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+                className="flex-1 sm:flex-none px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition"
+              >
+                📈 Buka Grafik 9 Unsur →
+              </button>
+              <button
+                type="button"
+                onClick={() => {
+                  setActiveTab('responden')
+                  window.scrollTo({ top: 0, behavior: 'smooth' })
+                }}
+                className="flex-1 sm:flex-none px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 transition"
+              >
+                📋 Buka Tabel Data →
+              </button>
+            </div>
+          </div>
+        )}
+      </div>
+    )}
+
+    {/* TAB 2: GRAFIK ANALISIS & DEMOGRAFI */}
+    {(activeTab === 'grafik' || activeTab === 'all') && (
+      <div className="space-y-6 fade-in">
         {/* SECTION 2: STATISTIKA & GRAFIK 9 UNSUR PELAYANAN (PERMENPAN RB) */}
         <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-200/80 space-y-6">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4 border-b border-gray-100 pb-5">
@@ -1510,7 +1601,12 @@ export default function DashboardPage() {
             </div>
           </section>
         )}
+      </div>
+    )}
 
+    {/* TAB 3: DATA RESPONDEN */}
+    {(activeTab === 'responden' || activeTab === 'all') && (
+      <div className="space-y-6 fade-in">
         {/* SECTION 5: TABEL DATA RESPONDEN LENGKAP */}
         <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-200/80 space-y-4">
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
@@ -1668,7 +1764,12 @@ export default function DashboardPage() {
             </div>
           )}
         </section>
+      </div>
+    )}
 
+    {/* TAB 4: SARAN & MASUKAN WARGA */}
+    {(activeTab === 'saran' || activeTab === 'all') && (
+      <div className="space-y-6 fade-in">
         {/* SECTION 5: KUMPULAN SARAN & MASUKAN WARGA */}
         <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-200/80">
           <h3 className="text-xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
@@ -1698,6 +1799,8 @@ export default function DashboardPage() {
             )}
           </div>
         </section>
+      </div>
+    )}
       </main>
 
       {/* MODAL: DETAIL RESPONDEN LENGKAP */}
