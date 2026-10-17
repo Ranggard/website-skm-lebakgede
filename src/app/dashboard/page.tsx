@@ -1569,37 +1569,53 @@ export default function DashboardPage() {
               </span>
             </div>
 
-            <div className="h-64 w-full">
-              <ResponsiveContainer width="100%" height="100%">
-                <BarChart
-                  data={serviceChartData}
-                  layout="vertical"
-                  margin={{ top: 10, right: 30, left: 20, bottom: 10 }}
-                >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
-                  <XAxis type="number" allowDecimals={false} tick={{ fontSize: 11, fill: '#64748b' }} />
-                  <YAxis
-                    type="category"
-                    dataKey="name"
-                    width={180}
-                    tick={{ fontSize: 11, fill: '#334155', fontWeight: 600 }}
-                  />
-                  <RechartsTooltip content={<CustomGenericTooltip />} />
-                  <Bar
-                    dataKey="count"
-                    fill="#0d9488"
-                    radius={[0, 8, 8, 0]}
-                    maxBarSize={28}
+            {/* Responsive Service Demand List */}
+            <div className="space-y-3">
+              {serviceChartData.map((item, idx) => {
+                const maxCount = Math.max(...serviceChartData.map((s) => s.count), 1)
+                const percent = Math.round((item.count / maxCount) * 100)
+                const totalPercent = Math.round((item.count / (derivedStats.total || 1)) * 100)
+                const colors = [
+                  'from-emerald-500 to-teal-600',
+                  'from-teal-500 to-cyan-600',
+                  'from-blue-500 to-indigo-600',
+                  'from-indigo-500 to-purple-600',
+                ]
+                const barColor = colors[idx % colors.length]
+
+                return (
+                  <div
+                    key={item.name}
+                    className="p-3.5 sm:p-4 rounded-2xl bg-gray-50/80 border border-gray-100 hover:bg-emerald-50/40 transition"
                   >
-                    {serviceChartData.map((_, idx) => (
-                      <Cell
-                        key={`service-cell-${idx}`}
-                        fill={idx === 0 ? '#059669' : idx === 1 ? '#0d9488' : '#14b8a6'}
+                    <div className="flex items-center justify-between mb-2 gap-2">
+                      <div className="flex items-center gap-2.5 min-w-0">
+                        <span className="w-6 h-6 rounded-lg bg-white shadow-xs border border-gray-200 text-gray-700 text-xs font-bold flex items-center justify-center flex-shrink-0">
+                          #{idx + 1}
+                        </span>
+                        <span className="font-bold text-xs sm:text-sm text-gray-800 truncate" title={item.name}>
+                          {item.name}
+                        </span>
+                      </div>
+                      <div className="flex items-center gap-2 flex-shrink-0">
+                        <span className="font-extrabold text-xs text-emerald-700 bg-emerald-50 px-2.5 py-0.5 rounded-lg border border-emerald-200">
+                          {item.count} Pemohon
+                        </span>
+                        <span className="text-[11px] font-semibold text-gray-400">
+                          ({totalPercent}%)
+                        </span>
+                      </div>
+                    </div>
+                    {/* Progress Track */}
+                    <div className="w-full bg-gray-200/80 rounded-full h-3 overflow-hidden">
+                      <div
+                        className={`h-full rounded-full bg-gradient-to-r ${barColor} transition-all duration-700`}
+                        style={{ width: `${percent}%` }}
                       />
-                    ))}
-                  </Bar>
-                </BarChart>
-              </ResponsiveContainer>
+                    </div>
+                  </div>
+                )
+              })}
             </div>
           </section>
         )}
