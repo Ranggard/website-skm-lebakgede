@@ -1570,32 +1570,32 @@ export default function DashboardPage() {
               </span>
             </div>
 
-            {/* Clean, Responsive Recharts BarChart */}
+            {/* Clean, Responsive Recharts BarChart with Clear Grid Lines */}
             <div
               className="w-full"
-              style={{ height: `${Math.max(130, serviceChartData.length * 52 + 35)}px` }}
+              style={{ height: `${Math.max(160, serviceChartData.length * 60 + 50)}px` }}
             >
               <ResponsiveContainer width="100%" height="100%">
                 <BarChart
                   data={serviceChartData}
                   layout="vertical"
-                  margin={{ top: 5, right: 65, left: -10, bottom: 0 }}
+                  margin={{ top: 10, right: 65, left: 5, bottom: 5 }}
                 >
-                  <CartesianGrid strokeDasharray="3 3" horizontal={false} stroke="#f1f5f9" />
+                  <CartesianGrid strokeDasharray="3 3" stroke="#cbd5e1" strokeOpacity={0.8} />
                   <XAxis
                     type="number"
                     allowDecimals={false}
                     domain={[0, (dataMax: number) => (dataMax <= 2 ? dataMax + 1 : 'auto')]}
-                    axisLine={false}
-                    tickLine={false}
-                    tick={{ fontSize: 10, fill: '#94a3b8' }}
+                    axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }}
+                    tickLine={{ stroke: '#94a3b8' }}
+                    tick={{ fontSize: 11, fill: '#64748b', fontWeight: 600 }}
                   />
                   <YAxis
                     type="category"
                     dataKey="name"
-                    width={120}
-                    axisLine={false}
-                    tickLine={false}
+                    width={130}
+                    axisLine={{ stroke: '#94a3b8', strokeWidth: 1.5 }}
+                    tickLine={{ stroke: '#94a3b8' }}
                     tick={{ fontSize: 11, fill: '#334155', fontWeight: 600 }}
                   />
                   <RechartsTooltip content={<CustomGenericTooltip />} />
@@ -1603,7 +1603,7 @@ export default function DashboardPage() {
                     dataKey="count"
                     fill="#0d9488"
                     radius={[0, 8, 8, 0]}
-                    maxBarSize={28}
+                    maxBarSize={30}
                   >
                     {serviceChartData.map((_, idx) => (
                       <Cell
