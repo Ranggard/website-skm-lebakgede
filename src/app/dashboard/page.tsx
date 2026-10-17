@@ -885,28 +885,30 @@ export default function DashboardPage() {
 
       {/* Top Navigation Bar */}
       <header className="bg-white border-b border-gray-200 sticky top-0 z-30 shadow-sm print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-20 flex items-center justify-between">
-          <div className="flex items-center gap-4">
-            <div className="flex-shrink-0 flex items-center justify-center">
+        <div className="max-w-7xl mx-auto px-3 sm:px-6 lg:px-8 py-2.5 sm:py-3 flex items-center justify-between gap-2 sm:gap-4">
+          <div className="flex items-center gap-2.5 sm:gap-3.5 min-w-0">
+            <div className="flex-shrink-0 bg-white p-1 rounded-xl shadow-sm border border-gray-100 flex items-center justify-center">
               <img
                 src="/logo-kelurahan.jpg"
                 alt="Logo Kota Bandung"
-                className="h-12 w-auto object-contain drop-shadow-sm transition-transform hover:scale-105"
+                className="h-9 sm:h-11 w-auto object-contain"
               />
             </div>
-            <div>
-              <div className="flex items-center gap-2">
-                <h1 className="text-lg font-extrabold text-gray-900 leading-tight">
-                  Dashboard Statistika SKM
-                </h1>
-              </div>
-              <p className="text-xs text-gray-500">Kelurahan Lebakgede, Kecamatan Coblong, Kota Bandung</p>
+            <div className="min-w-0">
+              <h1 className="text-sm sm:text-base md:text-lg font-extrabold text-gray-900 leading-tight truncate">
+                <span className="sm:hidden">Statistika SKM</span>
+                <span className="hidden sm:inline">Dashboard Statistika SKM</span>
+              </h1>
+              <p className="text-[11px] sm:text-xs text-gray-500 leading-tight truncate">
+                <span>Kelurahan Lebakgede</span>
+                <span className="hidden md:inline">, Kecamatan Coblong, Kota Bandung</span>
+              </p>
             </div>
           </div>
 
-          <div className="flex items-center gap-3">
+          <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
             {adminUser && (
-              <span className="hidden sm:inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200">
+              <span className="hidden lg:inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200">
                 <span>👤</span>
                 <span>{adminUser.username}</span>
               </span>
@@ -915,25 +917,25 @@ export default function DashboardPage() {
             <button
               onClick={() => fetchData(token)}
               disabled={loading}
-              className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-2 px-3 rounded-xl transition flex items-center gap-1.5 border border-gray-300"
+              className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl transition flex items-center gap-1.5 border border-gray-300"
+              title="Segarkan Data"
             >
-              🔄 {loading ? 'Memuat...' : 'Segarkan Data'}
+              <span className={loading ? 'animate-spin' : ''}>🔄</span>
+              <span className="hidden sm:inline">{loading ? 'Memuat...' : 'Segarkan Data'}</span>
             </button>
 
             <button
               onClick={handleLogout}
-              className="bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold py-2 px-3 rounded-xl transition border border-red-200"
+              className="bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl transition border border-red-200"
             >
               Keluar
             </button>
           </div>
         </div>
-      </header>
 
-      {/* Sticky Sub-Menu Tab Bar (Mobile & Desktop) */}
-      <nav className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/90 shadow-sm print:hidden">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-2.5">
-          <div className="flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
+        {/* Sub-Menu Tab Bar (Integrated under header) */}
+        <div className="border-t border-gray-100 bg-slate-50/90 px-3 sm:px-6 lg:px-8 py-2">
+          <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
             {[
               { id: 'ringkasan', label: 'Ringkasan IKM', icon: '📊', count: null },
               { id: 'grafik', label: 'Grafik Analisis', icon: '📈', count: '9 Unsur' },
@@ -948,10 +950,10 @@ export default function DashboardPage() {
                   setActiveTab(tab.id as any)
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
-                className={`flex items-center gap-2 px-3.5 sm:px-4 py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
+                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
                   activeTab === tab.id
                     ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-600/20'
-                    : 'bg-gray-50 text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200/90'
+                    : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
                 }`}
               >
                 <span>{tab.icon}</span>
@@ -971,7 +973,7 @@ export default function DashboardPage() {
             ))}
           </div>
         </div>
-      </nav>
+      </header>
 
       {/* Main Content Area */}
       <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 mt-6 space-y-6">
