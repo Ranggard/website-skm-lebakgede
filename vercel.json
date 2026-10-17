@@ -1,0 +1,44 @@
+{
+  "buildCommand": "npm run build",
+  "devCommand": "npm run dev",
+  "installCommand": "npm ci",
+  "framework": "nextjs",
+  "nodeVersion": "18.17.0",
+  "env": {
+    "NEXT_PUBLIC_BACKEND_TYPE": {
+      "description": "Backend type to use: 'google-sheets' or 'supabase'"
+    },
+    "BACKEND_TYPE": {
+      "description": "Backend type: 'google-sheets' or 'supabase'"
+    },
+    "GOOGLE_APPS_SCRIPT_URL": {
+      "description": "Google Apps Script deployment URL"
+    },
+    "GOOGLE_SHEET_ID": {
+      "description": "Google Sheet ID for data storage"
+    },
+    "ADMIN_TOKEN": {
+      "description": "Admin token for protected endpoints"
+    },
+    "NEXT_PUBLIC_SUPABASE_URL": {
+      "description": "Supabase project URL"
+    },
+    "NEXT_PUBLIC_SUPABASE_ANON_KEY": {
+      "description": "Supabase anon key for client access"
+    },
+    "SUPABASE_SERVICE_KEY": {
+      "description": "Supabase service role key (server-side only)"
+    }
+  },
+  "headers": [
+    {
+      "source": "/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "public, max-age=3600, must-revalidate"
+        }
+      ]
+    }
+  ]
+}

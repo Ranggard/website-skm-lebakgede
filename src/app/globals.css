@@ -1,53 +1,84 @@
+@import url('https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap');
+
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
 
 * {
-  margin: 0;
-  padding: 0;
+  font-family: 'Plus Jakarta Sans', sans-serif;
   box-sizing: border-box;
 }
 
 html {
   scroll-behavior: smooth;
+  height: 100%;
 }
 
 body {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', 'Roboto', 'Oxygen',
-    'Ubuntu', 'Cantarell', 'Fira Sans', 'Droid Sans', 'Helvetica Neue',
-    sans-serif;
+  font-family: 'Plus Jakarta Sans', sans-serif;
+  background: #0f766e;
+  background-attachment: fixed;
+  min-height: 100%;
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Typography */
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-  line-height: 1.2;
+/* Clean card design */
+.glass-card {
+  background: #ffffff;
+  border: 1px solid #e5e7eb;
+  box-shadow: 0 1px 3px rgba(0, 0, 0, 0.1);
 }
 
-/* Form styles */
-input,
-textarea,
-select {
-  font-family: inherit;
+/* Rating button hover and active states */
+.rating-btn {
+  transition: all 0.2s ease;
+  position: relative;
+  overflow: hidden;
 }
 
-input[type='text'],
-input[type='email'],
-input[type='password'],
-textarea,
-select {
-  @apply border border-gray-300 rounded-md px-3 py-2 focus:outline-none focus:ring-2 focus:ring-primary focus:border-transparent;
+.rating-btn:hover {
+  transform: translateY(-1px);
+  box-shadow: 0 2px 8px rgba(15, 118, 110, 0.12);
 }
 
-button {
-  @apply font-medium transition-colors duration-200;
+.rating-emoji {
+  display: inline-block;
+  font-size: 1.2em;
+  margin-right: 0.5rem;
+  transition: transform 0.2s ease;
+}
+
+.rating-btn:hover .rating-emoji {
+  transform: scale(1.1);
+}
+
+.rating-btn.selected {
+  transform: scale(1.02) !important;
+  box-shadow: 0 4px 12px rgba(15, 118, 110, 0.2) !important;
+  background-color: #0f766e !important;
+  color: white !important;
+  border-color: #0f766e !important;
+}
+
+.fade-in {
+  animation: fadeInUp 0.4s ease-out forwards;
+  opacity: 0;
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(10px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+.progress-bar {
+  transition: width 0.3s ease;
 }
 
 /* Accessibility */

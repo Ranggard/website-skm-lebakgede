@@ -7,23 +7,23 @@ import { BackendStrategy } from '../../types/backend'
 import { QuestionnaireResponse, AnalyticsData } from '../../types/questionnaire'
 
 export class PlaceholderBackend implements BackendStrategy {
-  async submitResponse(data: QuestionnaireResponse): Promise<string> {
+  async submitResponse(_data: QuestionnaireResponse): Promise<string> {
     throw new Error('Not implemented')
   }
 
-  async getAnalytics(startDate?: Date, endDate?: Date): Promise<AnalyticsData> {
+  async getAnalytics(_startDate?: Date, _endDate?: Date): Promise<AnalyticsData> {
     throw new Error('Not implemented')
   }
 
   async exportResponses(
-    format: 'csv' | 'excel',
-    startDate?: Date,
-    endDate?: Date
+    _format: 'csv' | 'excel',
+    _startDate?: Date,
+    _endDate?: Date
   ): Promise<Buffer> {
     throw new Error('Not implemented')
   }
 
-  async deleteResponse(responseId: string): Promise<void> {
+  async deleteResponse(_responseId: string): Promise<void> {
     throw new Error('Not implemented')
   }
 
