@@ -147,6 +147,134 @@ const CustomElementTooltip = ({ active, payload }: any) => {
   return null
 }
 
+// Clean Modern SVG Icons (replacing emojis)
+const IconChartBar = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 19v-6a2 2 0 00-2-2H5a2 2 0 00-2 2v6a2 2 0 002 2h2a2 2 0 002-2zm0 0V9a2 2 0 012-2h2a2 2 0 012 2v10m-6 0a2 2 0 002 2h2a2 2 0 002-2m0 0V5a2 2 0 012-2h2a2 2 0 012 2v14a2 2 0 01-2 2h-2a2 2 0 01-2-2z" />
+  </svg>
+)
+
+const IconTrendingUp = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13 7h8m0 0v8m0-8l-8 8-4-4-6 6" />
+  </svg>
+)
+
+const IconUsers = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.656-.126-1.283-.356-1.857M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.656.126-1.283.356-1.857m0 0a5.002 5.002 0 019.288 0M15 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z" />
+  </svg>
+)
+
+const IconUser = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M16 7a4 4 0 11-8 0 4 4 0 018 0zM12 14a7 7 0 00-7 7h14a7 7 0 00-7-7z" />
+  </svg>
+)
+
+const IconStar = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="currentColor" viewBox="0 0 24 24">
+    <path d="M12 17.27L18.18 21l-1.64-7.03L22 9.24l-7.19-.61L12 2 9.19 8.63 2 9.24l5.46 4.73L5.82 21z" />
+  </svg>
+)
+
+const IconTrophy = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M5 3v4M3 5h4M6 17v4m-2 0h4m5-16l2.286 6.857L21 12l-5.714 2.143L13 21l-2.286-6.857L5 12l5.714-2.143L13 3z" />
+  </svg>
+)
+
+const IconMessageSquare = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M8 12h.01M12 12h.01M16 12h.01M21 12c0 4.418-4.03 8-9 8a9.863 9.863 0 01-4.255-.949L3 20l1.395-3.72C3.512 15.042 3 13.574 3 12c0-4.418 4.03-8 9-8s9 3.582 9 8z" />
+  </svg>
+)
+
+const IconLayers = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 11H5m14 0a2 2 0 012 2v6a2 2 0 01-2 2H5a2 2 0 01-2-2v-6a2 2 0 012-2m14 0V9a2 2 0 00-2-2M5 11V9a2 2 0 012-2m0 0V5a2 2 0 012-2h6a2 2 0 012 2v2M7 7h10" />
+  </svg>
+)
+
+const IconBuilding = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M19 21V5a2 2 0 00-2-2H7a2 2 0 00-2 2v16m14 0h2m-2 0h-5m-9 0H3m2 0h5M9 7h1m-1 4h1m4-4h1m-1 4h1m-5 10v-5a1 1 0 011-1h2a1 1 0 011 1v5m-4 0h4" />
+  </svg>
+)
+
+const IconDownload = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+  </svg>
+)
+
+const IconPrinter = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 17h2a2 2 0 002-2v-4a2 2 0 00-2-2H5a2 2 0 00-2 2v4a2 2 0 002 2h2m2 4h6a2 2 0 002-2v-4H7v4a2 2 0 002 2zm8-12V5a2 2 0 00-2-2H9a2 2 0 00-2 2v4h10z" />
+  </svg>
+)
+
+const IconSearch = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0z" />
+  </svg>
+)
+
+const IconRefresh = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15" />
+  </svg>
+)
+
+const IconLogout = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M17 16l4-4m0 0l-4-4m4 4H7m6 4v1a3 3 0 01-3 3H6a3 3 0 01-3-3V7a3 3 0 013-3h4a3 3 0 013 3v1" />
+  </svg>
+)
+
+const IconLock = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 15v2m-6 4h12a2 2 0 002-2v-6a2 2 0 00-2-2H6a2 2 0 00-2 2v6a2 2 0 002 2zm10-10V7a4 4 0 00-8 0v4h8z" />
+  </svg>
+)
+
+const IconEye = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M15 12a3 3 0 11-6 0 3 3 0 016 0z" />
+    <path strokeLinecap="round" strokeLinejoin="round" d="M2.458 12C3.732 7.943 7.523 5 12 5c4.478 0 8.268 2.943 9.542 7-1.274 4.057-5.064 7-9.542 7-4.477 0-8.268-2.943-9.542-7z" />
+  </svg>
+)
+
+const IconEyeOff = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M13.875 18.825A10.05 10.05 0 0112 19c-4.478 0-8.268-2.943-9.543-7a9.97 9.97 0 011.563-3.029m5.858.908a3 3 0 114.243 4.243M9.878 9.878l4.242 4.242M9.88 9.88l-3.29-3.29m7.532 7.532l3.29 3.29M3 3l18 18" />
+  </svg>
+)
+
+const IconRadar = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 2l8 4.5v9L12 22l-8-4.5v-9L12 2zM12 6l5 3v6l-5 3-5-3V9l5-3z" />
+  </svg>
+)
+
+const IconSliders = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M12 6V4m0 2a2 2 0 100 4m0-4a2 2 0 110 4m-6 8a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4m6 6v10m6-2a2 2 0 100-4m0 4a2 2 0 110-4m0 4v2m0-6V4" />
+  </svg>
+)
+
+const IconCheckCircle = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M9 12l2 2 4-4m6 2a9 9 0 11-18 0 9 9 0 0118 0z" />
+  </svg>
+)
+
+const IconArrowRight = ({ className = 'w-4 h-4' }: { className?: string }) => (
+  <svg className={className} fill="none" viewBox="0 0 24 24" stroke="currentColor" strokeWidth={2}>
+    <path strokeLinecap="round" strokeLinejoin="round" d="M14 5l7 7m0 0l-7 7m7-7H3" />
+  </svg>
+)
+
 // Custom Tooltip for Generic Demographics
 const CustomGenericTooltip = ({ active, payload, label }: any) => {
   if (active && payload && payload.length) {
@@ -787,7 +915,7 @@ export default function DashboardPage() {
             {/* Username Input */}
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <span>👤</span>
+                <IconUser className="w-3.5 h-3.5 text-gray-500" />
                 <span>Username</span>
               </label>
               <input
@@ -804,7 +932,7 @@ export default function DashboardPage() {
             {/* Password Input */}
             <div>
               <label className="block text-xs font-bold text-gray-700 uppercase tracking-wider mb-1.5 flex items-center gap-1.5">
-                <span>🔒</span>
+                <IconLock className="w-3.5 h-3.5 text-gray-500" />
                 <span>Password</span>
               </label>
               <div className="relative">
@@ -820,10 +948,11 @@ export default function DashboardPage() {
                 <button
                   type="button"
                   onClick={() => setShowPassword(!showPassword)}
-                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 text-sm p-1"
+                  className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 p-1"
                   tabIndex={-1}
+                  title={showPassword ? 'Sembunyikan password' : 'Tampilkan password'}
                 >
-                  {showPassword ? '👁️' : '👁️‍🗨️'}
+                  {showPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
                 </button>
               </div>
             </div>
@@ -910,7 +1039,7 @@ export default function DashboardPage() {
           <div className="flex items-center gap-1.5 sm:gap-2.5 flex-shrink-0">
             {adminUser && (
               <span className="hidden lg:inline-flex items-center gap-1.5 bg-slate-100 text-slate-700 text-xs font-semibold px-3 py-1.5 rounded-xl border border-slate-200">
-                <span>👤</span>
+                <IconUser className="w-3.5 h-3.5 text-slate-500" />
                 <span>{adminUser.username}</span>
               </span>
             )}
@@ -921,15 +1050,16 @@ export default function DashboardPage() {
               className="bg-gray-100 hover:bg-gray-200 text-gray-700 text-xs font-bold py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl transition flex items-center gap-1.5 border border-gray-300"
               title="Segarkan Data"
             >
-              <span className={loading ? 'animate-spin' : ''}>🔄</span>
+              <IconRefresh className={`w-3.5 h-3.5 ${loading ? 'animate-spin' : ''}`} />
               <span className="hidden sm:inline">{loading ? 'Memuat...' : 'Segarkan Data'}</span>
             </button>
 
             <button
               onClick={handleLogout}
-              className="bg-red-50 hover:bg-red-100 text-red-700 text-xs font-bold py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl transition border border-red-200"
+              className="bg-rose-50 hover:bg-rose-100 text-rose-700 text-xs font-bold py-1.5 sm:py-2 px-2.5 sm:px-3 rounded-xl transition border border-rose-200 flex items-center gap-1.5"
             >
-              Keluar
+              <IconLogout className="w-3.5 h-3.5" />
+              <span>Keluar</span>
             </button>
           </div>
         </div>
@@ -938,40 +1068,43 @@ export default function DashboardPage() {
         <div className="border-t border-gray-100 bg-slate-50/90 px-3 sm:px-6 lg:px-8 py-2">
           <div className="max-w-7xl mx-auto flex items-center gap-2 overflow-x-auto no-scrollbar py-0.5">
             {[
-              { id: 'ringkasan', label: 'Ringkasan IKM', icon: '📊', count: null },
-              { id: 'grafik', label: 'Grafik Analisis', icon: '📈', count: '9 Unsur' },
-              { id: 'responden', label: 'Data Responden', icon: '📋', count: filteredResponses.length },
-              { id: 'saran', label: 'Saran Warga', icon: '💬', count: allResponses.filter((r) => r.saran && r.saran !== '-' && r.saran.trim().length > 1).length },
-              { id: 'all', label: 'Semua', icon: '📑', count: null },
-            ].map((tab) => (
-              <button
-                key={tab.id}
-                type="button"
-                onClick={() => {
-                  setActiveTab(tab.id as any)
-                  window.scrollTo({ top: 0, behavior: 'smooth' })
-                }}
-                className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-sm ${
-                  activeTab === tab.id
-                    ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-600/20'
-                    : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
-                }`}
-              >
-                <span>{tab.icon}</span>
-                <span>{tab.label}</span>
-                {tab.count !== null && (
-                  <span
-                    className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
-                      activeTab === tab.id
-                        ? 'bg-white/25 text-white'
-                        : 'bg-gray-200 text-gray-700'
-                    }`}
-                  >
-                    {tab.count}
-                  </span>
-                )}
-              </button>
-            ))}
+              { id: 'ringkasan', label: 'Ringkasan IKM', icon: IconTrendingUp, count: null },
+              { id: 'grafik', label: 'Grafik Analisis', icon: IconChartBar, count: '9 Unsur' },
+              { id: 'responden', label: 'Data Responden', icon: IconUsers, count: filteredResponses.length },
+              { id: 'saran', label: 'Saran Warga', icon: IconMessageSquare, count: allResponses.filter((r) => r.saran && r.saran !== '-' && r.saran.trim().length > 1).length },
+              { id: 'all', label: 'Semua Data', icon: IconLayers, count: null },
+            ].map((tab) => {
+              const TabIcon = tab.icon
+              return (
+                <button
+                  key={tab.id}
+                  type="button"
+                  onClick={() => {
+                    setActiveTab(tab.id as any)
+                    window.scrollTo({ top: 0, behavior: 'smooth' })
+                  }}
+                  className={`flex items-center gap-1.5 sm:gap-2 px-3 sm:px-4 py-1.5 sm:py-2 rounded-xl text-xs font-bold whitespace-nowrap transition-all shadow-xs ${
+                    activeTab === tab.id
+                      ? 'bg-emerald-600 text-white shadow-emerald-600/25 ring-2 ring-emerald-600/20'
+                      : 'bg-white text-gray-700 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
+                  }`}
+                >
+                  <TabIcon className="w-3.5 h-3.5" />
+                  <span>{tab.label}</span>
+                  {tab.count !== null && (
+                    <span
+                      className={`text-[10px] px-1.5 py-0.5 rounded-full font-extrabold ${
+                        activeTab === tab.id
+                          ? 'bg-white/25 text-white'
+                          : 'bg-gray-200 text-gray-700'
+                      }`}
+                    >
+                      {tab.count}
+                    </span>
+                  )}
+                </button>
+              )
+            })}
           </div>
         </div>
       </header>
@@ -984,8 +1117,9 @@ export default function DashboardPage() {
             {/* Banner Quick Actions & Export Bar */}
         <div className="bg-gradient-to-r from-emerald-700 via-teal-700 to-emerald-800 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col md:flex-row justify-between items-start md:items-center gap-6 print:hidden">
           <div>
-            <span className="bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider">
-              Indikator Kinerja Pelayanan Publik
+            <span className="bg-white/20 backdrop-blur-md text-emerald-100 text-xs font-bold px-3 py-1 rounded-full uppercase tracking-wider flex items-center gap-1.5 w-fit">
+              <IconBuilding className="w-3.5 h-3.5" />
+              <span>Indikator Kinerja Pelayanan Publik</span>
             </span>
             <h2 className="text-2xl md:text-3xl font-extrabold mt-2 leading-tight">
               Statistika Survei Kepuasan Masyarakat
@@ -1000,27 +1134,31 @@ export default function DashboardPage() {
             <button
               onClick={handleExportExcel}
               disabled={isExporting}
-              className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-2 border border-emerald-400/40"
+              className="bg-emerald-500 hover:bg-emerald-400 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-1.5 border border-emerald-400/40"
             >
-              📊 Ekspor Excel (.xlsx)
+              <IconDownload className="w-3.5 h-3.5" />
+              <span>Ekspor Excel</span>
             </button>
             <button
               onClick={handleExportWord}
-              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-2 border border-blue-400/40"
+              className="bg-blue-600 hover:bg-blue-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-1.5 border border-blue-400/40"
             >
-              📄 Laporan Word (.doc)
+              <IconDownload className="w-3.5 h-3.5" />
+              <span>Laporan Word</span>
             </button>
             <button
               onClick={handleExportCSV}
-              className="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-2 border border-teal-400/40"
+              className="bg-teal-600 hover:bg-teal-500 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-1.5 border border-teal-400/40"
             >
-              📑 Unduh CSV
+              <IconDownload className="w-3.5 h-3.5" />
+              <span>Unduh CSV</span>
             </button>
             <button
               onClick={handlePrint}
-              className="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-2 border border-white/20"
+              className="bg-slate-800 hover:bg-slate-700 text-white font-bold py-2.5 px-4 rounded-xl text-xs transition shadow flex items-center gap-1.5 border border-white/20"
             >
-              🖨️ Cetak / PDF
+              <IconPrinter className="w-3.5 h-3.5" />
+              <span>Cetak / PDF</span>
             </button>
           </div>
         </div>
@@ -1036,8 +1174,8 @@ export default function DashboardPage() {
                   {derivedStats.ikmKonversi.toFixed(2)}
                 </h3>
               </div>
-              <span className="w-12 h-12 bg-emerald-100 text-emerald-700 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">
-                ⭐
+              <span className="w-12 h-12 bg-emerald-50 text-emerald-600 border border-emerald-100 rounded-2xl flex items-center justify-center font-bold text-xl shadow-xs">
+                <IconStar className="w-6 h-6" />
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs">
@@ -1058,8 +1196,8 @@ export default function DashboardPage() {
                   <span className="text-sm font-semibold text-gray-400">/ 4.00</span>
                 </h3>
               </div>
-              <span className="w-12 h-12 bg-teal-100 text-teal-700 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">
-                📈
+              <span className="w-12 h-12 bg-teal-50 text-teal-600 border border-teal-100 rounded-2xl flex items-center justify-center font-bold text-xl shadow-xs">
+                <IconTrendingUp className="w-6 h-6" />
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs">
@@ -1077,13 +1215,16 @@ export default function DashboardPage() {
                   {derivedStats.total} <span className="text-sm font-semibold text-gray-400">Orang</span>
                 </h3>
               </div>
-              <span className="w-12 h-12 bg-blue-100 text-blue-700 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">
-                👥
+              <span className="w-12 h-12 bg-blue-50 text-blue-600 border border-blue-100 rounded-2xl flex items-center justify-center font-bold text-xl shadow-xs">
+                <IconUsers className="w-6 h-6" />
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs">
               <span className="font-semibold text-gray-600">Penyelesaian:</span>
-              <span className="font-bold text-emerald-600">100% Terverifikasi</span>
+              <span className="font-bold text-emerald-600 inline-flex items-center gap-1">
+                <IconCheckCircle className="w-3.5 h-3.5" />
+                <span>100% Terverifikasi</span>
+              </span>
             </div>
           </div>
 
@@ -1096,8 +1237,8 @@ export default function DashboardPage() {
                   {bestElement?.short || '-'}
                 </h4>
               </div>
-              <span className="w-12 h-12 bg-indigo-100 text-indigo-700 rounded-2xl flex items-center justify-center font-bold text-xl shadow-inner">
-                🏆
+              <span className="w-12 h-12 bg-indigo-50 text-indigo-600 border border-indigo-100 rounded-2xl flex items-center justify-center font-bold text-xl shadow-xs">
+                <IconTrophy className="w-6 h-6" />
               </span>
             </div>
             <div className="mt-3 flex items-center justify-between text-xs">
@@ -1113,8 +1254,8 @@ export default function DashboardPage() {
         {activeTab === 'ringkasan' && (
           <div className="bg-white rounded-3xl p-6 shadow-sm border border-gray-200/80 flex flex-col sm:flex-row items-center justify-between gap-4">
             <div className="flex items-center gap-3">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-100 text-emerald-800 flex items-center justify-center font-bold text-lg">
-                💡
+              <div className="w-10 h-10 rounded-2xl bg-emerald-50 text-emerald-700 border border-emerald-100 flex items-center justify-center font-bold">
+                <IconLayers className="w-5 h-5" />
               </div>
               <div>
                 <h4 className="text-sm font-bold text-gray-900">Eksplorasi Detail Dashboard</h4>
@@ -1128,9 +1269,10 @@ export default function DashboardPage() {
                   setActiveTab('grafik')
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
-                className="flex-1 sm:flex-none px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition"
+                className="flex-1 sm:flex-none px-4 py-2 bg-emerald-50 hover:bg-emerald-100 text-emerald-800 text-xs font-bold rounded-xl border border-emerald-200 transition flex items-center justify-center gap-1.5"
               >
-                📈 Buka Grafik 9 Unsur →
+                <IconChartBar className="w-3.5 h-3.5" />
+                <span>Buka Grafik 9 Unsur →</span>
               </button>
               <button
                 type="button"
@@ -1138,9 +1280,10 @@ export default function DashboardPage() {
                   setActiveTab('responden')
                   window.scrollTo({ top: 0, behavior: 'smooth' })
                 }}
-                className="flex-1 sm:flex-none px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 transition"
+                className="flex-1 sm:flex-none px-4 py-2 bg-slate-50 hover:bg-slate-100 text-slate-800 text-xs font-bold rounded-xl border border-slate-200 transition flex items-center justify-center gap-1.5"
               >
-                📋 Buka Tabel Data →
+                <IconUsers className="w-3.5 h-3.5" />
+                <span>Buka Tabel Data →</span>
               </button>
             </div>
           </div>
@@ -1162,7 +1305,8 @@ export default function DashboardPage() {
                 <span className="text-xs text-gray-500 font-medium">Skala 1.00 &ndash; 4.00</span>
               </div>
               <h3 className="text-xl md:text-2xl font-extrabold text-gray-900 mt-1 flex items-center gap-2">
-                📊 Kinerja 9 Unsur Pelayanan Publik (U1 &ndash; U9)
+                <IconChartBar className="w-6 h-6 text-emerald-600" />
+                <span>Kinerja 9 Unsur Pelayanan Publik (U1 &ndash; U9)</span>
               </h3>
               <p className="text-xs text-gray-500 mt-1 max-w-2xl">
                 Visualisasi Nilai Rata-rata (NRR) per unsur pelayanan untuk identifikasi kelebihan dan aspek perbaikan mutu.
@@ -1179,7 +1323,7 @@ export default function DashboardPage() {
                     : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
-                <span>📊</span>
+                <IconChartBar className="w-3.5 h-3.5" />
                 <span>Grafik Batang</span>
               </button>
               <button
@@ -1190,7 +1334,7 @@ export default function DashboardPage() {
                     : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
-                <span>🕸️</span>
+                <IconRadar className="w-3.5 h-3.5" />
                 <span>Radar Kinerja</span>
               </button>
               <button
@@ -1201,7 +1345,7 @@ export default function DashboardPage() {
                     : 'text-gray-600 hover:text-gray-900'
                   }`}
               >
-                <span>📋</span>
+                <IconSliders className="w-3.5 h-3.5" />
                 <span>Rincian Indikator</span>
               </button>
             </div>
@@ -1337,13 +1481,15 @@ export default function DashboardPage() {
                           <span className="text-gray-800 flex items-center gap-2">
                             <span className="font-bold text-gray-900">{elem.label}</span>
                             {isBest && (
-                              <span className="bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">
-                                🏆 Tertinggi
+                              <span className="inline-flex items-center gap-1 bg-emerald-100 text-emerald-800 text-[10px] px-2 py-0.5 rounded font-bold">
+                                <IconTrophy className="w-3 h-3 text-emerald-700" />
+                                <span>Tertinggi</span>
                               </span>
                             )}
                             {isLowest && (
-                              <span className="bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">
-                                ⚠️ Perlu Peningkatan
+                              <span className="inline-flex items-center gap-1 bg-amber-100 text-amber-800 text-[10px] px-2 py-0.5 rounded font-bold">
+                                <span className="w-1.5 h-1.5 rounded-full bg-amber-500" />
+                                <span>Perlu Peningkatan</span>
                               </span>
                             )}
                           </span>
@@ -1384,7 +1530,8 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-md font-extrabold text-gray-900 flex items-center gap-2">
-                  👤 Proporsi Jenis Kelamin
+                  <IconUsers className="w-4 h-4 text-emerald-600" />
+                  <span>Proporsi Jenis Kelamin</span>
                 </h4>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">
                   Donut Chart
@@ -1446,7 +1593,8 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-md font-extrabold text-gray-900 flex items-center gap-2">
-                  🎓 Tingkat Pendidikan
+                  <IconBuilding className="w-4 h-4 text-indigo-600" />
+                  <span>Tingkat Pendidikan</span>
                 </h4>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">
                   Bar Chart
@@ -1495,7 +1643,8 @@ export default function DashboardPage() {
             <div>
               <div className="flex items-center justify-between mb-3">
                 <h4 className="text-md font-extrabold text-gray-900 flex items-center gap-2">
-                  😊 Distribusi Kepuasan Warga
+                  <IconStar className="w-4 h-4 text-amber-500" />
+                  <span>Distribusi Kepuasan Warga</span>
                 </h4>
                 <span className="text-[10px] font-bold text-gray-400 uppercase tracking-wider bg-gray-100 px-2 py-0.5 rounded">
                   Donut Chart
@@ -1559,7 +1708,8 @@ export default function DashboardPage() {
             <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center mb-5 gap-2 border-b border-gray-100 pb-4">
               <div>
                 <h3 className="text-lg font-extrabold text-gray-900 flex items-center gap-2">
-                  🏛️ Frekuensi Akses Layanan Publik Kelurahan
+                  <IconBuilding className="w-5 h-5 text-emerald-600" />
+                  <span>Frekuensi Akses Layanan Publik Kelurahan</span>
                 </h3>
                 <p className="text-xs text-gray-500 mt-0.5">
                   Distribusi jenis layanan yang paling sering diakses dan dinilai oleh masyarakat.
@@ -1651,7 +1801,8 @@ export default function DashboardPage() {
           <div className="flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
             <div>
               <h3 className="text-xl font-extrabold text-gray-900 flex items-center gap-2">
-                📋 Database Responden ({filteredResponses.length} Data)
+                <IconUsers className="w-5 h-5 text-emerald-600" />
+                <span>Database Responden ({filteredResponses.length} Data)</span>
               </h3>
               <p className="text-xs text-gray-500 mt-1">
                 Daftar kuesioner yang telah masuk ke Google Spreadsheet. Klik baris untuk melihat detail penilaian.
@@ -1660,16 +1811,19 @@ export default function DashboardPage() {
 
             {/* Filter & Search Bar */}
             <div className="flex flex-wrap items-center gap-3 w-full md:w-auto">
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => {
-                  setSearchQuery(e.target.value)
-                  setCurrentPage(1)
-                }}
-                placeholder="Cari ID, layanan, saran..."
-                className="px-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition flex-1 md:w-60"
-              />
+              <div className="relative flex-1 md:w-60">
+                <IconSearch className="w-4 h-4 text-gray-400 absolute left-3 top-1/2 -translate-y-1/2 pointer-events-none" />
+                <input
+                  type="text"
+                  value={searchQuery}
+                  onChange={(e) => {
+                    setSearchQuery(e.target.value)
+                    setCurrentPage(1)
+                  }}
+                  placeholder="Cari ID, layanan, saran..."
+                  className="w-full pl-9 pr-3.5 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs focus:outline-none focus:border-emerald-500 focus:bg-white transition"
+                />
+              </div>
 
               <select
                 value={filterService}
@@ -1705,7 +1859,7 @@ export default function DashboardPage() {
           {/* Table Container */}
           <div className="overflow-x-auto rounded-2xl border border-gray-200">
             <table className="w-full text-left text-xs">
-              <thead className="bg-emerald-600 text-white font-bold uppercase tracking-wider text-[11px]">
+              <thead className="bg-slate-50 text-slate-700 font-bold uppercase tracking-wider text-[11px] border-b border-slate-200">
                 <tr>
                   <th className="py-3 px-3 text-center">No</th>
                   <th className="py-3 px-4">ID Responden</th>
@@ -1730,25 +1884,28 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-center text-gray-400 font-mono font-bold">
                         {(currentPage - 1) * itemsPerPage + i + 1}
                       </td>
-                      <td className="py-3 px-4 font-mono font-bold text-emerald-800">
-                        {r.id}
+                      <td className="py-3 px-4">
+                        <span className="font-mono font-bold text-slate-800 bg-slate-100 px-2 py-0.5 rounded text-[11px] border border-slate-200/60">
+                          {r.id}
+                        </span>
                       </td>
                       <td className="py-3 px-4 text-gray-500">{r.waktu}</td>
                       <td className="py-3 px-3 text-center">
                         <span
-                          className={`px-2 py-0.5 rounded-full text-[10px] font-bold ${r.jenis_kelamin === 'Laki-laki'
-                              ? 'bg-sky-100 text-sky-800'
-                              : 'bg-pink-100 text-pink-800'
+                          className={`px-2.5 py-0.5 rounded-full text-[10px] font-bold inline-flex items-center gap-1 ${r.jenis_kelamin === 'Laki-laki'
+                              ? 'bg-blue-50 text-blue-700 border border-blue-200/60'
+                              : 'bg-rose-50 text-rose-700 border border-rose-200/60'
                             }`}
                         >
-                          {r.jenis_kelamin}
+                          <span className={`w-1.5 h-1.5 rounded-full ${r.jenis_kelamin === 'Laki-laki' ? 'bg-blue-500' : 'bg-rose-500'}`} />
+                          <span>{r.jenis_kelamin}</span>
                         </span>
                       </td>
                       <td className="py-3 px-3 text-center">{r.usia}</td>
                       <td className="py-3 px-4">{r.pendidikan}</td>
                       <td className="py-3 px-4 font-semibold text-gray-900">{r.jenis_layanan}</td>
                       <td className="py-3 px-3 text-center">
-                        <span className="font-extrabold px-2 py-0.5 rounded bg-emerald-100 text-emerald-800 font-mono text-[11px]">
+                        <span className="font-extrabold px-2.5 py-0.5 rounded-lg bg-emerald-50 text-emerald-800 font-mono text-[11px] border border-emerald-200">
                           {r.nilai}
                         </span>
                       </td>
@@ -1758,9 +1915,10 @@ export default function DashboardPage() {
                       <td className="py-3 px-3 text-center print:hidden">
                         <button
                           type="button"
-                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[11px] font-bold border border-emerald-200 transition"
+                          className="bg-emerald-50 hover:bg-emerald-100 text-emerald-700 px-2.5 py-1 rounded-lg text-[11px] font-bold border border-emerald-200 transition inline-flex items-center gap-1"
                         >
-                          Detail
+                          <span>Detail</span>
+                          <IconArrowRight className="w-3 h-3" />
                         </button>
                       </td>
                     </tr>
@@ -1812,7 +1970,8 @@ export default function DashboardPage() {
         {/* SECTION 5: KUMPULAN SARAN & MASUKAN WARGA */}
         <section className="bg-white rounded-3xl p-6 md:p-8 shadow-sm border border-gray-200/80">
           <h3 className="text-xl font-extrabold text-gray-900 mb-4 flex items-center gap-2">
-            💬 Aspirasi, Kritik &amp; Saran Masyarakat
+            <IconMessageSquare className="w-5 h-5 text-emerald-600" />
+            <span>Aspirasi, Kritik &amp; Saran Masyarakat</span>
           </h3>
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {allResponses.filter((r) => r.saran && r.saran !== '-' && r.saran.trim().length > 1).length > 0 ? (
