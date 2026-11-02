@@ -8,6 +8,11 @@ const config: Config = {
   ],
   theme: {
     extend: {
+      fontFamily: {
+        sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
+        heading: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
+        display: ['Outfit', 'sans-serif'],
+      },
       colors: {
         // SKM Satisfaction Levels
         satisfied: {
