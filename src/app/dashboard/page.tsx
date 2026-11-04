@@ -22,13 +22,11 @@ import {
   Pie,
 } from 'recharts'
 import {
-  IKM_TW3_RESPONDENTS,
   IKM_UNSUR_METADATA,
-  IKM_BAKU_MUTU_SUMMARY,
-  getBaselineAnalyticsData,
-  filterRespondentsByDate,
-  calculateIKMFromResponses,
-} from '@/src/lib/data/ikm-tw3-database'
+  STANDAR_BAKU_MUTU,
+  calculateIKM,
+  letterToScore,
+} from '@/src/lib/ikm-calculator'
 
 interface ResponseRow {
   no: number
@@ -51,6 +49,15 @@ interface ResponseRow {
   saran: string
   nilai: string
   skor_rata: number
+  u1?: number
+  u2?: number
+  u3?: number
+  u4?: number
+  u5?: number
+  u6?: number
+  u7?: number
+  u8?: number
+  u9?: number
 }
 
 interface AnalyticsData {
@@ -115,13 +122,6 @@ const TEXT_TO_SCORE: Record<string, number> = {
   'sangat kompeten': 4, 'sangat sopan': 4, 'sangat sopan dan ramah': 4, 'sangat baik': 4, 'dikelola dengan baik': 4,
   'd': 4, '4': 4,
 }
-
-const STANDAR_BAKU_MUTU = [
-  { mutu: 'D', kinerja: 'TIDAK BAIK', rentangKonversi: '25.00 – 64.99', rentangSkala4: '1.00 – 2.59' },
-  { mutu: 'C', kinerja: 'KURANG BAIK', rentangKonversi: '65.00 – 76.60', rentangSkala4: '2.60 – 3.06' },
-  { mutu: 'B', kinerja: 'BAIK', rentangKonversi: '76.61 – 88.30', rentangSkala4: '3.07 – 3.53' },
-  { mutu: 'A', kinerja: 'SANGAT BAIK', rentangKonversi: '88.31 – 100.00', rentangSkala4: '3.53 – 4.00' },
-]
 
 function parseScore(val: any): number {
   if (typeof val === 'number' && !isNaN(val)) return val
@@ -353,10 +353,10 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // Initialize with baseline data from TW 3 2026
+  // Fetch live data on mount
   useEffect(() => {
-    const initialData = getBaselineAnalyticsData()
-    setAnalytics(initialData as any)
+    const saved = localStorage.getItem('adminToken') || ''
+    fetchData(saved)
   }, [])
 
   const fetchData = async (authToken: string) => {
@@ -384,19 +384,15 @@ export default function DashboardPage() {
       }
 
       const resData = await response.json()
-      if (resData.data && resData.data.responses && resData.data.responses.length > 0) {
+      if (resData.data) {
         setAnalytics(resData.data)
-      } else {
-        setAnalytics(getBaselineAnalyticsData() as any)
       }
-      setIsAuthenticated(true)
-      localStorage.setItem('adminToken', authToken)
-    } catch (err: any) {
-      console.warn('Dashboard fetch warning, using baseline data:', err)
-      setAnalytics(getBaselineAnalyticsData() as any)
       if (authToken) {
         setIsAuthenticated(true)
+        localStorage.setItem('adminToken', authToken)
       }
+    } catch (err: any) {
+      console.warn('Dashboard fetch error:', err)
     } finally {
       setLoading(false)
     }
@@ -475,9 +471,9 @@ export default function DashboardPage() {
     }
   }, [])
 
-  // All responses from state or baseline
+  // All responses from state
   const allResponses = useMemo(() => {
-    return analytics?.responses || (getBaselineAnalyticsData().responses as ResponseRow[])
+    return analytics?.responses || []
   }, [analytics])
 
   // Filtered responses for Respondent Tab
@@ -558,6 +554,8 @@ export default function DashboardPage() {
 
       return {
         ...u,
+        id: u.key,
+        name: u.label,
         score: avg,
         ikm,
         mutu,
@@ -618,12 +616,42 @@ export default function DashboardPage() {
       }
     }
 
-    return filterRespondentsByDate(IKM_TW3_RESPONDENTS, start, end)
-  }, [exportPreset, exportStartDate, exportEndDate])
+    const responses = analytics?.responses || []
+    if (!start && !end) return responses
+
+    return responses.filter((r) => {
+      const d = r.timestamp || r.waktu ? new Date(r.timestamp || r.waktu) : null
+      if (!d || isNaN(d.getTime())) return true
+      if (start && d < start) return false
+      if (end && d > end) return false
+      return true
+    })
+  }, [analytics, exportPreset, exportStartDate, exportEndDate])
 
   // Calculation for Export Preview
   const exportPreviewCalc = useMemo(() => {
-    return calculateIKMFromResponses(exportFilteredResponses)
+    const records = exportFilteredResponses.map((r) => ({
+      id: r.id,
+      u1: parseScore(r.q1),
+      u2: parseScore(r.q2),
+      u3: parseScore(r.q3),
+      u4: parseScore(r.q4),
+      u5: parseScore(r.q5),
+      u6: parseScore(r.q6),
+      u7: parseScore(r.q7),
+      u8: parseScore(r.q8),
+      u9: parseScore(r.q9),
+      saran: r.saran,
+    }))
+    const calc = calculateIKM(records)
+    return {
+      count: calc.totalResponden,
+      ikmSkala4: calc.ikmSkala4,
+      ikmKonversi: calc.ikmKonversi,
+      mutuPelayanan: calc.mutuPelayanan,
+      kinerjaUnit: calc.kinerjaUnit,
+      unsurAverages: calc.unsurStats,
+    }
   }, [exportFilteredResponses])
 
   // Handler for Exporting Excel with specific filtered range
@@ -1155,7 +1183,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {derivedStats.elements.map((el) => (
                   <div
-                    key={el.key}
+                    key={el.id}
                     className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:shadow-md transition space-y-3"
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -1164,7 +1192,7 @@ export default function DashboardPage() {
                           {el.short}
                         </span>
                         <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
-                          {el.label}
+                          {el.name}
                         </h3>
                       </div>
                       <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase whitespace-nowrap ${el.score >= 3.53
@@ -1629,8 +1657,8 @@ export default function DashboardPage() {
           {isSidebarOpen && (
             <div className="p-3 border-t border-gray-100 bg-slate-50/80 text-[11px] text-gray-500 space-y-1">
               <div className="font-semibold text-gray-700">Lurah Lebakgede:</div>
-              <div className="text-xs font-bold text-gray-900">{IKM_BAKU_MUTU_SUMMARY.pejabat.nama}</div>
-              <div className="text-[10px] text-gray-400">NIP. {IKM_BAKU_MUTU_SUMMARY.pejabat.nip}</div>
+              <div className="text-xs font-bold text-gray-900">USMAN ADIREJA, S.Sos</div>
+              <div className="text-[10px] text-gray-400">NIP. 19721209 199901 1 001</div>
             </div>
           )}
         </aside>

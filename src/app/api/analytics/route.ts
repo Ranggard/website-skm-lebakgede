@@ -11,8 +11,51 @@ import {
 import { validateAnalyticsQuery } from '@/src/lib/validators'
 import { BackendFactory } from '@/src/lib/backend/factory'
 import { validateAdminEndpointAuth } from '@/src/lib/backend/strategies/supabase-rls-helper'
-import { getBaselineAnalyticsData } from '@/src/lib/data/ikm-tw3-database'
+import { calculateIKM, IKM_UNSUR_METADATA } from '@/src/lib/ikm-calculator'
 import type { AnalyticsQueryInput } from '@/src/lib/validators'
+
+function getEmptyAnalyticsData() {
+  const calc = calculateIKM([])
+  const elementsObj: Record<string, { name: string; score: number }> = {}
+  IKM_UNSUR_METADATA.forEach((u) => {
+    elementsObj[u.key] = { name: u.short, score: 0 }
+  })
+  return {
+    totalResponses: 0,
+    avgSatisfaction: 0,
+    ikmSkala4: 0,
+    ikmKonversi: 0,
+    mutuPelayanan: 'D',
+    kinerjaUnitPelayanan: 'TIDAK BAIK',
+    satisfactionRate: 0,
+    satisfactionDistribution: {
+      verySatisfied: 0,
+      satisfied: 0,
+      neutral: 0,
+      dissatisfied: 0,
+      veryDissatisfied: 0,
+    },
+    dimensionAverages: {
+      accessibility: 0,
+      serviceQuality: 0,
+      professionalism: 0,
+      courtesy: 0,
+      reliability: 0,
+      security: 0,
+      responseTime: 0,
+      facilities: 0,
+    },
+    elements: elementsObj,
+    demographics: {
+      gender: {},
+      education: {},
+      serviceType: {},
+    },
+    responses: [],
+    lastUpdated: new Date().toISOString(),
+  }
+}
+
 
 /**
  * GET /api/analytics
@@ -101,12 +144,12 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
     let analytics
     try {
       analytics = await backend.getAnalytics(startDate, endDate)
-      if (!analytics || !analytics.totalResponses || analytics.totalResponses === 0) {
-        analytics = getBaselineAnalyticsData(startDate, endDate)
+      if (!analytics) {
+        analytics = getEmptyAnalyticsData()
       }
     } catch (error) {
-      console.warn('Backend analytics fetch error, serving baseline TW 3 2026 data:', error)
-      analytics = getBaselineAnalyticsData(startDate, endDate)
+      console.warn('Backend analytics fetch error, serving empty template:', error)
+      analytics = getEmptyAnalyticsData()
     }
 
     return createSuccessResponse(analytics, 'Analytics retrieved successfully')

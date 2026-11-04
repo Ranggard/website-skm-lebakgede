@@ -1,11 +1,37 @@
 'use client'
 
-import React from 'react'
+import React, { useState, useEffect } from 'react'
 import Link from 'next/link'
-import { IKM_BAKU_MUTU_SUMMARY, IKM_UNSUR_METADATA } from '@/src/lib/data/ikm-tw3-database'
+
+const DEFAULT_SUMMARY = {
+  mutuPelayanan: 'B',
+  kinerjaUnit: 'BAIK',
+  ikmKonversi: 87.20,
+  ikmSkala4: 3.49,
+  totalResponden: 100,
+}
 
 export default function Home() {
   const currentYear = new Date().getFullYear()
+  const [summary, setSummary] = useState(DEFAULT_SUMMARY)
+
+  useEffect(() => {
+    fetch('/api/analytics')
+      .then((res) => res.json())
+      .then((json) => {
+        if (json.data && json.data.totalResponses > 0) {
+          setSummary({
+            mutuPelayanan: json.data.mutuPelayanan || 'B',
+            kinerjaUnit: json.data.kinerjaUnitPelayanan || 'BAIK',
+            ikmKonversi: json.data.ikmKonversi || 87.20,
+            ikmSkala4: json.data.ikmSkala4 || 3.49,
+            totalResponden: json.data.totalResponses,
+          })
+        }
+      })
+      .catch(() => {})
+  }, [])
+
 
   return (
     <div className="min-h-screen flex flex-col justify-between text-white selection:bg-emerald-400 selection:text-emerald-950 font-sans">
@@ -63,12 +89,8 @@ export default function Home() {
                   Masyarakat (SKM)
                 </span>
               </h1>
-              <p className="text-lg sm:text-xl font-semibold text-teal-100 font-display flex items-center gap-2">
-                <span>Kelurahan Lebakgede</span>
-                <span className="text-white/40">•</span>
-                <span className="font-script text-2xl sm:text-3xl text-amber-200 tracking-wide font-normal">
-                  Melayani dengan Sepenuh Hati
-                </span>
+              <p className="text-lg sm:text-xl font-semibold text-teal-100 font-display">
+                Kelurahan Lebakgede
               </p>
             </div>
 
@@ -144,7 +166,7 @@ export default function Home() {
                 <div className="flex flex-col items-end">
                   <span className="text-xs font-medium text-gray-400">Mutu Pelayanan</span>
                   <span className="inline-flex items-center px-3 py-1 rounded-full text-xs font-extrabold bg-emerald-100 text-emerald-800 border border-emerald-300 mt-0.5">
-                    Kategori {IKM_BAKU_MUTU_SUMMARY.mutuPelayanan} ({IKM_BAKU_MUTU_SUMMARY.kinerjaUnit})
+                    Kategori {summary.mutuPelayanan} ({summary.kinerjaUnit})
                   </span>
                 </div>
               </div>
@@ -154,7 +176,7 @@ export default function Home() {
                 <div className="bg-gradient-to-br from-teal-50 to-emerald-50 rounded-2xl p-4 border border-teal-100/80">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-teal-800">Nilai IKM</span>
                   <div className="text-3xl sm:text-4xl font-extrabold text-teal-900 mt-1 font-display tracking-tight">
-                    {IKM_BAKU_MUTU_SUMMARY.ikmKonversi}
+                    {summary.ikmKonversi}
                   </div>
                   <span className="text-[11px] text-teal-700 font-medium">Skala Konversi (0-100)</span>
                 </div>
@@ -162,7 +184,7 @@ export default function Home() {
                 <div className="bg-gradient-to-br from-blue-50 to-indigo-50 rounded-2xl p-4 border border-blue-100/80">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-blue-800">Skala 4.0</span>
                   <div className="text-3xl sm:text-4xl font-extrabold text-blue-900 mt-1 font-display tracking-tight">
-                    {IKM_BAKU_MUTU_SUMMARY.ikmSkala4.toFixed(2)}
+                    {summary.ikmSkala4.toFixed(2)}
                   </div>
                   <span className="text-[11px] text-blue-700 font-medium">NRR Tertimbang</span>
                 </div>
@@ -170,7 +192,7 @@ export default function Home() {
                 <div className="col-span-2 sm:col-span-1 bg-gradient-to-br from-amber-50 to-orange-50 rounded-2xl p-4 border border-amber-100/80">
                   <span className="text-[11px] font-bold uppercase tracking-wider text-amber-800">Responden</span>
                   <div className="text-3xl sm:text-4xl font-extrabold text-amber-900 mt-1 font-display tracking-tight">
-                    {IKM_BAKU_MUTU_SUMMARY.totalResponden}
+                    {summary.totalResponden}
                   </div>
                   <span className="text-[11px] text-amber-700 font-medium">Warga Mengisi</span>
                 </div>

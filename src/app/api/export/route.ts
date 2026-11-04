@@ -10,73 +10,17 @@ import {
 import { validateExportQuery } from '@/src/lib/validators'
 import { BackendFactory } from '@/src/lib/backend/factory'
 import { validateAdminEndpointAuth } from '@/src/lib/backend/strategies/supabase-rls-helper'
-import {
-  IKM_TW3_RESPONDENTS,
-  filterRespondentsByDate,
-  calculateIKMFromResponses,
-} from '@/src/lib/data/ikm-tw3-database'
+import { generateIKMExcelWorkbook } from '@/src/lib/ikm-calculator'
 import type { ExportQueryInput } from '@/src/lib/validators'
 
-function generateBaselineExportBuffer(
-  format: 'csv' | 'excel',
-  startDate?: Date,
-  endDate?: Date
-): Buffer {
-  // eslint-disable-next-line global-require
-  const xlsx = require('xlsx')
-  const filtered = filterRespondentsByDate(IKM_TW3_RESPONDENTS, startDate, endDate)
-
-  const rows = filtered.map((r, idx) => ({
-    'NO': idx + 1,
-    'NOMOR RESPONDEN': r.no,
-    'ID RESPONDEN': r.id,
-    'WAKTU': r.waktu,
-    'JENIS KELAMIN': r.jenis_kelamin,
-    'USIA': r.usia,
-    'PENDIDIKAN': r.pendidikan,
-    'JENIS LAYANAN': r.jenis_layanan,
-    'U1 - Persyaratan': r.u1,
-    'U2 - Prosedur': r.u2,
-    'U3 - Waktu': r.u3,
-    'U4 - Biaya/Tarif': r.u4,
-    'U5 - Produk Layanan': r.u5,
-    'U6 - Kompetensi': r.u6,
-    'U7 - Perilaku/Keramahan': r.u7,
-    'U8 - Sarana & Prasarana': r.u8,
-    'U9 - Pengaduan': r.u9,
-    'RATA-RATA': r.skor_rata,
-    'MUTU': r.nilai,
-    'SARAN & MASUKAN': r.saran,
-  }))
-
-  const ws = xlsx.utils.json_to_sheet(rows)
-
-  if (format === 'csv') {
-    const csvString = xlsx.utils.sheet_to_csv(ws)
-    return Buffer.from('\uFEFF' + csvString, 'utf-8')
-  }
-
-  const wb = xlsx.utils.book_new()
-  xlsx.utils.book_append_sheet(wb, ws, 'DATA_RESPONDEN_TW3')
-
-  const calc = calculateIKMFromResponses(filtered)
-  const summaryRows = [
-    { 'INDIKATOR': 'Unit Pelayanan', 'NILAI': 'Kelurahan Lebakgede Kecamatan Coblong' },
-    { 'INDIKATOR': 'Alamat', 'NILAI': 'Jl. Tubagus Ismail Bawah No. 5 Bandung' },
-    { 'INDIKATOR': 'Jumlah Responden Terfilter', 'NILAI': calc.count },
-    { 'INDIKATOR': 'Nilai IKM (Skala 4)', 'NILAI': calc.ikmSkala4 },
-    { 'INDIKATOR': 'Nilai Konversi IKM (0-100)', 'NILAI': calc.ikmKonversi },
-    { 'INDIKATOR': 'Mutu Pelayanan', 'NILAI': calc.mutuPelayanan },
-    { 'INDIKATOR': 'Kinerja Unit Pelayanan', 'NILAI': calc.kinerjaUnit },
-    { 'INDIKATOR': 'Pejabat Pengesah', 'NILAI': 'USMAN ADIREJA, S.Sos (Lurah Lebakgede)' },
-    { 'INDIKATOR': 'NIP', 'NILAI': '19721209 199901 1 001' },
-  ]
-  const wsSummary = xlsx.utils.json_to_sheet(summaryRows)
-  xlsx.utils.book_append_sheet(wb, wsSummary, 'BAKU_MUTU')
-
-  const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' })
-  return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer)
+function generateFallbackExportBuffer(format: 'csv' | 'excel'): Buffer {
+  return generateIKMExcelWorkbook([], {
+    unitPelayanan: 'Kelurahan Lebakgede Kecamatan Coblong',
+    alamat: 'Jl. Tubagus Ismail Bawah No. 5 Bandung',
+    periode: 'Survei Kepuasan Masyarakat',
+  })
 }
+
 
 /**
  * GET /api/export
@@ -168,11 +112,11 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
     try {
       fileBuffer = await backend.exportResponses(format, startDate, endDate)
       if (!fileBuffer || fileBuffer.length === 0) {
-        fileBuffer = generateBaselineExportBuffer(format, startDate, endDate)
+        fileBuffer = generateFallbackExportBuffer(format)
       }
     } catch (error) {
-      console.warn('Backend export error, falling back to baseline TW 3 2026 dataset:', error)
-      fileBuffer = generateBaselineExportBuffer(format, startDate, endDate)
+      console.warn('Backend export error, falling back to empty template:', error)
+      fileBuffer = generateFallbackExportBuffer(format)
     }
 
     // Determine content type and filename

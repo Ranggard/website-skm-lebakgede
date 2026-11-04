@@ -92,18 +92,18 @@ export interface AnalyticsData {
   }
 
   // Dimension Response Counts (for weighted calculations)
-  dimensionResponseCounts: Record<SKMCategory, number>
+  dimensionResponseCounts?: Record<SKMCategory, number>
 
   // Time-based trends
-  dailyTrend: Array<{
+  dailyTrend?: Array<{
     date: Date
     count: number
     avgSatisfaction: number
   }>
 
   // Completion metrics
-  completionRate: number // Percentage of respondents who completed all mandatory questions
-  averageCompletionTime: number // in seconds
+  completionRate?: number // Percentage of respondents who completed all mandatory questions
+  averageCompletionTime?: number // in seconds
 
   // Additional insights
   mostPositiveCategory?: SKMCategory
@@ -113,6 +113,7 @@ export interface AnalyticsData {
   ikmKonversi?: number
   ikmSkala4?: number
   mutuPelayanan?: string
+  kinerjaUnitPelayanan?: string
   elements?: Record<string, { name: string; score: number }>
   demographics?: {
     gender?: Record<string, number>
@@ -121,6 +122,7 @@ export interface AnalyticsData {
     serviceType?: Record<string, number>
   }
   responses?: any[]
+  lastUpdated?: string
 }
 
 /**
