@@ -116,6 +116,13 @@ const TEXT_TO_SCORE: Record<string, number> = {
   'd': 4, '4': 4,
 }
 
+const STANDAR_BAKU_MUTU = [
+  { mutu: 'D', kinerja: 'TIDAK BAIK', rentangKonversi: '25.00 – 64.99', rentangSkala4: '1.00 – 2.59' },
+  { mutu: 'C', kinerja: 'KURANG BAIK', rentangKonversi: '65.00 – 76.60', rentangSkala4: '2.60 – 3.06' },
+  { mutu: 'B', kinerja: 'BAIK', rentangKonversi: '76.61 – 88.30', rentangSkala4: '3.07 – 3.53' },
+  { mutu: 'A', kinerja: 'SANGAT BAIK', rentangKonversi: '88.31 – 100.00', rentangSkala4: '3.53 – 4.00' },
+]
+
 function parseScore(val: any): number {
   if (typeof val === 'number' && !isNaN(val)) return val
   if (!val) return 3
@@ -1356,7 +1363,7 @@ export default function DashboardPage() {
                 </div>
 
                 <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-4 gap-4">
-                  {IKM_BAKU_MUTU_SUMMARY.rentangNilai.map((item) => {
+                  {STANDAR_BAKU_MUTU.map((item) => {
                     const isCurrent = item.mutu === derivedStats.mutu
                     return (
                       <div
