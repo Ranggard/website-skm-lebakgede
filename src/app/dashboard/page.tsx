@@ -1148,7 +1148,7 @@ export default function DashboardPage() {
               <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
                 {derivedStats.elements.map((el) => (
                   <div
-                    key={el.id}
+                    key={el.key}
                     className="bg-white rounded-2xl p-5 border border-gray-200/80 shadow-xs hover:shadow-md transition space-y-3"
                   >
                     <div className="flex items-start justify-between gap-2">
@@ -1157,7 +1157,7 @@ export default function DashboardPage() {
                           {el.short}
                         </span>
                         <h3 className="text-sm font-bold text-gray-900 line-clamp-2 leading-snug">
-                          {el.name}
+                          {el.label}
                         </h3>
                       </div>
                       <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase whitespace-nowrap ${el.score >= 3.53
