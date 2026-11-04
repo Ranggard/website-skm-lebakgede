@@ -42,4 +42,5 @@ build
 # Misc
 .cache
 *.log
-Data/
+/Data/
+!src/lib/data/
