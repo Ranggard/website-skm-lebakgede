@@ -12,6 +12,7 @@ const config: Config = {
         sans: ['"Plus Jakarta Sans"', 'ui-sans-serif', 'system-ui', 'sans-serif'],
         heading: ['Outfit', '"Plus Jakarta Sans"', 'sans-serif'],
         display: ['Outfit', 'sans-serif'],
+        script: ['"Grand Hotel"', 'cursive', 'sans-serif'],
       },
       colors: {
         // SKM Satisfaction Levels

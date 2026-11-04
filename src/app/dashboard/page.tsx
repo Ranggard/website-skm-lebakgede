@@ -714,14 +714,14 @@ export default function DashboardPage() {
       exportPreset === '3m'
         ? '3 Bulan Terakhir'
         : exportPreset === '1m'
-        ? '1 Bulan Terakhir'
-        : exportPreset === '6m'
-        ? '6 Bulan Terakhir'
-        : exportPreset === '1y'
-        ? '1 Tahun Terakhir'
-        : exportPreset === 'all'
-        ? 'Seluruh Data Responden'
-        : `${exportStartDate} s/d ${exportEndDate}`
+          ? '1 Bulan Terakhir'
+          : exportPreset === '6m'
+            ? '6 Bulan Terakhir'
+            : exportPreset === '1y'
+              ? '1 Tahun Terakhir'
+              : exportPreset === 'all'
+                ? 'Seluruh Data Responden'
+                : `${exportStartDate} s/d ${exportEndDate}`
 
     const tableRows = exportPreviewCalc.unsurAverages
       .map(
@@ -985,7 +985,7 @@ export default function DashboardPage() {
   if (!isAuthenticated) {
     return (
       <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-gray-900">
-        
+
         {/* PUBLIC TOP HEADER */}
         <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
           <div className="flex items-center gap-3">
@@ -1031,11 +1031,11 @@ export default function DashboardPage() {
 
         {/* MAIN PUBLIC CONTENT */}
         <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
-          
+
           {/* HERO SUMMARY CARD */}
           <div className="bg-gradient-to-br from-teal-800 via-teal-700 to-emerald-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
             <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-96 h-96 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
-            
+
             <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
               <div className="space-y-3 max-w-2xl">
                 <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight font-display leading-tight text-white">
@@ -1116,11 +1116,10 @@ export default function DashboardPage() {
                 <button
                   key={tab.id}
                   onClick={() => setPublicTab(tab.id as any)}
-                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap cursor-pointer ${
-                    isActive
+                  className={`flex items-center gap-2 px-4 py-2.5 rounded-xl text-xs sm:text-sm font-bold transition whitespace-nowrap cursor-pointer ${isActive
                       ? 'bg-teal-700 text-white shadow-sm'
                       : 'bg-white text-gray-600 hover:bg-gray-100 hover:text-gray-900 border border-gray-200'
-                  }`}
+                    }`}
                 >
                   <Icon className="w-4 h-4" />
                   <span>{tab.label}</span>
@@ -1161,11 +1160,10 @@ export default function DashboardPage() {
                           {el.name}
                         </h3>
                       </div>
-                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase whitespace-nowrap ${
-                        el.score >= 3.53
+                      <span className={`px-2.5 py-1 rounded-lg text-[10px] font-black uppercase whitespace-nowrap ${el.score >= 3.53
                           ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
                           : 'bg-teal-100 text-teal-800 border border-teal-200'
-                      }`}>
+                        }`}>
                         {el.mutu}
                       </span>
                     </div>
@@ -1204,23 +1202,21 @@ export default function DashboardPage() {
                     Bandingkan capaian kepuasan tiap unsur layanan dengan diagram batang dan radar spider
                   </p>
                 </div>
-                
+
                 {/* Switcher Button */}
                 <div className="inline-flex p-1 bg-gray-100 rounded-xl border border-gray-200 self-start sm:self-auto">
                   <button
                     onClick={() => setPublicChartView('bar')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                      publicChartView === 'bar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${publicChartView === 'bar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                      }`}
                   >
                     <IconChartBar className="w-3.5 h-3.5" />
                     <span>Diagram Batang</span>
                   </button>
                   <button
                     onClick={() => setPublicChartView('radar')}
-                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${
-                      publicChartView === 'radar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
-                    }`}
+                    className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 cursor-pointer ${publicChartView === 'radar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                      }`}
                   >
                     <IconActivity className="w-3.5 h-3.5" />
                     <span>Radar Spider</span>
@@ -1276,7 +1272,7 @@ export default function DashboardPage() {
                     Proporsi keikutsertaan masyarakat berdasarkan gender
                   </p>
                 </div>
-                
+
                 <div className="h-64 w-full">
                   <ResponsiveContainer width="100%" height="100%">
                     <PieChart>
@@ -1365,16 +1361,14 @@ export default function DashboardPage() {
                     return (
                       <div
                         key={item.mutu}
-                        className={`rounded-2xl p-5 border transition-all ${
-                          isCurrent
+                        className={`rounded-2xl p-5 border transition-all ${isCurrent
                             ? 'bg-teal-50/70 border-teal-500 ring-2 ring-teal-500/20 shadow-md'
                             : 'bg-white border-gray-200'
-                        }`}
+                          }`}
                       >
                         <div className="flex items-center justify-between mb-2">
-                          <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm font-display ${
-                            isCurrent ? 'bg-teal-700 text-white' : 'bg-gray-100 text-gray-700'
-                          }`}>
+                          <span className={`w-8 h-8 rounded-xl flex items-center justify-center font-black text-sm font-display ${isCurrent ? 'bg-teal-700 text-white' : 'bg-gray-100 text-gray-700'
+                            }`}>
                             {item.mutu}
                           </span>
                           {isCurrent && (
@@ -1461,7 +1455,7 @@ export default function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-gray-900">
-      
+
       {/* TOP HEADER BAR with Hamburger Button */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-6 py-3 flex items-center justify-between shadow-xs no-print">
         <div className="flex items-center gap-3">
@@ -1527,12 +1521,11 @@ export default function DashboardPage() {
 
       {/* DASHBOARD BODY with Collapsible Sidebar & Content */}
       <div className="flex-1 flex overflow-hidden">
-        
+
         {/* COLLAPSIBLE SIDEBAR */}
         <aside
-          className={`fixed lg:static inset-y-0 left-0 z-40 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out shadow-lg lg:shadow-none no-print ${
-            isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-16'
-          }`}
+          className={`fixed lg:static inset-y-0 left-0 z-40 bg-white border-r border-gray-200 flex flex-col transition-all duration-300 ease-in-out shadow-lg lg:shadow-none no-print ${isSidebarOpen ? 'w-64 translate-x-0' : '-translate-x-full lg:translate-x-0 lg:w-16'
+            }`}
           style={{ top: '57px' }}
         >
           {/* Sidebar Top Info */}
@@ -1549,7 +1542,7 @@ export default function DashboardPage() {
                 <span className="w-2.5 h-2.5 rounded-full bg-emerald-500 inline-block"></span>
               </div>
             )}
-            
+
             {/* Close button on mobile overlay */}
             <button
               onClick={() => setIsSidebarOpen(false)}
@@ -1574,19 +1567,17 @@ export default function DashboardPage() {
                       setIsSidebarOpen(false)
                     }
                   }}
-                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group cursor-pointer ${
-                    isActive
+                  className={`w-full flex items-center gap-3 px-3 py-2.5 rounded-xl text-left transition-all group cursor-pointer ${isActive
                       ? 'bg-gradient-to-r from-teal-600 to-emerald-600 text-white shadow-md shadow-teal-700/20 font-bold'
                       : 'text-gray-700 hover:bg-teal-50/70 hover:text-teal-900 font-medium'
-                  }`}
+                    }`}
                   title={item.label}
                 >
-                  <div className={`p-1.5 rounded-lg flex-shrink-0 ${
-                    isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600 group-hover:bg-teal-100 group-hover:text-teal-800'
-                  }`}>
+                  <div className={`p-1.5 rounded-lg flex-shrink-0 ${isActive ? 'bg-white/20 text-white' : 'bg-gray-100 text-gray-600 group-hover:bg-teal-100 group-hover:text-teal-800'
+                    }`}>
                     <Icon className="w-4 h-4" />
                   </div>
-                  
+
                   {isSidebarOpen && (
                     <div className="min-w-0 flex-1">
                       <div className="text-xs truncate font-display">
@@ -1804,17 +1795,15 @@ export default function DashboardPage() {
                   <div className="flex items-center gap-1.5 p-1 bg-gray-100 rounded-xl">
                     <button
                       onClick={() => setActiveChartView('bar')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition font-display ${
-                        activeChartView === 'bar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
-                      }`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition font-display ${activeChartView === 'bar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                        }`}
                     >
                       Diagram Batang
                     </button>
                     <button
                       onClick={() => setActiveChartView('radar')}
-                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition font-display ${
-                        activeChartView === 'radar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
-                      }`}
+                      className={`px-3 py-1.5 rounded-lg text-xs font-bold transition font-display ${activeChartView === 'radar' ? 'bg-white text-teal-800 shadow-xs' : 'text-gray-600 hover:text-gray-900'
+                        }`}
                     >
                       Radar Spider
                     </button>
@@ -1870,12 +1859,12 @@ export default function DashboardPage() {
           {activeTab === 'demografi' && (
             <div className="space-y-6 fade-in">
               <div className="grid grid-cols-1 lg:grid-cols-2 gap-6">
-                
+
                 {/* Gender Pie Chart */}
                 <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs">
                   <h4 className="text-sm font-extrabold text-gray-900 font-display mb-1">Distribusi Jenis Kelamin</h4>
                   <p className="text-xs text-gray-500 mb-4">Komposisi responden warga perempuan dan laki-laki</p>
-                  
+
                   <div className="h-64 w-full">
                     <ResponsiveContainer width="100%" height="100%">
                       <PieChart>
@@ -1915,7 +1904,7 @@ export default function DashboardPage() {
                 <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs">
                   <h4 className="text-sm font-extrabold text-gray-900 font-display mb-1">Tingkat Pendidikan Responden</h4>
                   <p className="text-xs text-gray-500 mb-4">Latar belakang pendidikan responden pengurus layanan</p>
-                  
+
                   <div className="space-y-2.5 pt-2">
                     {[
                       { edu: 'SMA / Sederajat', count: 15, pct: 62.5 },
@@ -1945,7 +1934,7 @@ export default function DashboardPage() {
           {activeTab === 'responden' && (
             <div className="space-y-6 fade-in">
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs">
-                
+
                 {/* Search & Filter Bar */}
                 <div className="flex flex-col md:flex-row items-stretch md:items-center justify-between gap-3 mb-6">
                   <div className="relative flex-1 max-w-md">
@@ -2016,9 +2005,8 @@ export default function DashboardPage() {
                           <td className="py-3 px-3 font-semibold text-teal-900">{r.id}</td>
                           <td className="py-3 px-3 text-gray-600">{r.waktu}</td>
                           <td className="py-3 px-3">
-                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${
-                              r.jenis_kelamin.toLowerCase().includes('laki') ? 'bg-sky-50 text-sky-700' : 'bg-pink-50 text-pink-700'
-                            }`}>
+                            <span className={`px-2 py-0.5 rounded-md text-[10px] font-bold ${r.jenis_kelamin.toLowerCase().includes('laki') ? 'bg-sky-50 text-sky-700' : 'bg-pink-50 text-pink-700'
+                              }`}>
                               {r.jenis_kelamin}
                             </span>
                           </td>
@@ -2027,9 +2015,8 @@ export default function DashboardPage() {
                           <td className="py-3 px-3 font-medium text-gray-900">{r.jenis_layanan}</td>
                           <td className="py-3 px-3 text-center font-bold text-teal-800">{Number(r.skor_rata).toFixed(2)}</td>
                           <td className="py-3 px-3 text-center">
-                            <span className={`px-2 py-0.5 rounded-md font-extrabold text-[11px] ${
-                              r.nilai === 'A' ? 'bg-emerald-100 text-emerald-800' : 'bg-teal-100 text-teal-800'
-                            }`}>
+                            <span className={`px-2 py-0.5 rounded-md font-extrabold text-[11px] ${r.nilai === 'A' ? 'bg-emerald-100 text-emerald-800' : 'bg-teal-100 text-teal-800'
+                              }`}>
                               {r.nilai}
                             </span>
                           </td>
@@ -2114,7 +2101,7 @@ export default function DashboardPage() {
           {/* SUB-MENU 6: EXPORT & UNDUH DOKUMEN (NEW WITH LIVE PREVIEW & DATE RANGE) */}
           {activeTab === 'export' && (
             <div className="space-y-6 fade-in">
-              
+
               {/* Header Card */}
               <div className="bg-white rounded-2xl p-6 border border-gray-200 shadow-xs space-y-6">
                 <div className="no-print">
@@ -2283,11 +2270,10 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => setExportFormat('pdf')}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${
-                        exportFormat === 'pdf'
+                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${exportFormat === 'pdf'
                           ? 'border-emerald-600 bg-emerald-50/50 shadow-md ring-2 ring-emerald-600/20'
                           : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
@@ -2314,11 +2300,10 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => setExportFormat('excel')}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${
-                        exportFormat === 'excel'
+                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${exportFormat === 'excel'
                           ? 'border-emerald-600 bg-emerald-50/50 shadow-md ring-2 ring-emerald-600/20'
                           : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
@@ -2345,11 +2330,10 @@ export default function DashboardPage() {
                     <button
                       type="button"
                       onClick={() => setExportFormat('csv')}
-                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${
-                        exportFormat === 'csv'
+                      className={`p-4 rounded-2xl border-2 text-left transition-all relative overflow-hidden flex flex-col justify-between ${exportFormat === 'csv'
                           ? 'border-emerald-600 bg-emerald-50/50 shadow-md ring-2 ring-emerald-600/20'
                           : 'border-gray-200 hover:border-gray-300 bg-white'
-                      }`}
+                        }`}
                     >
                       <div>
                         <div className="flex items-center justify-between mb-2">
@@ -2381,8 +2365,8 @@ export default function DashboardPage() {
                       <span className="w-5 h-5 rounded-full bg-teal-700 text-white flex items-center justify-center text-[10px]">3</span>
                       <span>Live Preview Berkas: {
                         exportFormat === 'pdf' ? '📄 Dokumen Naskah Dinas Resmi (PDF/A4)' :
-                        exportFormat === 'excel' ? '📊 Lembar Kerja Microsoft Excel (.xlsx)' :
-                        '📑 Struktur Teks Data CSV (.csv)'
+                          exportFormat === 'excel' ? '📊 Lembar Kerja Microsoft Excel (.xlsx)' :
+                            '📑 Struktur Teks Data CSV (.csv)'
                       }</span>
                     </span>
                     <span className="text-[11px] text-gray-500">
@@ -2394,7 +2378,7 @@ export default function DashboardPage() {
                   {exportFormat === 'pdf' && (
                     <div className="bg-slate-200/80 p-3 sm:p-8 rounded-2xl border border-gray-300 flex justify-center overflow-x-auto print-container">
                       <div className="bg-white shadow-2xl rounded-none sm:rounded-sm p-6 sm:p-12 max-w-[760px] w-full text-black font-serif leading-normal text-xs printable-official-document">
-                        
+
                         {/* 1. KOP SURAT RESMI KELURAHAN LEBAK GEDE */}
                         <div className="flex items-start gap-4 pb-1">
                           <img
@@ -2546,11 +2530,10 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setExcelPreviewSheet('data')}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-                            excelPreviewSheet === 'data'
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${excelPreviewSheet === 'data'
                               ? 'bg-white text-[#107c41] shadow-xs border border-gray-300'
                               : 'text-gray-600 hover:bg-gray-200'
-                          }`}
+                            }`}
                         >
                           <span>📑 Sheet 1: DATA_RESPONDEN</span>
                           <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[#107c41] text-[10px]">
@@ -2560,11 +2543,10 @@ export default function DashboardPage() {
                         <button
                           type="button"
                           onClick={() => setExcelPreviewSheet('baku_mutu')}
-                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${
-                            excelPreviewSheet === 'baku_mutu'
+                          className={`px-3 py-1.5 rounded-lg text-xs font-bold transition flex items-center gap-1.5 ${excelPreviewSheet === 'baku_mutu'
                               ? 'bg-white text-[#107c41] shadow-xs border border-gray-300'
                               : 'text-gray-600 hover:bg-gray-200'
-                          }`}
+                            }`}
                         >
                           <span>📑 Sheet 2: BAKU_MUTU</span>
                           <span className="px-1.5 py-0.2 rounded-full bg-emerald-100 text-[#107c41] text-[10px]">
@@ -2693,8 +2675,8 @@ export default function DashboardPage() {
                       <p className="text-[11px] text-gray-500 mt-0.5">
                         Format aktif: <strong>{
                           exportFormat === 'pdf' ? 'Dokumen Laporan Resmi (PDF)' :
-                          exportFormat === 'excel' ? 'Buku Kerja Excel (.xlsx)' :
-                          'Data Tabular CSV (.csv)'
+                            exportFormat === 'excel' ? 'Buku Kerja Excel (.xlsx)' :
+                              'Data Tabular CSV (.csv)'
                         }</strong> ({exportFilteredResponses.length} responden)
                       </p>
                     </div>

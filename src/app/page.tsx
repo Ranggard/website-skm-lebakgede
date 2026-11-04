@@ -45,10 +45,10 @@ export default function Home() {
 
       {/* Main Content Area */}
       <main className="w-full max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8 sm:py-12 flex-1 flex flex-col justify-center">
-        
+
         {/* Hero Section */}
         <div className="grid grid-cols-1 lg:grid-cols-12 gap-8 lg:gap-12 items-center mb-8">
-          
+
           {/* Left Column - Hero Titles & Statistics Highlights */}
           <div className="lg:col-span-6 space-y-6">
             <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-teal-500/20 border border-teal-300/30 text-teal-200 text-xs font-semibold backdrop-blur-sm">
@@ -63,8 +63,12 @@ export default function Home() {
                   Masyarakat (SKM)
                 </span>
               </h1>
-              <p className="text-lg sm:text-xl font-semibold text-teal-100 font-display">
-                Kelurahan Lebakgede
+              <p className="text-lg sm:text-xl font-semibold text-teal-100 font-display flex items-center gap-2">
+                <span>Kelurahan Lebakgede</span>
+                <span className="text-white/40">•</span>
+                <span className="font-script text-2xl sm:text-3xl text-amber-200 tracking-wide font-normal">
+                  Melayani dengan Sepenuh Hati
+                </span>
               </p>
             </div>
 
