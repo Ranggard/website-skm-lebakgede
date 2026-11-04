@@ -1,10 +1,14 @@
-import type { Metadata } from 'next'
+import type { Metadata, Viewport } from 'next'
 import './globals.css'
+
+export const viewport: Viewport = {
+  width: 'device-width',
+  initialScale: 1,
+}
 
 export const metadata: Metadata = {
   title: 'Survei Kepuasan Masyarakat - Kelurahan Lebakgede',
   description: 'Survei Kepuasan Masyarakat - Kelurahan Lebakgede, Kecamatan Coblong, Kota Bandung',
-  viewport: 'width=device-width, initial-scale=1',
 }
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
