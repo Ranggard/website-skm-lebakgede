@@ -62,26 +62,21 @@ export async function POST(request: NextRequest) {
       }
     }
 
-    // 2. Fallback darurat (jika Supabase belum di-migrate tabel admin_users)
-    if (!matchedUser) {
+    // 2. Fallback darurat HANYA jika Supabase tidak terhubung
+    if (!matchedUser && (!supabaseUrl || !supabaseKey)) {
       const defaultAccounts: Record<string, { pass: string[]; role: string; nama: string }> = {
         admin: {
-          pass: ['Admin123', 'admin123', process.env.ADMIN_PASSWORD || 'Staf12345'],
+          pass: ['Admin123'],
           role: 'admin',
           nama: 'Administrator Kelurahan',
         },
         staf: {
-          pass: ['Staf12345', 'staf12345', process.env.ADMIN_PASSWORD || 'Staf12345'],
-          role: 'staf',
-          nama: 'Staf Pelayanan Lebakgede',
-        },
-        staflebakgede: {
-          pass: ['Staf12345', 'staf12345', process.env.ADMIN_PASSWORD || 'Staf12345'],
+          pass: ['Staf12345'],
           role: 'staf',
           nama: 'Staf Pelayanan Lebakgede',
         },
         lurah: {
-          pass: ['Lurah123', 'lurah123'],
+          pass: ['Lurah123'],
           role: 'lurah',
           nama: 'Lurah Lebakgede',
         },

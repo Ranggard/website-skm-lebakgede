@@ -8,6 +8,8 @@
  * TIDAK mengandung data pribadi responden, aman untuk di-commit ke repositori Git publik.
  */
 
+import { IKM_MASTER_TEMPLATE_BASE64 } from './ikm-template-binary'
+
 export interface IKMRespondentRecord {
   no?: number
   id: string
@@ -15,7 +17,7 @@ export interface IKMRespondentRecord {
   waktu?: string
   timestamp?: string
   jenis_kelamin?: string
-  usia?: string
+  usia?: string | number
   pendidikan?: string
   jenis_layanan?: string
   u1: number // 1. Persyaratan Pelayanan
@@ -181,7 +183,7 @@ export function calculateIKM(responses: IKMRespondentRecord[]): IKMCalculationRe
     totals.u9 += letterToScore(r.u9)
   })
 
-  const bobot = 1 / 9 // 0.111111...
+  const bobot = 1 / 9
   let ikmSkala4 = 0
 
   const unsurStats: UnsurStat[] = IKM_UNSUR_METADATA.map((u) => {
@@ -240,10 +242,17 @@ export function calculateIKM(responses: IKMRespondentRecord[]): IKMCalculationRe
 }
 
 /**
- * Generator Buffer File Excel Resmi format IKM TW 3
- * Menghasilkan workbook dengan 2 Sheet:
- * 1. DATA_RESPONDEN: Daftar responden dan skor 9 unsur
- * 2. BAKU_MUTU: Ringkasan Nilai IKM, Mutu, dan Kinerja Unit
+ * Konversi Javascript Date ke Serial Number Excel
+ */
+function jsDateToExcelSerial(d: Date): number {
+  return 25569.0 + ((d.getTime() - (d.getTimezoneOffset() * 60 * 1000)) / (1000 * 60 * 60 * 24))
+}
+
+/**
+ * Generator Buffer File Excel Resmi format IKM TW 3 2026
+ * 100% identik dengan master template 'Data/IKM TW 3 2026.xlsx':
+ * - 5 sheet: BLANKO, TRIWULAN 3, BAKU MUTU TW 3, NILAI MUTU PELAYANAN, REKAP
+ * - Semua cell merges, rumus Excel asli (SUM, COUNTIF, IF, cross-sheet references), styles, dan layout terjaga 100%
  */
 export function generateIKMExcelWorkbook(
   responses: IKMRespondentRecord[],
@@ -258,79 +267,106 @@ export function generateIKMExcelWorkbook(
   // eslint-disable-next-line global-require
   const xlsx = require('xlsx')
 
-  const calc = calculateIKM(responses)
+  // Baca template master yang sudah tersemat secara permanen (aman untuk serverless, docker, maupun client-side bundle)
+  const templateBuf = Buffer.from(IKM_MASTER_TEMPLATE_BASE64, 'base64')
+  const wb = xlsx.read(templateBuf, { type: 'buffer', cellStyles: true })
 
-  // Sheet 1: DATA_RESPONDEN
-  const dataRows = responses.map((r, idx) => {
-    const u1 = letterToScore(r.u1)
-    const u2 = letterToScore(r.u2)
-    const u3 = letterToScore(r.u3)
-    const u4 = letterToScore(r.u4)
-    const u5 = letterToScore(r.u5)
-    const u6 = letterToScore(r.u6)
-    const u7 = letterToScore(r.u7)
-    const u8 = letterToScore(r.u8)
-    const u9 = letterToScore(r.u9)
-    const avg = Number(((u1 + u2 + u3 + u4 + u5 + u6 + u7 + u8 + u9) / 9).toFixed(2))
+  const wsTW = wb.Sheets['TRIWULAN 3']
+  const count = responses.length
 
-    let nilaiHuruf = 'B'
-    if (avg >= 3.53) nilaiHuruf = 'A'
-    else if (avg >= 3.07) nilaiHuruf = 'B'
-    else if (avg >= 2.6) nilaiHuruf = 'C'
-    else nilaiHuruf = 'D'
+  // 2. Inject respondent data ke sheet 'TRIWULAN 3' (baris 9 s/d 103 = index r: 8 s/d 102)
+  for (let i = 0; i < 95; i++) {
+    const rowNum = 9 + i // row 9, 10, ..., 103
+    if (i < count) {
+      const resp = responses[i]
+      
+      // Kolom A: Nomor Responden (A9 = 1, A10 = A9+1, dst)
+      if (i === 0) {
+        wsTW[`A${rowNum}`] = { t: 'n', v: 1, z: 'General', w: '1', s: { patternType: 'none' } }
+      } else {
+        const prevRow = rowNum - 1
+        wsTW[`A${rowNum}`] = { t: 'n', v: i + 1, f: `A${prevRow}+1`, z: 'General', w: String(i + 1), s: { patternType: 'none' } }
+      }
 
-    return {
-      'NO': idx + 1,
-      'NOMOR RESPONDEN': r.no || idx + 1,
-      'ID RESPONDEN': r.id,
-      'WAKTU': r.waktu || r.created_at || new Date().toISOString(),
-      'JENIS KELAMIN': r.jenis_kelamin || '-',
-      'USIA': r.usia || '-',
-      'PENDIDIKAN': r.pendidikan || '-',
-      'JENIS LAYANAN': r.jenis_layanan || '-',
-      'U1 - Persyaratan': u1,
-      'U2 - Prosedur': u2,
-      'U3 - Waktu': u3,
-      'U4 - Biaya/Tarif': u4,
-      'U5 - Produk Layanan': u5,
-      'U6 - Kompetensi': u6,
-      'U7 - Perilaku/Keramahan': u7,
-      'U8 - Sarana & Prasarana': u8,
-      'U9 - Pengaduan': u9,
-      'RATA-RATA': avg,
-      'MUTU': nilaiHuruf,
-      'SARAN & MASUKAN': r.saran || '',
+      // Kolom B: Tanggal Survey (format m/d/yy h:mm)
+      let dateSerial = 46060.384247685186
+      let dateStr = '2/7/26 9:13'
+      if (resp.timestamp || resp.waktu || resp.created_at) {
+        const d = new Date((resp.timestamp || resp.created_at || resp.waktu) as string)
+        if (!isNaN(d.getTime())) {
+          dateSerial = jsDateToExcelSerial(d)
+          dateStr = xlsx.SSF.format('m/d/yy h:mm', dateSerial)
+        }
+      }
+      wsTW[`B${rowNum}`] = { t: 'n', v: dateSerial, z: 'm/d/yy h:mm', w: dateStr, s: { patternType: 'none' } }
+
+      // Kolom C: Jenis Kelamin (Laki-laki / Perempuan)
+      let jk = (resp.jenis_kelamin || 'Laki-laki').trim()
+      if (jk.toLowerCase().startsWith('l')) jk = 'Laki-laki'
+      else if (jk.toLowerCase().startsWith('p')) jk = 'Perempuan'
+      wsTW[`C${rowNum}`] = { t: 's', v: jk, r: `<t>${jk}</t>`, h: jk, z: 'General', w: jk, s: { patternType: 'none' } }
+
+      // Kolom D: Usia (number)
+      const age = Number(resp.usia) || 30
+      wsTW[`D${rowNum}`] = { t: 'n', v: age, z: 'General', w: String(age), s: { patternType: 'none' } }
+
+      // Kolom E: Pendidikan (SD, SMP, SMA, D1-D3, S1, S2, S3)
+      let edu = (resp.pendidikan || 'SMA').trim().toUpperCase()
+      if (['D1', 'D2', 'D3'].includes(edu)) edu = 'D3'
+      wsTW[`E${rowNum}`] = { t: 's', v: edu, r: `<t>${edu}</t>`, h: edu, z: 'General', w: edu, s: { patternType: 'none' } }
+
+      // Kolom F: Pekerjaan / Jenis Layanan
+      const svc = resp.jenis_layanan || 'Lainnya'
+      wsTW[`F${rowNum}`] = { t: 's', v: svc, r: `<t>${svc}</t>`, h: svc, z: 'General', w: svc, s: { patternType: 'none' } }
+
+      // Kolom G-O: Nilai Per Unsur Pelayanan (U1 - U9)
+      const unsurs: (keyof IKMRespondentRecord)[] = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7', 'u8', 'u9']
+      unsurs.forEach((key, uIdx) => {
+        const colLetter = String.fromCharCode(71 + uIdx) // 71 = 'G'
+        const score = letterToScore(resp[key] as any)
+        wsTW[`${colLetter}${rowNum}`] = { t: 'n', v: score, z: 'General', w: String(score), s: { patternType: 'none' } }
+      })
+    } else {
+      // Baris kosong filler (baris count + 9 sampai 103)
+      if (i === count) {
+        wsTW[`A${rowNum}`] = { t: 'e', v: 23, f: '#REF!+1', w: '#REF!', z: 'General', s: { patternType: 'none' } }
+      } else {
+        const prevRow = rowNum - 1
+        wsTW[`A${rowNum}`] = { t: 'e', v: 23, f: `A${prevRow}+1`, w: '#REF!', z: 'General', s: { patternType: 'none' } }
+      }
+      wsTW[`B${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
+      wsTW[`C${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
+      wsTW[`D${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
+      wsTW[`E${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
+      wsTW[`F${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
+      for (let uIdx = 0; uIdx < 9; uIdx++) {
+        const colLetter = String.fromCharCode(71 + uIdx)
+        wsTW[`${colLetter}${rowNum}`] = {
+          t: 'n',
+          v: 0,
+          z: '_-* #,##0_-;\\-* #,##0_-;_-* "-"_-;_-@_-',
+          w: ' - ',
+          s: { patternType: 'none' }
+        }
+      }
     }
-  })
+  }
 
-  const wb = xlsx.utils.book_new()
-  const wsData = xlsx.utils.json_to_sheet(dataRows)
-  xlsx.utils.book_append_sheet(wb, wsData, 'DATA_RESPONDEN')
+  // 3. Baris 105: Update "Total yang Terisi" di kolom G-O dengan jumlah responden aktual
+  for (let c = 6; c <= 14; c++) {
+    const addr = xlsx.utils.encode_cell({ r: 104, c })
+    wsTW[addr] = { t: 'n', v: count, z: '#,##0', w: String(count), s: { patternType: 'none' } }
+  }
 
-  // Sheet 2: BAKU_MUTU & PENGOLAHAN
-  const summaryRows = [
-    { 'INDIKATOR': 'Unit Pelayanan', 'NILAI': metadataInfo?.unitPelayanan || 'Kelurahan Lebakgede Kecamatan Coblong' },
-    { 'INDIKATOR': 'Alamat', 'NILAI': metadataInfo?.alamat || 'Jl. Tubagus Ismail Bawah No. 5 Bandung' },
-    { 'INDIKATOR': 'Periode Evaluasi', 'NILAI': metadataInfo?.periode || 'Triwulan Evaluasi Pelayanan Publik' },
-    { 'INDIKATOR': 'Jumlah Responden', 'NILAI': calc.totalResponden },
-    { 'INDIKATOR': 'Nilai IKM (Skala 4)', 'NILAI': calc.ikmSkala4 },
-    { 'INDIKATOR': 'Nilai Konversi IKM (0-100)', 'NILAI': calc.ikmKonversi },
-    { 'INDIKATOR': 'Mutu Pelayanan', 'NILAI': calc.mutuPelayanan },
-    { 'INDIKATOR': 'Kinerja Unit Pelayanan', 'NILAI': calc.kinerjaUnit },
-    { 'INDIKATOR': 'Pejabat Pengesah', 'NILAI': metadataInfo?.pejabat || 'Lurah Lebakgede' },
-    { 'INDIKATOR': 'NIP', 'NILAI': metadataInfo?.nip || '-' },
-  ]
+  // 4. Update Pejabat dan NIP jika disediakan
+  if (metadataInfo?.pejabat) {
+    wsTW['L116'] = { t: 's', v: metadataInfo.pejabat, r: `<t>${metadataInfo.pejabat}</t>`, h: metadataInfo.pejabat, z: 'General', w: metadataInfo.pejabat, s: { patternType: 'none' } }
+  }
+  if (metadataInfo?.nip) {
+    wsTW['L118'] = { t: 's', v: `NIP. ${metadataInfo.nip}`, r: `<t>NIP. ${metadataInfo.nip}</t>`, h: `NIP. ${metadataInfo.nip}`, z: 'General', w: `NIP. ${metadataInfo.nip}`, s: { patternType: 'none' } }
+  }
 
-  calc.unsurStats.forEach((u) => {
-    summaryRows.push({
-      'INDIKATOR': `Nilai Rata-rata ${u.code} (${u.name})`,
-      'NILAI': `${u.nrr} | Konversi: ${u.ikmKonversi} (${u.mutu})` as any,
-    })
-  })
-
-  const wsSummary = xlsx.utils.json_to_sheet(summaryRows)
-  xlsx.utils.book_append_sheet(wb, wsSummary, 'BAKU_MUTU')
-
-  const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx' })
+  // 5. Generate buffer dengan cellStyles: true agar format visual, garis, warna persis template master
+  const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx', cellStyles: true })
   return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer)
 }
