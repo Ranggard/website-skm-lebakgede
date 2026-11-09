@@ -310,7 +310,7 @@ export default function DashboardPage() {
 
   // Derived statistics for overview
   const derivedStats = useMemo(() => {
-    const total = allResponses.length || 24
+    const total = allResponses.length
     const sums = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0, q7: 0, q8: 0, q9: 0 }
     const genderCount: Record<string, number> = {}
     const eduCount: Record<string, number> = {}
@@ -338,14 +338,16 @@ export default function DashboardPage() {
     let ikmSkala4 = 0
     const elements = UNSUR_NAMES.map((u, i) => {
       const qKey = qKeys[i]
-      const avg = total > 0 ? sums[qKey] / total : 3.5
+      const avg = total > 0 ? sums[qKey] / total : 0
       ikmSkala4 += avg * (1 / 9)
       const ikm = avg * 25
-      let mutu = 'B (Baik)'
-      if (avg >= 3.53) mutu = 'A (Sangat Baik)'
-      else if (avg >= 3.06) mutu = 'B (Baik)'
-      else if (avg >= 2.60) mutu = 'C (Kurang Baik)'
-      else mutu = 'D (Tidak Baik)'
+      let mutu = 'D (Tidak Baik)'
+      if (total > 0) {
+        if (avg >= 3.53) mutu = 'A (Sangat Baik)'
+        else if (avg >= 3.06) mutu = 'B (Baik)'
+        else if (avg >= 2.60) mutu = 'C (Kurang Baik)'
+        else mutu = 'D (Tidak Baik)'
+      }
 
       return {
         ...u,
@@ -358,20 +360,22 @@ export default function DashboardPage() {
     })
 
     const ikmKonversi = ikmSkala4 * 25
-    let mutuPelayanan = 'B'
-    let kinerjaUnit = 'BAIK'
-    if (ikmKonversi >= 88.31) {
-      mutuPelayanan = 'A'
-      kinerjaUnit = 'SANGAT BAIK'
-    } else if (ikmKonversi >= 76.61) {
-      mutuPelayanan = 'B'
-      kinerjaUnit = 'BAIK'
-    } else if (ikmKonversi >= 65.0) {
-      mutuPelayanan = 'C'
-      kinerjaUnit = 'KURANG BAIK'
-    } else {
-      mutuPelayanan = 'D'
-      kinerjaUnit = 'TIDAK BAIK'
+    let mutuPelayanan = 'D'
+    let kinerjaUnit = 'TIDAK BAIK'
+    if (total > 0) {
+      if (ikmKonversi >= 88.31) {
+        mutuPelayanan = 'A'
+        kinerjaUnit = 'SANGAT BAIK'
+      } else if (ikmKonversi >= 76.61) {
+        mutuPelayanan = 'B'
+        kinerjaUnit = 'BAIK'
+      } else if (ikmKonversi >= 65.0) {
+        mutuPelayanan = 'C'
+        kinerjaUnit = 'KURANG BAIK'
+      } else {
+        mutuPelayanan = 'D'
+        kinerjaUnit = 'TIDAK BAIK'
+      }
     }
 
     return {
