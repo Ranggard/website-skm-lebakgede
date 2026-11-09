@@ -5,7 +5,7 @@ export const LandingHeader: React.FC = () => {
   return (
     <header className="w-full px-4 sm:px-6 lg:px-12 py-3.5 flex items-center justify-between border-b border-white/10 bg-teal-950/40 backdrop-blur-md sticky top-0 z-40">
       <div className="flex items-center gap-3">
-        <div className="bg-white p-1 rounded-xl shadow-md flex items-center justify-center">
+        <div className="bg-white p-1 rounded-xl shadow-md flex items-center justify-center logo-float">
           <img
             src="/logo-kelurahan.jpg"
             alt="Logo Kelurahan Lebakgede"

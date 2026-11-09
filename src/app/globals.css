@@ -97,6 +97,27 @@ html {
   transition: width 0.3s ease;
 }
 
+/* Gentle Floating Animation for Official Logo */
+@keyframes logoFloat {
+  0%, 100% {
+    transform: translateY(0px);
+  }
+  50% {
+    transform: translateY(-4px);
+  }
+}
+
+.logo-float {
+  display: inline-block;
+  animation: logoFloat 3.5s ease-in-out infinite;
+  will-change: transform;
+  transition: transform 0.3s ease;
+}
+
+.logo-float:hover {
+  transform: translateY(-6px) scale(1.04);
+}
+
 /* Accessibility */
 @media (prefers-reduced-motion: reduce) {
 

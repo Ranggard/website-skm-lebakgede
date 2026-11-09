@@ -242,7 +242,7 @@ export default function FormPage() {
             <img
               src="/logo-kelurahan.jpg"
               alt="Logo Kelurahan"
-              className="h-20 w-auto drop-shadow-lg object-contain"
+              className="h-20 w-auto drop-shadow-lg object-contain logo-float"
               loading="lazy"
             />
           </div>
