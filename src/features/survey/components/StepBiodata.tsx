@@ -49,7 +49,7 @@ export const StepBiodata: React.FC<StepBiodataProps> = ({
                 />
                 <div
                   className={`border-2 rounded-xl py-3 px-4 text-center cursor-pointer transition-all font-medium ${
-                    formData.gender === 'Laki-laki'
+                    formData.jenis_kelamin === 'Laki-laki'
                       ? 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-[1.02]'
                       : 'bg-gray-50 border-gray-200 text-gray-800 hover:border-emerald-300'
                   }`}
@@ -68,7 +68,7 @@ export const StepBiodata: React.FC<StepBiodataProps> = ({
                 />
                 <div
                   className={`border-2 rounded-xl py-3 px-4 text-center cursor-pointer transition-all font-medium ${
-                    formData.gender === 'Perempuan'
+                    formData.jenis_kelamin === 'Perempuan'
                       ? 'bg-emerald-500 text-white border-emerald-500 shadow-md scale-[1.02]'
                       : 'bg-gray-50 border-gray-200 text-gray-800 hover:border-emerald-300'
                   }`}
