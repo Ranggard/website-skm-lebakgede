@@ -84,21 +84,24 @@ export class SupabaseBackend implements BackendStrategy {
    */
   async submitResponse(data: any): Promise<string> {
     try {
-      const u1 = letterToScore(data.Q1 ?? data.u1)
-      const u2 = letterToScore(data.Q2 ?? data.u2)
-      const u3 = letterToScore(data.Q3 ?? data.u3)
-      const u4 = letterToScore(data.Q4 ?? data.u4)
-      const u5 = letterToScore(data.Q5 ?? data.u5)
-      const u6 = letterToScore(data.Q6 ?? data.u6)
-      const u7 = letterToScore(data.Q7 ?? data.u7)
-      const u8 = letterToScore(data.Q8 ?? data.u8)
-      const u9 = letterToScore(data.Q9 ?? data.u9)
+      // Map new Indonesian field names from form (u1_persyaratan, u2_prosedur, etc.)
+      // Also support old field names (Q1-Q9 or u1-u9) for backward compatibility
+      const u1 = letterToScore(data.u1_persyaratan ?? data.Q1 ?? data.u1)
+      const u2 = letterToScore(data.u2_prosedur ?? data.Q2 ?? data.u2)
+      const u3 = letterToScore(data.u3_waktu ?? data.Q3 ?? data.u3)
+      const u4 = letterToScore(data.u4_biaya ?? data.Q4 ?? data.u4)
+      const u5 = letterToScore(data.u5_produk ?? data.Q5 ?? data.u5)
+      const u6 = letterToScore(data.u6_kompetensi ?? data.Q6 ?? data.u6)
+      const u7 = letterToScore(data.u7_keramahan ?? data.Q7 ?? data.u7)
+      const u8 = letterToScore(data.u8_sarana ?? data.Q8 ?? data.u8)
+      const u9 = letterToScore(data.u9_pengaduan ?? data.Q9 ?? data.u9)
 
       const payload = {
-        gender: data.gender || data.demographic_gender || null,
-        age: data.age || data.demographic_age || null,
-        education: data.education || data.demographic_education || null,
-        service_type: data.service_type || data.demographic_service || null,
+        // Use new Indonesian field names (from standardized form)
+        jenis_kelamin: data.jenis_kelamin || data.gender || data.demographic_gender || null,
+        usia: data.usia || data.age || data.demographic_age || null,
+        pendidikan: data.pendidikan || data.education || data.demographic_education || null,
+        jenis_layanan: data.jenis_layanan || data.service_type || data.demographic_service || null,
         u1,
         u2,
         u3,
@@ -209,10 +212,10 @@ export class SupabaseBackend implements BackendStrategy {
         created_at: r.created_at,
         waktu: r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
         timestamp: r.created_at,
-        jenis_kelamin: r.gender,
-        usia: r.age,
-        pendidikan: r.education,
-        jenis_layanan: r.service_type,
+        jenis_kelamin: r.jenis_kelamin || r.gender || null,
+        usia: r.usia || r.age || null,
+        pendidikan: r.pendidikan || r.education || null,
+        jenis_layanan: r.jenis_layanan || r.service_type || null,
         u1: r.u1,
         u2: r.u2,
         u3: r.u3,
@@ -386,10 +389,10 @@ export class SupabaseBackend implements BackendStrategy {
         created_at: r.created_at,
         waktu: r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
         timestamp: r.created_at,
-        jenis_kelamin: r.gender,
-        usia: r.age,
-        pendidikan: r.education,
-        jenis_layanan: r.service_type,
+        jenis_kelamin: r.jenis_kelamin || r.gender || null,
+        usia: r.usia || r.age || null,
+        pendidikan: r.pendidikan || r.education || null,
+        jenis_layanan: r.jenis_layanan || r.service_type || null,
         u1: r.u1,
         u2: r.u2,
         u3: r.u3,

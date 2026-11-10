@@ -72,47 +72,47 @@ export default function FormPage() {
         return false
       }
     } else if (slideNum === 5) {
-      if (!formData.q1_persyaratan) {
+      if (!formData.u1_persyaratan) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 6) {
-      if (!formData.q2_prosedur) {
+      if (!formData.u2_prosedur) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 7) {
-      if (!formData.q3_waktu) {
+      if (!formData.u3_waktu) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 8) {
-      if (!formData.q4_biaya) {
+      if (!formData.u4_biaya) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 9) {
-      if (!formData.q5_produk) {
+      if (!formData.u5_produk) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 10) {
-      if (!formData.q6_kompetensi) {
+      if (!formData.u6_kompetensi) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 11) {
-      if (!formData.q7_keramahan) {
+      if (!formData.u7_keramahan) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 12) {
-      if (!formData.q8_sarana) {
+      if (!formData.u8_sarana) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
     } else if (slideNum === 13) {
-      if (!formData.q9_pengaduan) {
+      if (!formData.u9_pengaduan) {
         setErrorMessage('Mohon berikan penilaian/klik salah satu emoji.')
         return false
       }
@@ -164,23 +164,22 @@ export default function FormPage() {
     setIsSubmitting(true)
     setErrorMessage(null)
 
-    // Prepare payload for backend API
+    // Prepare payload - konsisten Indonesian + numeric 1-4
     const payload = {
-      gender: formData.jenis_kelamin,
-      age: formData.usia,
-      education: formData.pendidikan,
-      service_type: formData.jenis_layanan,
-      Q1: numToOption(formData.q1_persyaratan),
-      Q2: numToOption(formData.q2_prosedur),
-      Q3: numToOption(formData.q3_waktu),
-      Q4: numToOption(formData.q4_biaya),
-      Q5: numToOption(formData.q5_produk),
-      Q6: numToOption(formData.q6_kompetensi),
-      Q7: numToOption(formData.q7_keramahan),
-      Q8: numToOption(formData.q8_sarana),
-      Q9: numToOption(formData.q9_pengaduan),
+      jenis_kelamin: formData.jenis_kelamin,
+      usia: formData.usia,
+      pendidikan: formData.pendidikan,
+      jenis_layanan: formData.jenis_layanan,
+      u1_persyaratan: parseInt(formData.u1_persyaratan, 10),
+      u2_prosedur: parseInt(formData.u2_prosedur, 10),
+      u3_waktu: parseInt(formData.u3_waktu, 10),
+      u4_biaya: parseInt(formData.u4_biaya, 10),
+      u5_produk: parseInt(formData.u5_produk, 10),
+      u6_kompetensi: parseInt(formData.u6_kompetensi, 10),
+      u7_keramahan: parseInt(formData.u7_keramahan, 10),
+      u8_sarana: parseInt(formData.u8_sarana, 10),
+      u9_pengaduan: parseInt(formData.u9_pengaduan, 10),
       saran: formData.saran,
-      Q21: formData.saran,
     }
 
     try {

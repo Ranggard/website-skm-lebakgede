@@ -555,35 +555,50 @@ export class GoogleSheetsBackend implements BackendStrategy {
       return parseInt(val, 10) || 1
     }
 
+    // Support both new format (u1-u9) and legacy format (Q1-Q9)
     return {
-      q1_accessibility: toScore(data.Q1),
-      q2_service_quality: toScore(data.Q2),
-      q3_professionalism: toScore(data.Q3),
-      q4_courtesy: toScore(data.Q4),
-      q5_reliability: toScore(data.Q5),
-      q6_security: toScore(data.Q6),
-      q7_response_time: toScore(data.Q7),
-      q8_facilities: toScore(data.Q8),
-      q9_complaints: toScore(data.Q9),
-      q9_suggestions: data.saran || data.Q21 || '',
-      demographic_gender: data.gender || data.demographic_gender || '',
-      demographic_age: data.age || data.demographic_age || '',
-      demographic_education: data.education || data.demographic_education || '',
-      demographic_service: data.service_type || data.demographic_service || '',
-      gender: data.gender || '',
-      age: data.age || '',
-      education: data.education || '',
-      service_type: data.service_type || '',
+      // New Indonesian format (primary)
+      u1_persyaratan: toScore(data.u1_persyaratan ?? data.Q1),
+      u2_prosedur: toScore(data.u2_prosedur ?? data.Q2),
+      u3_waktu: toScore(data.u3_waktu ?? data.Q3),
+      u4_biaya: toScore(data.u4_biaya ?? data.Q4),
+      u5_produk: toScore(data.u5_produk ?? data.Q5),
+      u6_kompetensi: toScore(data.u6_kompetensi ?? data.Q6),
+      u7_keramahan: toScore(data.u7_keramahan ?? data.Q7),
+      u8_sarana: toScore(data.u8_sarana ?? data.Q8),
+      u9_pengaduan: toScore(data.u9_pengaduan ?? data.Q9),
+      
+      // Demographics (both formats)
+      jenis_kelamin: data.jenis_kelamin || data.gender || '',
+      usia: data.usia || data.age || '',
+      pendidikan: data.pendidikan || data.education || '',
+      jenis_layanan: data.jenis_layanan || data.service_type || '',
+      
+      // Suggestions
       saran: data.saran || data.Q21 || '',
-      Q1: data.Q1,
-      Q2: data.Q2,
-      Q3: data.Q3,
-      Q4: data.Q4,
-      Q5: data.Q5,
-      Q6: data.Q6,
-      Q7: data.Q7,
-      Q8: data.Q8,
-      Q9: data.Q9,
+      
+      // Legacy demographic fields for backward compatibility
+      demographic_gender: data.jenis_kelamin || data.gender || data.demographic_gender || '',
+      demographic_age: data.usia || data.age || data.demographic_age || '',
+      demographic_education: data.pendidikan || data.education || data.demographic_education || '',
+      demographic_service: data.jenis_layanan || data.service_type || data.demographic_service || '',
+      
+      // Legacy fields for backward compatibility
+      gender: data.jenis_kelamin || data.gender || '',
+      age: data.usia || data.age || '',
+      education: data.pendidikan || data.education || '',
+      service_type: data.jenis_layanan || data.service_type || '',
+      
+      // Legacy Q1-Q9 fields for backward compatibility
+      Q1: data.u1_persyaratan ?? data.Q1,
+      Q2: data.u2_prosedur ?? data.Q2,
+      Q3: data.u3_waktu ?? data.Q3,
+      Q4: data.u4_biaya ?? data.Q4,
+      Q5: data.u5_produk ?? data.Q5,
+      Q6: data.u6_kompetensi ?? data.Q6,
+      Q7: data.u7_keramahan ?? data.Q7,
+      Q8: data.u8_sarana ?? data.Q8,
+      Q9: data.u9_pengaduan ?? data.Q9,
     }
   }
 

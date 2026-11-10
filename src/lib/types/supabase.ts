@@ -10,6 +10,7 @@
 /**
  * Survey Response Row
  * Represents a single questionnaire response with all SKM questions and metadata
+ * Uses Indonesian naming for consistency with form input
  */
 export interface SurveyResponse {
   // Primary key
@@ -19,20 +20,25 @@ export interface SurveyResponse {
   created_at: string;
   updated_at: string;
 
-  // ===== Core SKM Questions (1-5 Likert) =====
-  q1_accessibility: number;
-  q2_service_quality: number;
-  q3_professionalism: number;
-  q4_courtesy: number;
-  q5_reliability: number;
-  q6_security: number;
-  q7_response_time: number;
-  q8_facilities: number;
+  // ===== Demographics =====
+  jenis_kelamin: string;
+  usia: string;
+  pendidikan: string;
+  jenis_layanan: string;
+
+  // ===== Core SKM Questions (1-4 numeric scale) =====
+  u1_persyaratan: number;
+  u2_prosedur: number;
+  u3_waktu: number;
+  u4_biaya: number;
+  u5_produk: number;
+  u6_kompetensi: number;
+  u7_keramahan: number;
+  u8_sarana: number;
 
   // ===== Optional Fields =====
-  q9_suggestions: string | null;
-  demographic_age: string | null;
-  demographic_service: string | null;
+  u9_pengaduan: number;
+  saran: string | null;
 
   // ===== Metadata =====
   user_agent: string | null;
@@ -133,22 +139,30 @@ export interface SurveyAnalytics {
 /**
  * Insert Payload for Survey Responses
  * Used when creating new responses (omits generated fields)
+ * Uses Indonesian naming and 1-4 numeric scale
  */
 export interface SurveyResponseInsert {
-  // Required: Core SKM questions
-  q1_accessibility: number;
-  q2_service_quality: number;
-  q3_professionalism: number;
-  q4_courtesy: number;
-  q5_reliability: number;
-  q6_security: number;
-  q7_response_time: number;
-  q8_facilities: number;
+  // Demographics
+  jenis_kelamin: string;
+  usia: string;
+  pendidikan: string;
+  jenis_layanan: string;
 
-  // Optional: Additional questions
-  q9_suggestions?: string | null;
-  demographic_age?: string | null;
-  demographic_service?: string | null;
+  // Required: Core SKM questions (1-4 numeric scale)
+  u1_persyaratan: number;
+  u2_prosedur: number;
+  u3_waktu: number;
+  u4_biaya: number;
+  u5_produk: number;
+  u6_kompetensi: number;
+  u7_keramahan: number;
+  u8_sarana: number;
+
+  // Required: 9th question
+  u9_pengaduan: number;
+
+  // Optional: Suggestions
+  saran?: string | null;
 
   // Optional: Metadata
   user_agent?: string | null;
@@ -160,17 +174,20 @@ export interface SurveyResponseInsert {
  * Typically responses are immutable, but this is available if needed
  */
 export interface SurveyResponseUpdate {
-  q1_accessibility?: number;
-  q2_service_quality?: number;
-  q3_professionalism?: number;
-  q4_courtesy?: number;
-  q5_reliability?: number;
-  q6_security?: number;
-  q7_response_time?: number;
-  q8_facilities?: number;
-  q9_suggestions?: string | null;
-  demographic_age?: string | null;
-  demographic_service?: string | null;
+  jenis_kelamin?: string;
+  usia?: string;
+  pendidikan?: string;
+  jenis_layanan?: string;
+  u1_persyaratan?: number;
+  u2_prosedur?: number;
+  u3_waktu?: number;
+  u4_biaya?: number;
+  u5_produk?: number;
+  u6_kompetensi?: number;
+  u7_keramahan?: number;
+  u8_sarana?: number;
+  u9_pengaduan?: number;
+  saran?: string | null;
   user_agent?: string | null;
   ip_hash?: string | null;
 }
@@ -262,14 +279,15 @@ export interface AuthSession {
  */
 export function calculateOverallSatisfaction(response: SurveyResponse | SurveyResponseInsert): number {
   const questions = [
-    response.q1_accessibility,
-    response.q2_service_quality,
-    response.q3_professionalism,
-    response.q4_courtesy,
-    response.q5_reliability,
-    response.q6_security,
-    response.q7_response_time,
-    response.q8_facilities,
+    response.u1_persyaratan,
+    response.u2_prosedur,
+    response.u3_waktu,
+    response.u4_biaya,
+    response.u5_produk,
+    response.u6_kompetensi,
+    response.u7_keramahan,
+    response.u8_sarana,
+    response.u9_pengaduan,
   ];
 
   const sum = questions.reduce((acc, val) => acc + val, 0);
@@ -302,30 +320,32 @@ export function getSatisfactionLevel(score: number): SatisfactionLevel {
  * SKM Question Keys
  */
 export const SKM_QUESTIONS = [
-  'q1_accessibility',
-  'q2_service_quality',
-  'q3_professionalism',
-  'q4_courtesy',
-  'q5_reliability',
-  'q6_security',
-  'q7_response_time',
-  'q8_facilities',
+  'u1_persyaratan',
+  'u2_prosedur',
+  'u3_waktu',
+  'u4_biaya',
+  'u5_produk',
+  'u6_kompetensi',
+  'u7_keramahan',
+  'u8_sarana',
+  'u9_pengaduan',
 ] as const;
 
 export type SKMQuestion = typeof SKM_QUESTIONS[number];
 
 /**
- * SKM Question Descriptions
+ * SKM Question Descriptions (Indonesian)
  */
 export const SKM_QUESTION_DESCRIPTIONS: Record<SKMQuestion, string> = {
-  q1_accessibility: 'Service accessibility and availability',
-  q2_service_quality: 'Quality of service',
-  q3_professionalism: 'Professional conduct',
-  q4_courtesy: 'Staff courtesy and respect',
-  q5_reliability: 'Service reliability',
-  q6_security: 'Data security and privacy',
-  q7_response_time: 'Response time and efficiency',
-  q8_facilities: 'Facilities and infrastructure',
+  u1_persyaratan: 'Kesesuaian persyaratan pelayanan',
+  u2_prosedur: 'Kemudahan prosedur',
+  u3_waktu: 'Kecepatan waktu pelayanan',
+  u4_biaya: 'Kewajaran biaya/tarif',
+  u5_produk: 'Kesesuaian produk pelayanan',
+  u6_kompetensi: 'Kompetensi petugas',
+  u7_keramahan: 'Perilaku/keramahan petugas',
+  u8_sarana: 'Kualitas sarana prasarana',
+  u9_pengaduan: 'Penanganan pengaduan',
 };
 
 /**

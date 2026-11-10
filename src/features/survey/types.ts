@@ -3,15 +3,15 @@ export interface SurveyFormData {
   usia: string
   pendidikan: string
   jenis_layanan: string
-  q1_persyaratan: string
-  q2_prosedur: string
-  q3_waktu: string
-  q4_biaya: string
-  q5_produk: string
-  q6_kompetensi: string
-  q7_keramahan: string
-  q8_sarana: string
-  q9_pengaduan: string
+  u1_persyaratan: string
+  u2_prosedur: string
+  u3_waktu: string
+  u4_biaya: string
+  u5_produk: string
+  u6_kompetensi: string
+  u7_keramahan: string
+  u8_sarana: string
+  u9_pengaduan: string
   saran: string
 }
 
@@ -20,15 +20,15 @@ export const INITIAL_FORM_DATA: SurveyFormData = {
   usia: '',
   pendidikan: '',
   jenis_layanan: '',
-  q1_persyaratan: '',
-  q2_prosedur: '',
-  q3_waktu: '',
-  q4_biaya: '',
-  q5_produk: '',
-  q6_kompetensi: '',
-  q7_keramahan: '',
-  q8_sarana: '',
-  q9_pengaduan: '',
+  u1_persyaratan: '',
+  u2_prosedur: '',
+  u3_waktu: '',
+  u4_biaya: '',
+  u5_produk: '',
+  u6_kompetensi: '',
+  u7_keramahan: '',
+  u8_sarana: '',
+  u9_pengaduan: '',
   saran: '',
 }
 
@@ -61,17 +61,10 @@ export const EDUCATION_OPTIONS = [
   { value: 'S3', label: 'S3' },
 ]
 
-export const numToOption = (val: string): 'A' | 'B' | 'C' | 'D' => {
-  switch (val) {
-    case '1':
-      return 'A'
-    case '2':
-      return 'B'
-    case '3':
-      return 'C'
-    case '4':
-    default:
-      return 'D'
-  }
+// Convert string to number (keep as numeric 1-4, no A-B-C-D conversion)
+export const numToOption = (val: string): number => {
+  const num = parseInt(val, 10)
+  if (isNaN(num) || num < 1 || num > 4) return 4
+  return num
 }
 

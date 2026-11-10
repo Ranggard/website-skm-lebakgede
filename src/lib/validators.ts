@@ -8,33 +8,28 @@ import { VALIDATION } from './constants'
 
 /**
  * Schema for questionnaire response validation
- * Validates that all required SKM questions are answered with A, B, C, or D
+ * Validates that all required SKM questions are answered with numeric ratings 1-4
  */
 export const QuestionnaireResponseSchema = z.object({
-  // Survey metadata
-  survey_date: z.string().optional(),
-  survey_time: z.string().optional(),
+  // Demographics
+  jenis_kelamin: z.string(),
+  usia: z.string(),
+  pendidikan: z.string(),
+  jenis_layanan: z.string(),
 
-  // Profile Information
-  gender: z.string().optional(),
-  age: z.string().optional(),
-  education: z.string().optional(),
-  service_type: z.string().optional(),
-
-  // SKM Questions (9 questions) - All mandatory
-  Q1: z.enum(['A', 'B', 'C', 'D']).describe('Kesesuaian persyaratan'),
-  Q2: z.enum(['A', 'B', 'C', 'D']).describe('Kemudahan prosedur'),
-  Q3: z.enum(['A', 'B', 'C', 'D']).describe('Kecepatan layanan'),
-  Q4: z.enum(['A', 'B', 'C', 'D']).describe('Kewajaran biaya'),
-  Q5: z.enum(['A', 'B', 'C', 'D']).describe('Kesesuaian produk'),
-  Q6: z.enum(['A', 'B', 'C', 'D']).describe('Kompetensi petugas'),
-  Q7: z.enum(['A', 'B', 'C', 'D']).describe('Kesopanan dan keramahan'),
-  Q8: z.enum(['A', 'B', 'C', 'D']).describe('Kualitas sarana prasarana'),
-  Q9: z.enum(['A', 'B', 'C', 'D']).describe('Penanganan pengaduan'),
+  // SKM Questions (9 questions) - All mandatory, numeric 1-4 scale
+  u1_persyaratan: z.number().min(1).max(4),
+  u2_prosedur: z.number().min(1).max(4),
+  u3_waktu: z.number().min(1).max(4),
+  u4_biaya: z.number().min(1).max(4),
+  u5_produk: z.number().min(1).max(4),
+  u6_kompetensi: z.number().min(1).max(4),
+  u7_keramahan: z.number().min(1).max(4),
+  u8_sarana: z.number().min(1).max(4),
+  u9_pengaduan: z.number().min(1).max(4),
 
   // Optional feedback / suggestions
   saran: z.string().optional(),
-  Q21: z.string().optional(),
 })
 
 export type QuestionnaireResponseInput = z.infer<typeof QuestionnaireResponseSchema>
