@@ -368,6 +368,7 @@ export default function FormPage() {
         redirectCountdown={redirectCountdown}
         onReset={handleResetSurvey}
         onGoToDashboard={() => router.push('/dashboard')}
+        respondentCode={submittedId}
       />
     </div>
   )

@@ -30,6 +30,22 @@ interface CacheEntry<T> {
 }
 const analyticsCache = new Map<string, CacheEntry<AnalyticsData>>()
 
+/**
+ * Format ID Responden bulanan: RESPYYYYMMDDXXXXX (contoh: RESP2026111000001)
+ * Nomor urut (5 digit) otomatis dihitung dan di-reset setiap pergantian bulan.
+ */
+export function formatRespondentCode(dateInput: Date | string, monthlyIndex: number): string {
+  const d = typeof dateInput === 'string' ? new Date(dateInput) : dateInput
+  const validDate = isNaN(d.getTime()) ? new Date() : d
+
+  const yyyy = validDate.getFullYear()
+  const mm = String(validDate.getMonth() + 1).padStart(2, '0')
+  const dd = String(validDate.getDate()).padStart(2, '0')
+  const seq = String(monthlyIndex).padStart(5, '0')
+
+  return `RESP${yyyy}${mm}${dd}${seq}`
+}
+
 function getSupabaseClient() {
   if (!SupabaseClient) {
     try {
@@ -100,7 +116,7 @@ export class SupabaseBackend implements BackendStrategy {
       const { data: result, error } = await this.client
         .from('survey_responses')
         .insert([payload])
-        .select('id')
+        .select('id, created_at')
         .single()
 
       if (error) {
@@ -111,10 +127,23 @@ export class SupabaseBackend implements BackendStrategy {
         throw new Error('Response ID not returned from Supabase')
       }
 
+      // Hitung urutan responden dalam bulan berjalan untuk menghasilkan format RESPYYYYMMDDXXXXX
+      const createdAt = result.created_at ? new Date(result.created_at) : new Date()
+      const startOfMonth = new Date(Date.UTC(createdAt.getFullYear(), createdAt.getMonth(), 1, 0, 0, 0))
+      const nextMonth = new Date(Date.UTC(createdAt.getFullYear(), createdAt.getMonth() + 1, 1, 0, 0, 0))
+
+      const { count: monthlyCount } = await this.client
+        .from('survey_responses')
+        .select('*', { count: 'exact', head: true })
+        .gte('created_at', startOfMonth.toISOString())
+        .lt('created_at', nextMonth.toISOString())
+
+      const respondentCode = formatRespondentCode(createdAt, monthlyCount || 1)
+
       // Invalidate cache
       analyticsCache.clear()
 
-      return result.id
+      return respondentCode
     } catch (error) {
       console.error('[SupabaseBackend] Failed to submit response:', error)
       throw error
@@ -154,9 +183,29 @@ export class SupabaseBackend implements BackendStrategy {
         throw new Error(`Failed to fetch responses from Supabase: ${error.message}`)
       }
 
+      // Hitung urutan per bulan (chronological order) untuk menghasilkan ID format RESPYYYYMMDDXXXXX
+      // Reset otomatis ke 00001 setiap kali masuk bulan baru
+      const monthlySequenceMap = new Map<string, number>()
+      const idMap = new Map<string, string>()
+
+      // Urutkan dari data terlama ke terbaru untuk penomoran urut yang konsisten
+      const chronological = [...(responses || [])].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+
+      chronological.forEach((r) => {
+        const d = r.created_at ? new Date(r.created_at) : new Date()
+        const monthKey = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`
+        const currentCount = (monthlySequenceMap.get(monthKey) || 0) + 1
+        monthlySequenceMap.set(monthKey, currentCount)
+
+        const code = r.respondent_code || formatRespondentCode(d, currentCount)
+        idMap.set(r.id, code)
+      })
+
       const records: IKMRespondentRecord[] = (responses || []).map((r: any, idx: number) => ({
         no: idx + 1,
-        id: r.id,
+        id: idMap.get(r.id) || r.id,
         created_at: r.created_at,
         waktu: r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
         timestamp: r.created_at,
@@ -313,9 +362,27 @@ export class SupabaseBackend implements BackendStrategy {
         throw new Error(`Export query failed: ${error.message}`)
       }
 
+      // Hitung urutan per bulan (chronological) untuk format ID yang konsisten
+      const monthlySequenceMap = new Map<string, number>()
+      const idMap = new Map<string, string>()
+
+      const chronological = [...(responses || [])].sort(
+        (a, b) => new Date(a.created_at).getTime() - new Date(b.created_at).getTime()
+      )
+
+      chronological.forEach((r) => {
+        const d = r.created_at ? new Date(r.created_at) : new Date()
+        const monthKey = `${d.getFullYear()}${String(d.getMonth() + 1).padStart(2, '0')}`
+        const currentCount = (monthlySequenceMap.get(monthKey) || 0) + 1
+        monthlySequenceMap.set(monthKey, currentCount)
+
+        const code = r.respondent_code || formatRespondentCode(d, currentCount)
+        idMap.set(r.id, code)
+      })
+
       const records: IKMRespondentRecord[] = (responses || []).map((r: any, idx: number) => ({
         no: idx + 1,
-        id: r.id,
+        id: idMap.get(r.id) || r.id,
         created_at: r.created_at,
         waktu: r.created_at ? new Date(r.created_at).toLocaleDateString('id-ID') : '-',
         timestamp: r.created_at,

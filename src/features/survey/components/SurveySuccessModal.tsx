@@ -5,6 +5,7 @@ interface SurveySuccessModalProps {
   redirectCountdown: number
   onReset: () => void
   onGoToDashboard: () => void
+  respondentCode?: string | null
 }
 
 export const SurveySuccessModal: React.FC<SurveySuccessModalProps> = ({
@@ -12,6 +13,7 @@ export const SurveySuccessModal: React.FC<SurveySuccessModalProps> = ({
   redirectCountdown,
   onReset,
   onGoToDashboard,
+  respondentCode,
 }) => {
   if (!isOpen) return null
 
@@ -44,6 +46,15 @@ export const SurveySuccessModal: React.FC<SurveySuccessModalProps> = ({
           <strong>Kelurahan Lebakgede</strong> secara aman. Partisipasi Anda sangat berharga bagi kami
           untuk terus meningkatkan kualitas pelayanan publik masyarakat Kecamatan Coblong.
         </p>
+        {/* Nomor Bukti Survei */}
+        {respondentCode && (
+          <div className="bg-emerald-50 border border-emerald-200 rounded-2xl p-3 mb-4 text-center">
+            <p className="text-xs text-emerald-700 font-semibold mb-1">📋 Nomor Bukti Survei Anda</p>
+            <p className="text-base font-black text-emerald-900 font-mono tracking-widest">{respondentCode}</p>
+            <p className="text-[10px] text-emerald-600 mt-1">Simpan nomor ini sebagai bukti partisipasi Anda</p>
+          </div>
+        )}
+
         <div className="bg-teal-50 border border-teal-200/80 rounded-2xl p-3 mb-5 flex items-center justify-center gap-2 text-xs font-semibold text-teal-800">
           <span className="w-2 h-2 rounded-full bg-teal-500 animate-pulse"></span>
           <span>
