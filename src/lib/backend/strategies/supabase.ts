@@ -199,7 +199,7 @@ export class SupabaseBackend implements BackendStrategy {
         const currentCount = (monthlySequenceMap.get(monthKey) || 0) + 1
         monthlySequenceMap.set(monthKey, currentCount)
 
-        const code = r.respondent_code || formatRespondentCode(d, currentCount)
+        const code = r.id_responden || formatRespondentCode(d, currentCount)
         idMap.set(r.id, code)
       })
 
@@ -376,7 +376,7 @@ export class SupabaseBackend implements BackendStrategy {
         const currentCount = (monthlySequenceMap.get(monthKey) || 0) + 1
         monthlySequenceMap.set(monthKey, currentCount)
 
-        const code = r.respondent_code || formatRespondentCode(d, currentCount)
+        const code = r.id_responden || formatRespondentCode(d, currentCount)
         idMap.set(r.id, code)
       })
 
