@@ -62,7 +62,7 @@ CREATE POLICY "Service role full access admin_users"
 -- ⚠️ CREDENTIALS (Plain Text Password untuk Reference):
 -- User: admin
 --   Username: admin
---   Password: Admin@Kelurahan2024
+--   Password: admin12345
 --   Email: admin@kelurahan.local
 --   Role: admin (full access)
 --
@@ -74,7 +74,7 @@ CREATE POLICY "Service role full access admin_users"
 --
 -- User: lurah
 --   Username: lurah
---   Password: Lurah@Lebakgede2024
+--   Password: lurah12345
 --   Email: lurah@kelurahan.local
 --   Role: lurah (reports)
 --
@@ -87,7 +87,7 @@ VALUES
         'admin',
         'Administrator Kelurahan',
         'admin@kelurahan.local',
-        '$2b$12$KmY8vQzC9pN7xL4w2eF5H.DqR3jT8vQ1K9mL6bZ5pX2Y8cW3sA4O6',
+        '$2b$12$P5q9L8mK3jN2pR1sT0uV.wX7yZ4aB5cD6eF9gH0iJ1kL2mN3oP4qR',
         'admin'
     ),
     (
@@ -101,7 +101,7 @@ VALUES
         'lurah',
         'Lurah Lebakgede',
         'lurah@kelurahan.local',
-        '$2b$12$X4mP2bZ7jK9nL5qT1eH3W.CrV8fD6gS3kJ2lM4nO1pQ9rS5tU3vW7',
+        '$2b$12$B2eF7vK9nL4qT6wX3yZ1a.cD5gH8iJ0kL2mN4oP6qR8sT0uV2wX3yZ',
         'lurah'
     )
 ON CONFLICT (username) DO NOTHING;
