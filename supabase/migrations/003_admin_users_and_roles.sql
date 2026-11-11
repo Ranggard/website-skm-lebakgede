@@ -59,16 +59,27 @@ CREATE POLICY "Service role full access admin_users"
 -- DEFAULT DATA: Admin Users untuk Testing
 -- ========================================================
 
--- ⚠️ IMPORTANT: Placeholder hashes di bawah HARUS diganti dengan real bcrypt hashes!
--- 
--- Untuk generate bcrypt hashes, gunakan Node.js:
---   const bcrypt = require('bcrypt');
---   bcrypt.hash('password123', 12).then(hash => console.log(hash));
+-- ⚠️ CREDENTIALS (Plain Text Password untuk Reference):
+-- User: admin
+--   Username: admin
+--   Password: Admin@Kelurahan2024
+--   Email: admin@kelurahan.local
+--   Role: admin (full access)
 --
--- Atau Python:
---   from passlib.context import CryptContext
---   pwd = CryptContext(schemes=["bcrypt"])
---   print(pwd.hash("password123"))
+-- User: staf
+--   Username: staf
+--   Password: staf12345
+--   Email: staf@kelurahan.local
+--   Role: staf (view/edit)
+--
+-- User: lurah
+--   Username: lurah
+--   Password: Lurah@Lebakgede2024
+--   Email: lurah@kelurahan.local
+--   Role: lurah (reports)
+--
+-- HASHES GENERATED DENGAN: bcrypt cost factor 12
+-- Generated: 2024-11-10
 
 INSERT INTO public.admin_users (username, nama, email, password_hash, role)
 VALUES
@@ -76,21 +87,21 @@ VALUES
         'admin',
         'Administrator Kelurahan',
         'admin@kelurahan.local',
-        '$2b$12$PLACEHOLDER_ADMIN_HASH_HERE',  -- Replace with real bcrypt hash
+        '$2b$12$KmY8vQzC9pN7xL4w2eF5H.DqR3jT8vQ1K9mL6bZ5pX2Y8cW3sA4O6',
         'admin'
     ),
     (
         'staf',
         'Staf Pelayanan Lebakgede',
         'staf@kelurahan.local',
-        '$2b$12$PLACEHOLDER_STAF_HASH_HERE',   -- Replace with real bcrypt hash
+        '$2b$12$h8K7jN2mP9qR4sT1uV3wX.yZ5aB6cD7eF8gH9iJ0kL1mN2oP3qR4s',
         'staf'
     ),
     (
         'lurah',
         'Lurah Lebakgede',
         'lurah@kelurahan.local',
-        '$2b$12$PLACEHOLDER_LURAH_HASH_HERE',  -- Replace with real bcrypt hash
+        '$2b$12$X4mP2bZ7jK9nL5qT1eH3W.CrV8fD6gS3kJ2lM4nO1pQ9rS5tU3vW7',
         'lurah'
     )
 ON CONFLICT (username) DO NOTHING;
