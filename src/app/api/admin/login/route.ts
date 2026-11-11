@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
 import crypto from 'crypto'
+import bcrypt from 'bcrypt'
 
 export const dynamic = 'force-dynamic'
 
@@ -46,10 +47,18 @@ export async function POST(request: NextRequest) {
           .maybeSingle()
 
         if (!error && dbUser) {
-          const passMatches =
-            dbUser.password_hash === cleanPass ||
-            dbUser.password_hash ===
-              crypto.createHash('sha256').update(cleanPass).digest('hex')
+          // Verify bcrypt password hash
+          let passMatches = false
+          try {
+            passMatches = await bcrypt.compare(cleanPass, dbUser.password_hash)
+          } catch (bcryptErr) {
+            console.warn('[Login] Bcrypt compare error:', bcryptErr)
+            // Fallback untuk backward compatibility (jika ada hash lama)
+            passMatches =
+              dbUser.password_hash === cleanPass ||
+              dbUser.password_hash ===
+                crypto.createHash('sha256').update(cleanPass).digest('hex')
+          }
 
           if (passMatches) {
             matchedUser = {
