@@ -49,9 +49,9 @@ const mockSupabaseClient = {
     }),
     delete: vi.fn(function () {
       return {
-        eq: vi.fn(async () => ({
+        eq: vi.fn().mockResolvedValue({
           error: null,
-        })),
+        }),
       }
     }),
   })),
