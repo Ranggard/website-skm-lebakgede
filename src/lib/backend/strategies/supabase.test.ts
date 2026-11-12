@@ -27,23 +27,43 @@ const mockSupabaseClient = {
       return {
         select: vi.fn(function () {
           return {
-            single: vi.fn(async () => ({
+            single: vi.fn().mockResolvedValue({
               data: { id: 'mock-uuid-123' },
               error: null,
-            })),
+            }),
           }
         }),
       }
     }),
     select: vi.fn(function (columns?: string, options?: any) {
       return {
-        gte: vi.fn(function () {
+        order: vi.fn(function () {
           return {
-            lte: vi.fn(async () => ({
+            gte: vi.fn(function () {
+              return {
+                lte: vi.fn().mockResolvedValue({
+                  data: [],
+                  error: null,
+                }),
+              }
+            }),
+            lte: vi.fn().mockResolvedValue({
               data: [],
               error: null,
-            })),
+            }),
           }
+        }),
+        gte: vi.fn(function () {
+          return {
+            lte: vi.fn().mockResolvedValue({
+              data: [],
+              error: null,
+            }),
+          }
+        }),
+        lte: vi.fn().mockResolvedValue({
+          data: [],
+          error: null,
         }),
       }
     }),
