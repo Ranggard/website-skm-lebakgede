@@ -24,11 +24,9 @@ describe('Backend Types - IBackend Interface', () => {
     expect(backendMethods).toHaveLength(6)
   })
 
-  it('should support google-sheets and supabase backend types', () => {
-    const googleSheets: BackendType = 'google-sheets'
+  it('should support supabase backend type', () => {
     const supabase: BackendType = 'supabase'
 
-    expect(googleSheets).toBe('google-sheets')
     expect(supabase).toBe('supabase')
   })
 
@@ -63,7 +61,7 @@ describe('Backend Types - IBackend Interface', () => {
     }
 
     expect(['ok', 'error']).toContain(healthCheck.status)
-    expect(['google-sheets', 'supabase']).toContain(healthCheck.backend)
+    expect(['supabase']).toContain(healthCheck.backend)
   })
 })
 

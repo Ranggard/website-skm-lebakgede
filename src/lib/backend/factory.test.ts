@@ -1,6 +1,8 @@
 /**
  * BackendFactory Tests
  * Tests environment-based backend selection, singleton pattern, and validation
+ * 
+ * NOW SUPABASE-ONLY: All google-sheets tests removed
  */
 
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
@@ -43,15 +45,6 @@ describe('BackendFactory', () => {
       }).toThrow('Invalid BACKEND_TYPE: "invalid-backend"')
     })
 
-    it('should return google-sheets backend when BACKEND_TYPE=google-sheets', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-
-      const instance = BackendFactory.getInstance()
-
-      expect(instance).toBeDefined()
-      expect(BackendFactory.getActiveBackendType()).toBe('google-sheets')
-    })
-
     it('should return supabase backend when BACKEND_TYPE=supabase', () => {
       process.env.BACKEND_TYPE = 'supabase'
 
@@ -70,28 +63,13 @@ describe('BackendFactory', () => {
       expect(instance1).toBe(instance2)
     })
 
-    it('should prevent runtime backend switching', () => {
-      process.env.BACKEND_TYPE = 'supabase'
-      const instance1 = BackendFactory.getInstance()
-
-      // Change environment variable
-      process.env.BACKEND_TYPE = 'google-sheets'
-
-      // Should throw error on attempt to switch backends
-      expect(() => {
-        BackendFactory.getInstance()
-      }).toThrow(
-        expect.stringContaining('Runtime backend switch detected')
-      )
-    })
-
     it('should track active backend type after instantiation', () => {
       expect(BackendFactory.getActiveBackendType()).toBeNull()
 
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       BackendFactory.getInstance()
 
-      expect(BackendFactory.getActiveBackendType()).toBe('google-sheets')
+      expect(BackendFactory.getActiveBackendType()).toBe('supabase')
     })
   })
 
@@ -124,7 +102,7 @@ describe('BackendFactory', () => {
 
   describe('reset()', () => {
     it('should clear singleton instance', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       const instance1 = BackendFactory.getInstance()
 
       BackendFactory.reset()
@@ -136,17 +114,17 @@ describe('BackendFactory', () => {
     })
 
     it('should reset active backend type', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       BackendFactory.getInstance()
 
-      expect(BackendFactory.getActiveBackendType()).toBe('google-sheets')
+      expect(BackendFactory.getActiveBackendType()).toBe('supabase')
 
       BackendFactory.reset()
 
       expect(BackendFactory.getActiveBackendType()).toBeNull()
     })
 
-    it('should allow backend switching after reset()', () => {
+    it('should allow backend instantiation after reset()', () => {
       process.env.BACKEND_TYPE = 'supabase'
       const instance1 = BackendFactory.getInstance()
 
@@ -185,11 +163,6 @@ describe('BackendFactory', () => {
   })
 
   describe('Environment validation', () => {
-    it('should accept google-sheets as valid BACKEND_TYPE', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-      expect(() => BackendFactory.getInstance()).not.toThrow()
-    })
-
     it('should accept supabase as valid BACKEND_TYPE', () => {
       process.env.BACKEND_TYPE = 'supabase'
       expect(() => BackendFactory.getInstance()).not.toThrow()
@@ -206,7 +179,7 @@ describe('BackendFactory', () => {
     })
 
     it('should be case-sensitive for BACKEND_TYPE', () => {
-      process.env.BACKEND_TYPE = 'Google-Sheets' // Wrong case
+      process.env.BACKEND_TYPE = 'Supabase' // Wrong case
       expect(() => BackendFactory.getInstance()).toThrow()
     })
   })
@@ -217,18 +190,6 @@ describe('BackendFactory', () => {
       BackendFactory.getInstance()
 
       expect(BackendFactory.getActiveBackendType()).toBe('supabase')
-    })
-
-    it('should only allow one backend active at a time', () => {
-      process.env.BACKEND_TYPE = 'supabase'
-      const instance1 = BackendFactory.getInstance()
-
-      // Try to switch backend
-      process.env.BACKEND_TYPE = 'google-sheets'
-
-      expect(() => BackendFactory.getInstance()).toThrow(
-        expect.stringContaining('Runtime backend switch detected')
-      )
     })
 
     it('should enforce singleton after reset', () => {
@@ -255,7 +216,6 @@ describe('BackendFactory', () => {
         expect.fail('Should have thrown error')
       } catch (error) {
         expect((error as Error).message).toContain('BACKEND_TYPE')
-        expect((error as Error).message).toContain('google-sheets')
         expect((error as Error).message).toContain('supabase')
       }
     })
@@ -269,23 +229,6 @@ describe('BackendFactory', () => {
       } catch (error) {
         expect((error as Error).message).toContain('Invalid BACKEND_TYPE')
         expect((error as Error).message).toContain('mongodb')
-        expect((error as Error).message).toContain('google-sheets')
-        expect((error as Error).message).toContain('supabase')
-      }
-    })
-
-    it('should provide helpful error message for runtime backend switch', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-      BackendFactory.getInstance()
-
-      process.env.BACKEND_TYPE = 'supabase'
-
-      try {
-        BackendFactory.getInstance()
-        expect.fail('Should have thrown error')
-      } catch (error) {
-        expect((error as Error).message).toContain('Runtime backend switch detected')
-        expect((error as Error).message).toContain('google-sheets')
         expect((error as Error).message).toContain('supabase')
       }
     })
