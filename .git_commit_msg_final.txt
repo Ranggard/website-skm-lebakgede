@@ -1,0 +1,6 @@
+chore: add bcrypt types and UI assets
+
+- Add bcrypt TypeScript type definitions
+- Add favicon and logo assets for dashboard
+- Update dashboard and form components styling
+- Update public assets

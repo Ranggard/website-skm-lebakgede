@@ -9,6 +9,17 @@ import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
 import { SupabaseBackend } from './supabase'
 import type { QuestionnaireResponse } from '../../types/questionnaire'
 
+// Mock WebSocket for Node.js test environment
+if (!global.WebSocket) {
+  global.WebSocket = class WebSocket {
+    constructor(public url: string) {}
+    addEventListener() {}
+    removeEventListener() {}
+    close() {}
+    send() {}
+  } as any
+}
+
 /**
  * Mock Supabase client
  * Simulates @supabase/supabase-js behavior
