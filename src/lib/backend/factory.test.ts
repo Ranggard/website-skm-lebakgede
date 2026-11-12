@@ -5,7 +5,34 @@
  * NOW SUPABASE-ONLY: All google-sheets tests removed
  */
 
+// Mock WebSocket FIRST before any Supabase imports
+if (!global.WebSocket) {
+  global.WebSocket = class WebSocket {
+    constructor(public url: string) {}
+    addEventListener() {}
+    removeEventListener() {}
+    close() {}
+    send() {}
+  } as any
+}
+
 import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
+// Mock Supabase BEFORE importing factory
+const mockSupabaseClient = {
+  from: vi.fn(() => ({
+    insert: vi.fn(() => ({
+      select: vi.fn(() => ({
+        single: vi.fn().mockResolvedValue({ data: { id: 'mock-uuid' }, error: null }),
+      })),
+    })),
+  })),
+}
+
+vi.mock('@supabase/supabase-js', () => ({
+  createClient: vi.fn(() => mockSupabaseClient),
+}))
+
 import { BackendFactory } from './factory'
 import { BackendType } from '../types/backend'
 
@@ -21,7 +48,11 @@ describe('BackendFactory', () => {
     delete process.env.SUPABASE_ANON_KEY
     // Set minimum required env for tests
     process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+    process.env.SUPABASE_SERVICE_KEY = 'test-service-key'
     process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key'
+
+    // Clear all mocks
+    vi.clearAllMocks()
   })
 
   afterEach(() => {
