@@ -139,10 +139,9 @@ export type IBackend = BackendStrategy
 /**
  * Supported backend types
  * 
- * AC9: google-sheets - Google Sheets API with Apps Script
- * AC10: supabase - PostgreSQL via Supabase
+ * supabase - PostgreSQL via Supabase (only supported backend)
  */
-export type BackendType = 'google-sheets' | 'supabase'
+export type BackendType = 'supabase'
 
 /**
  * Backend configuration object for initialization
