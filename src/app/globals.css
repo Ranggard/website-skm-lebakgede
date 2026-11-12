@@ -97,25 +97,31 @@ html {
   transition: width 0.3s ease;
 }
 
-/* Gentle Floating Animation for Official Logo */
+/* Gentle Organic Floating Animation for Official Logo (Up-Down & Left-Right) */
 @keyframes logoFloat {
   0%, 100% {
-    transform: translateY(0px);
+    transform: translate(0px, 0px);
+  }
+  25% {
+    transform: translate(3px, -3px);
   }
   50% {
-    transform: translateY(-4px);
+    transform: translate(0px, -5px);
+  }
+  75% {
+    transform: translate(-3px, -2px);
   }
 }
 
 .logo-float {
   display: inline-block;
-  animation: logoFloat 3.5s ease-in-out infinite;
+  animation: logoFloat 4s ease-in-out infinite;
   will-change: transform;
   transition: transform 0.3s ease;
 }
 
 .logo-float:hover {
-  transform: translateY(-6px) scale(1.04);
+  transform: translate(0px, -6px) scale(1.05);
 }
 
 /* Accessibility */

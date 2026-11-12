@@ -376,8 +376,8 @@ export const TabExport: React.FC<TabExportProps> = ({
               <div className="bg-white shadow-2xl rounded-none sm:rounded-sm p-6 sm:p-12 max-w-[760px] w-full text-black font-serif leading-normal text-xs printable-official-document">
                 <div className="flex items-start gap-4 pb-1">
                   <img
-                    src="/logo-kelurahan.jpg"
-                    alt="Logo Kota Bandung"
+                    src="/lebakgede.png"
+                    alt="Logo Kelurahan Lebakgede"
                     className="h-20 w-auto object-contain flex-shrink-0"
                   />
                   <div className="flex-1 text-center font-serif">

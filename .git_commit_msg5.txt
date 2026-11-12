@@ -1,0 +1,6 @@
+fix: implement bcrypt password verification for admin login
+
+- Add bcrypt import and dependency
+- Fix password verification logic to use bcrypt.compare()
+- Support bcrypt hashes (new) and fallback to SHA256 (legacy)
+- Password now correctly verified against stored hashes

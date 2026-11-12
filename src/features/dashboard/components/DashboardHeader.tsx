@@ -33,8 +33,8 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </button>
 
         <div className="flex items-center gap-2.5">
-          <div className="bg-white p-1 rounded-xl shadow-xs border border-gray-200 flex items-center justify-center logo-float">
-            <img src="/logo-kelurahan.jpg" alt="Logo Kota Bandung" className="h-7 w-auto object-contain" />
+          <div className="flex items-center justify-center logo-float">
+            <img src="/lebakgede.png" alt="Logo Kelurahan Lebakgede" className="h-8 w-8 object-contain drop-shadow-sm" />
           </div>
           <div>
             <div className="text-xs sm:text-sm font-extrabold text-gray-900 leading-tight font-display flex items-center gap-1.5">

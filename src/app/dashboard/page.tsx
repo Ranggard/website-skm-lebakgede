@@ -630,7 +630,7 @@ export default function DashboardPage() {
         <table class="kop-table">
           <tr>
             <td style="width: 80px; vertical-align: middle;">
-              <img src="http://localhost:3000/logo-kelurahan.jpg" width="70" height="85" alt="Logo Kota Bandung" />
+              <img src="/lebakgede.png" width="70" height="70" alt="Logo Kelurahan Lebakgede" style="object-fit: contain;" />
             </td>
             <td class="kop-text" style="vertical-align: middle;">
               <div class="kop-h1">PEMERINTAH KOTA BANDUNG</div>

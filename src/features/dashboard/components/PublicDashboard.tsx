@@ -97,8 +97,8 @@ export const PublicDashboard: React.FC<PublicDashboardProps> = ({
       {/* PUBLIC TOP HEADER */}
       <header className="sticky top-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-8 py-3.5 flex items-center justify-between shadow-xs">
         <div className="flex items-center gap-3">
-          <div className="bg-white p-1 rounded-xl shadow-xs border border-gray-200 flex items-center justify-center logo-float">
-            <img src="/logo-kelurahan.jpg" alt="Logo Kelurahan Lebakgede" className="h-8 w-auto object-contain" />
+          <div className="flex items-center justify-center logo-float">
+            <img src="/lebakgede.png" alt="Logo Kelurahan Lebakgede" className="h-9 w-9 object-contain drop-shadow-sm" />
           </div>
           <div>
             <div className="text-sm sm:text-base font-extrabold text-gray-900 leading-tight font-display flex items-center gap-2">

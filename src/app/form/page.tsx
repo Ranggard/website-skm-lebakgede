@@ -239,8 +239,8 @@ export default function FormPage() {
         <div className="text-center mb-8 fade-in">
           <div className="flex justify-center mb-4">
             <img
-              src="/logo-kelurahan.jpg"
-              alt="Logo Kelurahan"
+              src="/lebakgede.png"
+              alt="Logo Kelurahan Lebakgede"
               className="h-20 w-auto drop-shadow-lg object-contain logo-float"
               loading="lazy"
             />

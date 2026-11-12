@@ -1,0 +1,4 @@
+fix: update StepBiodata to use jenis_kelamin field name
+
+- Change formData.gender to formData.jenis_kelamin for consistency
+- Fix TypeScript compilation error

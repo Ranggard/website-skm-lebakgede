@@ -1,0 +1,8 @@
+fix: correct field name mapping for survey responses
+
+- Fix backend field name mismatch in supabase.ts
+- Map u1_persyaratan, u2_prosedur, etc from form instead of Q1/u1
+- Database now stores correct rating values (1-4) instead of defaulting to 3
+- Analytics and export functions read new Indonesian field names
+- Consolidate migrations to 002 and 003 only
+- Remove obsolete migration files

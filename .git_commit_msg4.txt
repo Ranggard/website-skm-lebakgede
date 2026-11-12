@@ -1,0 +1,6 @@
+chore: update all admin user passwords
+
+- admin: admin12345
+- staf: staf12345
+- lurah: lurah12345
+- Update all bcrypt hashes in migration
