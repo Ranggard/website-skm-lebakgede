@@ -8,7 +8,6 @@
  */
 
 import { BackendStrategy, BackendType } from '../types/backend'
-import { GoogleSheetsBackend } from './strategies/google-sheets'
 import { SupabaseBackend } from './strategies/supabase'
 
 // Singleton instance storage
@@ -23,15 +22,15 @@ function validateBackendType(): BackendType {
 
   if (!backendType) {
     throw new Error(
-      'BACKEND_TYPE environment variable is not set. Must be one of: "google-sheets", "supabase"'
+      'BACKEND_TYPE environment variable is not set. Must be: "supabase"'
     )
   }
 
   // Validate against allowed backend types
-  const validBackends: BackendType[] = ['google-sheets', 'supabase']
+  const validBackends: BackendType[] = ['supabase']
   if (!validBackends.includes(backendType as BackendType)) {
     throw new Error(
-      `Invalid BACKEND_TYPE: "${backendType}". Must be one of: ${validBackends.join(', ')}`
+      `Invalid BACKEND_TYPE: "${backendType}". Must be: ${validBackends.join(', ')}`
     )
   }
 
@@ -47,9 +46,6 @@ export class BackendFactory {
    */
   static create(provider: BackendType): BackendStrategy {
     switch (provider) {
-      case 'google-sheets':
-        return new GoogleSheetsBackend()
-
       case 'supabase':
         return new SupabaseBackend()
 
@@ -101,26 +97,8 @@ export class BackendFactory {
    * @throws Error if multiple backends appear to be configured
    */
   private static validateSingleBackendConstraint(activeBackend: BackendType): void {
-    const configuredBackends: BackendType[] = []
-
-    // Check for Google Sheets configuration
-    if (process.env.GOOGLE_APPS_SCRIPT_URL || process.env.GOOGLE_SHEET_ID) {
-      configuredBackends.push('google-sheets')
-    }
-
-    // Check for Supabase configuration
-    if (process.env.SUPABASE_URL || process.env.SUPABASE_ANON_KEY) {
-      configuredBackends.push('supabase')
-    }
-
-    // Warn if multiple backends are configured but only one is active
-    if (configuredBackends.length > 1) {
-      console.warn(
-        `[BackendFactory] Multiple backends are configured (${configuredBackends.join(', ')}), ` +
-          `but only "${activeBackend}" is active per BACKEND_TYPE. ` +
-          `Ensure environment variables for unused backends are not set.`
-      )
-    }
+    // No need to validate multiple backends since we only support Supabase
+    // This method is kept for backward compatibility but does nothing
   }
 
   /**
