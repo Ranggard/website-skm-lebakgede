@@ -5,11 +5,7 @@
  * Validates Requirements AC3, AC10 from BACKEND_CONTRACT.md
  */
 
-import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
-import { SupabaseBackend } from './supabase'
-import type { QuestionnaireResponse } from '../../types/questionnaire'
-
-// Mock WebSocket for Node.js test environment
+// Mock WebSocket FIRST
 if (!global.WebSocket) {
   global.WebSocket = class WebSocket {
     constructor(public url: string) {}
@@ -20,11 +16,12 @@ if (!global.WebSocket) {
   } as any
 }
 
+import { describe, it, expect, beforeEach, afterEach, vi } from 'vitest'
+
 /**
- * Mock Supabase client
- * Simulates @supabase/supabase-js behavior
+ * Mock the Supabase library BEFORE importing SupabaseBackend
  */
-const createMockSupabaseClient = () => ({
+const mockSupabaseClient = {
   from: vi.fn((table: string) => ({
     insert: vi.fn(function () {
       return {
@@ -58,14 +55,14 @@ const createMockSupabaseClient = () => ({
       }
     }),
   })),
-})
+}
 
-/**
- * Mock the Supabase library
- */
 vi.mock('@supabase/supabase-js', () => ({
-  createClient: vi.fn(() => createMockSupabaseClient()),
+  createClient: vi.fn(() => mockSupabaseClient),
 }))
+
+import { SupabaseBackend } from './supabase'
+import type { QuestionnaireResponse } from '../../types/questionnaire'
 
 describe('SupabaseBackend', () => {
   let backend: SupabaseBackend
