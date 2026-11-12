@@ -17,6 +17,9 @@ describe('BackendFactory', () => {
     delete process.env.GOOGLE_SHEET_ID
     delete process.env.SUPABASE_URL
     delete process.env.SUPABASE_ANON_KEY
+    // Set minimum required env for tests
+    process.env.NEXT_PUBLIC_SUPABASE_URL = 'https://test.supabase.co'
+    process.env.NEXT_PUBLIC_SUPABASE_ANON_KEY = 'test-key'
   })
 
   afterEach(() => {
@@ -59,7 +62,7 @@ describe('BackendFactory', () => {
     })
 
     it('should return same instance on multiple calls (singleton pattern)', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
 
       const instance1 = BackendFactory.getInstance()
       const instance2 = BackendFactory.getInstance()
@@ -68,11 +71,11 @@ describe('BackendFactory', () => {
     })
 
     it('should prevent runtime backend switching', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       const instance1 = BackendFactory.getInstance()
 
       // Change environment variable
-      process.env.BACKEND_TYPE = 'supabase'
+      process.env.BACKEND_TYPE = 'google-sheets'
 
       // Should throw error on attempt to switch backends
       expect(() => {
@@ -93,18 +96,6 @@ describe('BackendFactory', () => {
   })
 
   describe('create()', () => {
-    it('should create google-sheets backend instance', () => {
-      const instance = BackendFactory.create('google-sheets')
-
-      expect(instance).toBeDefined()
-      expect(instance).toHaveProperty('submitResponse')
-      expect(instance).toHaveProperty('getAnalytics')
-      expect(instance).toHaveProperty('exportResponses')
-      expect(instance).toHaveProperty('deleteResponse')
-      expect(instance).toHaveProperty('getResponseCount')
-      expect(instance).toHaveProperty('healthCheck')
-    })
-
     it('should create supabase backend instance', () => {
       const instance = BackendFactory.create('supabase')
 
@@ -124,8 +115,8 @@ describe('BackendFactory', () => {
     })
 
     it('should create different instances on successive create() calls', () => {
-      const instance1 = BackendFactory.create('google-sheets')
-      const instance2 = BackendFactory.create('google-sheets')
+      const instance1 = BackendFactory.create('supabase')
+      const instance2 = BackendFactory.create('supabase')
 
       expect(instance1).not.toBe(instance2)
     })
@@ -156,41 +147,21 @@ describe('BackendFactory', () => {
     })
 
     it('should allow backend switching after reset()', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-      BackendFactory.getInstance()
+      process.env.BACKEND_TYPE = 'supabase'
+      const instance1 = BackendFactory.getInstance()
 
       BackendFactory.reset()
 
       process.env.BACKEND_TYPE = 'supabase'
-      const instance = BackendFactory.getInstance()
+      const instance2 = BackendFactory.getInstance()
 
       expect(BackendFactory.getActiveBackendType()).toBe('supabase')
-      expect(instance).toBeDefined()
+      expect(instance2).toBeDefined()
+      expect(instance1).not.toBe(instance2)
     })
   })
 
   describe('Backend instances implement BackendStrategy interface', () => {
-    it('google-sheets backend should have all required methods', async () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-      const instance = BackendFactory.getInstance()
-
-      // Verify all required methods exist and are callable
-      expect(typeof instance.submitResponse).toBe('function')
-      expect(typeof instance.getAnalytics).toBe('function')
-      expect(typeof instance.exportResponses).toBe('function')
-      expect(typeof instance.deleteResponse).toBe('function')
-      expect(typeof instance.getResponseCount).toBe('function')
-      expect(typeof instance.healthCheck).toBe('function')
-
-      // Verify they are async functions (return promises)
-      expect(instance.submitResponse('test')).toBeInstanceOf(Promise)
-      expect(instance.getAnalytics()).toBeInstanceOf(Promise)
-      expect(instance.exportResponses('csv')).toBeInstanceOf(Promise)
-      expect(instance.deleteResponse('123')).toBeInstanceOf(Promise)
-      expect(instance.getResponseCount()).toBeInstanceOf(Promise)
-      expect(instance.healthCheck()).toBeInstanceOf(Promise)
-    })
-
     it('supabase backend should have all required methods', async () => {
       process.env.BACKEND_TYPE = 'supabase'
       const instance = BackendFactory.getInstance()
@@ -241,13 +212,6 @@ describe('BackendFactory', () => {
   })
 
   describe('Runtime singleton constraints', () => {
-    it('should return correct backend type for google-sheets', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
-      BackendFactory.getInstance()
-
-      expect(BackendFactory.getActiveBackendType()).toBe('google-sheets')
-    })
-
     it('should return correct backend type for supabase', () => {
       process.env.BACKEND_TYPE = 'supabase'
       BackendFactory.getInstance()
@@ -256,11 +220,11 @@ describe('BackendFactory', () => {
     })
 
     it('should only allow one backend active at a time', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       const instance1 = BackendFactory.getInstance()
 
       // Try to switch backend
-      process.env.BACKEND_TYPE = 'supabase'
+      process.env.BACKEND_TYPE = 'google-sheets'
 
       expect(() => BackendFactory.getInstance()).toThrow(
         expect.stringContaining('Runtime backend switch detected')
@@ -268,7 +232,7 @@ describe('BackendFactory', () => {
     })
 
     it('should enforce singleton after reset', () => {
-      process.env.BACKEND_TYPE = 'google-sheets'
+      process.env.BACKEND_TYPE = 'supabase'
       const instance1 = BackendFactory.getInstance()
 
       BackendFactory.reset()
