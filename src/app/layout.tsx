@@ -10,7 +10,7 @@ export const metadata: Metadata = {
   title: 'Survei Kepuasan Masyarakat - Kelurahan Lebakgede',
   description: 'Survei Kepuasan Masyarakat - Kelurahan Lebakgede, Kecamatan Coblong, Kota Bandung',
   icons: {
-    icon: '/favicon.ico',
+    icon: '/logo-kelurahan.png',
   },
 }
 
