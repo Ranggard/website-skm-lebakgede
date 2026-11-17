@@ -68,8 +68,13 @@ export async function POST(request: NextRequest) {
             }
           }
         }
-      } catch (dbErr) {
-        console.warn('[Login] Supabase admin_users query warning, falling back to local defaults:', dbErr)
+      } catch (dbErr: any) {
+        console.warn('[Login] Supabase admin_users query error:', {
+          message: dbErr?.message,
+          code: dbErr?.code,
+          status: dbErr?.status,
+          fullError: dbErr,
+        })
       }
     }
 
@@ -133,14 +138,19 @@ export async function POST(request: NextRequest) {
     })
 
     return response
-  } catch (error) {
-    console.error('Login error:', error)
+  } catch (error: any) {
+    console.error('[Login] Fatal error:', {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    })
     return NextResponse.json(
       {
         success: false,
         error: {
           code: 'INTERNAL_ERROR',
           message: 'Terjadi kesalahan sistem saat proses login',
+          debug: process.env.NODE_ENV === 'development' ? error?.message : undefined,
         },
       },
       { status: 500 }
