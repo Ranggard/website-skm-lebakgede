@@ -47,14 +47,19 @@ export async function POST(request: NextRequest) {
           .maybeSingle()
 
         if (!error && dbUser) {
+          console.log('[Login] Found user in DB:', { username: dbUser.username, role: dbUser.role })
+          console.log('[Login] Password comparison:', { inputPass: cleanPass, hashFromDB: dbUser.password_hash })
+          
           // Verify password - try bcrypt first, fallback to plain text
           let passMatches = false
           try {
             passMatches = await bcrypt.compare(cleanPass, dbUser.password_hash)
+            console.log('[Login] Bcrypt compare result:', passMatches)
           } catch (bcryptErr) {
             console.warn('[Login] Bcrypt compare failed, trying plain text fallback')
             // Fallback: plain text comparison (untuk testing sementara)
             passMatches = dbUser.password_hash === cleanPass
+            console.log('[Login] Plain text compare result:', passMatches)
           }
 
           if (passMatches) {
@@ -64,6 +69,8 @@ export async function POST(request: NextRequest) {
               nama: dbUser.nama || 'Petugas Kelurahan',
             }
           }
+        } else {
+          console.log('[Login] DB query error or no user found:', { error, dbUser })
         }
       } catch (dbErr: any) {
         console.warn('[Login] Supabase admin_users query error:', {
