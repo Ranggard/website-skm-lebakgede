@@ -42,9 +42,11 @@ export async function POST(request: NextRequest) {
         const { data: dbUser, error } = await client
           .from('admin_users')
           .select('id, username, nama, password_hash, role, is_active')
-          .ilike('username', cleanUser)
+          .eq('username', cleanUser)
           .eq('is_active', true)
           .maybeSingle()
+
+        console.log('[Login] Supabase query result:', { cleanUser, error, found: !!dbUser })
 
         if (!error && dbUser) {
           console.log('[Login] Found user in DB:', { username: dbUser.username, role: dbUser.role })
