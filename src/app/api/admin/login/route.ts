@@ -55,13 +55,20 @@ export async function POST(request: NextRequest) {
           // Verify password - try bcrypt first, fallback to plain text
           let passMatches = false
           try {
-            passMatches = await bcrypt.compare(cleanPass, dbUser.password_hash)
-            console.log('[Login] Bcrypt compare result:', passMatches)
+            // Check if it looks like bcrypt hash (starts with $2a$, $2b$, or $2y$)
+            if (dbUser.password_hash.startsWith('$2')) {
+              passMatches = await bcrypt.compare(cleanPass, dbUser.password_hash)
+              console.log('[Login] Bcrypt compare result:', passMatches)
+            } else {
+              // Plain text password
+              passMatches = dbUser.password_hash === cleanPass
+              console.log('[Login] Plain text compare result:', passMatches)
+            }
           } catch (bcryptErr) {
-            console.warn('[Login] Bcrypt compare failed, trying plain text fallback')
-            // Fallback: plain text comparison (untuk testing sementara)
+            console.warn('[Login] Password compare error, trying plain text fallback:', bcryptErr)
+            // Fallback: plain text comparison
             passMatches = dbUser.password_hash === cleanPass
-            console.log('[Login] Plain text compare result:', passMatches)
+            console.log('[Login] Fallback plain text compare result:', passMatches)
           }
 
           if (passMatches) {
