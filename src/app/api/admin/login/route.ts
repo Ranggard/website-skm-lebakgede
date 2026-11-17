@@ -47,17 +47,14 @@ export async function POST(request: NextRequest) {
           .maybeSingle()
 
         if (!error && dbUser) {
-          // Verify bcrypt password hash
+          // Verify password - try bcrypt first, fallback to plain text
           let passMatches = false
           try {
             passMatches = await bcrypt.compare(cleanPass, dbUser.password_hash)
           } catch (bcryptErr) {
-            console.warn('[Login] Bcrypt compare error:', bcryptErr)
-            // Fallback untuk backward compatibility (jika ada hash lama)
-            passMatches =
-              dbUser.password_hash === cleanPass ||
-              dbUser.password_hash ===
-                crypto.createHash('sha256').update(cleanPass).digest('hex')
+            console.warn('[Login] Bcrypt compare failed, trying plain text fallback')
+            // Fallback: plain text comparison (untuk testing sementara)
+            passMatches = dbUser.password_hash === cleanPass
           }
 
           if (passMatches) {
