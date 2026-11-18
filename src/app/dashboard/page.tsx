@@ -93,6 +93,11 @@ export default function DashboardPage() {
   // Modal Detail Responden
   const [selectedRespondent, setSelectedRespondent] = useState<ResponseRow | null>(null)
 
+  // DASHBOARD PERIOD FILTER STATE
+  const [dashboardPeriod, setDashboardPeriod] = useState<'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'>('all')
+  const [dashboardStartDate, setDashboardStartDate] = useState<string>('')
+  const [dashboardEndDate, setDashboardEndDate] = useState<string>('')
+
   // EXPORT SUB-MENU STATE & PREVIEW CONTROLS
   const [exportPreset, setExportPreset] = useState<'tw1' | 'tw2' | 'tw3' | 'tw4' | '1m' | '6m' | '1y' | 'all' | 'custom'>('all')
   const [exportFormat, setExportFormat] = useState<'pdf' | 'excel' | 'csv'>('pdf')
@@ -228,6 +233,57 @@ export default function DashboardPage() {
     return analytics?.responses || []
   }, [analytics])
 
+  // DASHBOARD FILTERED RESPONSES based on period
+  const dashboardFilteredResponses = useMemo(() => {
+    let start: Date | null = null
+    let end: Date | null = null
+
+    const currentYear = new Date().getFullYear()
+
+    if (dashboardPeriod === 'tw1') {
+      start = new Date(currentYear, 0, 1, 0, 0, 0, 0) // 1 Jan
+      end = new Date(currentYear, 2, 31, 23, 59, 59, 999) // 31 Mar
+    } else if (dashboardPeriod === 'tw2') {
+      start = new Date(currentYear, 3, 1, 0, 0, 0, 0) // 1 Apr
+      end = new Date(currentYear, 5, 30, 23, 59, 59, 999) // 30 Jun
+    } else if (dashboardPeriod === 'tw3') {
+      start = new Date(currentYear, 6, 1, 0, 0, 0, 0) // 1 Jul
+      end = new Date(currentYear, 8, 30, 23, 59, 59, 999) // 30 Sep
+    } else if (dashboardPeriod === 'tw4') {
+      start = new Date(currentYear, 9, 1, 0, 0, 0, 0) // 1 Okt
+      end = new Date(currentYear, 11, 31, 23, 59, 59, 999) // 31 Des
+    } else if (dashboardPeriod === 'sem1') {
+      start = new Date(currentYear, 0, 1, 0, 0, 0, 0) // 1 Jan
+      end = new Date(currentYear, 5, 30, 23, 59, 59, 999) // 30 Jun
+    } else if (dashboardPeriod === 'sem2') {
+      start = new Date(currentYear, 6, 1, 0, 0, 0, 0) // 1 Jul
+      end = new Date(currentYear, 11, 31, 23, 59, 59, 999) // 31 Des
+    } else if (dashboardPeriod === '1y') {
+      start = new Date(currentYear, 0, 1, 0, 0, 0, 0)
+      end = new Date(currentYear, 11, 31, 23, 59, 59, 999)
+    } else if (dashboardPeriod === 'all') {
+      start = null
+      end = null
+    } else if (dashboardPeriod === 'custom') {
+      if (dashboardStartDate) start = new Date(dashboardStartDate)
+      if (dashboardEndDate) {
+        end = new Date(dashboardEndDate)
+        end.setHours(23, 59, 59, 999)
+      }
+    }
+
+    if (!start && !end) return allResponses
+
+    return allResponses.filter((r) => {
+      const dateVal = r.timestamp || (r as any).created_at || r.waktu
+      const d = dateVal ? new Date(dateVal) : null
+      if (!d || isNaN(d.getTime())) return true
+      if (start && d < start) return false
+      if (end && d > end) return false
+      return true
+    })
+  }, [allResponses, dashboardPeriod, dashboardStartDate, dashboardEndDate])
+
   // Reset all filters in Responden Tab
   const handleResetRespondentFilters = () => {
     setSearchQuery('')
@@ -239,9 +295,9 @@ export default function DashboardPage() {
     setCurrentPage(1)
   }
 
-  // Filtered responses for Respondent Tab
+  // Filtered responses for Respondent Tab (applies table filters on top of dashboard period filter)
   const filteredResponses = useMemo(() => {
-    return allResponses.filter((item) => {
+    return dashboardFilteredResponses.filter((item) => {
       const q = searchQuery.toLowerCase().trim()
       const matchesSearch =
         !q ||
@@ -288,7 +344,7 @@ export default function DashboardPage() {
 
       return matchesSearch && matchesService && matchesGender && matchesAge && matchesDate
     })
-  }, [allResponses, searchQuery, filterService, filterGender, filterAgeGroup, filterStartDate, filterEndDate])
+  }, [dashboardFilteredResponses, searchQuery, filterService, filterGender, filterAgeGroup, filterStartDate, filterEndDate])
 
   // Pagination
   const totalPages = Math.ceil(filteredResponses.length / itemsPerPage) || 1
@@ -310,12 +366,12 @@ export default function DashboardPage() {
 
   // Derived statistics for overview
   const derivedStats = useMemo(() => {
-    const total = allResponses.length
+    const total = dashboardFilteredResponses.length
     const sums = { q1: 0, q2: 0, q3: 0, q4: 0, q5: 0, q6: 0, q7: 0, q8: 0, q9: 0 }
     const genderCount: Record<string, number> = {}
     const eduCount: Record<string, number> = {}
 
-    allResponses.forEach((r: any) => {
+    dashboardFilteredResponses.forEach((r: any) => {
       sums.q1 += parseScore(r.u1 || r.q1)
       sums.q2 += parseScore(r.u2 || r.q2)
       sums.q3 += parseScore(r.u3 || r.q3)
@@ -388,7 +444,7 @@ export default function DashboardPage() {
       gender: genderCount,
       education: eduCount,
     }
-  }, [allResponses])
+  }, [dashboardFilteredResponses])
 
   // EXPORT FILTERED RESPONSES & LIVE PREVIEW
   const exportFilteredResponses = useMemo(() => {
@@ -772,6 +828,13 @@ export default function DashboardPage() {
         loading={loading}
         fetchData={() => fetchData(token)}
         handleLogout={handleLogout}
+        dashboardPeriod={dashboardPeriod}
+        setDashboardPeriod={setDashboardPeriod}
+        dashboardStartDate={dashboardStartDate}
+        setDashboardStartDate={setDashboardStartDate}
+        dashboardEndDate={dashboardEndDate}
+        setDashboardEndDate={setDashboardEndDate}
+        filteredResponseCount={dashboardFilteredResponses.length}
       />
       <div className="flex-1 flex overflow-hidden relative">
         <DashboardSidebar
@@ -828,6 +891,7 @@ export default function DashboardPage() {
           {activeTab === 'saran' && (
             <TabSaran
               allResponses={allResponses}
+              filteredResponses={dashboardFilteredResponses}
               setSelectedRespondent={setSelectedRespondent}
             />
           )}

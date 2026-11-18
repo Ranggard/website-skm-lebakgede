@@ -4,22 +4,26 @@ import { IconSearch } from '@/src/components/icons'
 
 interface TabSaranProps {
   allResponses: ResponseRow[]
+  filteredResponses?: ResponseRow[]
   setSelectedRespondent?: (r: ResponseRow) => void
 }
 
-export const TabSaran: React.FC<TabSaranProps> = ({ allResponses, setSelectedRespondent }) => {
+export const TabSaran: React.FC<TabSaranProps> = ({ allResponses, filteredResponses, setSelectedRespondent }) => {
   const [searchQuery, setSearchQuery] = useState('')
   const [filterSentiment, setFilterSentiment] = useState<'ALL' | 'PUAS' | 'EVALUASI'>('ALL')
   const [filterService, setFilterService] = useState('ALL')
   const [currentPage, setCurrentPage] = useState(1)
   const itemsPerPage = 6
 
+  // Use filteredResponses if provided, otherwise use allResponses
+  const responsesToUse = filteredResponses || allResponses
+
   // Ambil data yang memiliki saran riil
   const rawFeedback = useMemo(() => {
-    return allResponses.filter(
+    return responsesToUse.filter(
       (r) => r.saran && r.saran.trim().length > 1 && r.saran.trim() !== '-'
     )
-  }, [allResponses])
+  }, [responsesToUse])
 
   // Ambil list layanan unik dari saran
   const uniqueServices = useMemo(() => {
