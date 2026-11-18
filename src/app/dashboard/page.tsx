@@ -872,6 +872,13 @@ export default function DashboardPage() {
         <PublicDashboard
           derivedStats={derivedStats}
           onLoginClick={() => setIsLoginModalOpen(true)}
+          dashboardPeriod={dashboardPeriod}
+          setDashboardPeriod={setDashboardPeriod}
+          dashboardStartDate={dashboardStartDate}
+          setDashboardStartDate={setDashboardStartDate}
+          dashboardEndDate={dashboardEndDate}
+          setDashboardEndDate={setDashboardEndDate}
+          filteredResponseCount={dashboardFilteredResponses.length}
         />
         <LoginModal
           isOpen={isLoginModalOpen}
@@ -903,8 +910,6 @@ export default function DashboardPage() {
         loading={loading}
         fetchData={() => fetchData(token)}
         handleLogout={handleLogout}
-        currentPeriod={getPeriodDisplayText(dashboardPeriod)}
-        filteredResponseCount={dashboardFilteredResponses.length}
       />
       <div className="flex-1 flex overflow-hidden relative">
         <DashboardSidebar

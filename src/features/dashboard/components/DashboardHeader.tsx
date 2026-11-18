@@ -9,8 +9,6 @@ interface DashboardHeaderProps {
   loading: boolean
   fetchData: () => void
   handleLogout: () => void
-  currentPeriod: string
-  filteredResponseCount: number
 }
 
 export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
@@ -20,8 +18,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   loading,
   fetchData,
   handleLogout,
-  currentPeriod,
-  filteredResponseCount,
 }) => {
   return (
     <header className="flex-shrink-0 z-30 bg-white/95 backdrop-blur-md border-b border-gray-200/80 px-4 sm:px-6 py-3 flex flex-col gap-3 shadow-xs no-print">
@@ -85,11 +81,6 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
             <span className="hidden sm:inline">Keluar</span>
           </button>
         </div>
-      </div>
-
-      {/* Current Period Indicator - Minimal, Text Only */}
-      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600">
-        <span>📊 {currentPeriod} ({filteredResponseCount} responden)</span>
       </div>
     </header>
   )
