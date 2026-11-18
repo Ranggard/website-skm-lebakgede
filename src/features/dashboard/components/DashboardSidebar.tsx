@@ -20,6 +20,13 @@ interface DashboardSidebarProps {
   activeTab: TabId
   setActiveTab: (t: TabId) => void
   totalResponses: number
+  dashboardPeriod?: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'
+  setDashboardPeriod?: (v: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom') => void
+  dashboardStartDate?: string
+  setDashboardStartDate?: (v: string) => void
+  dashboardEndDate?: string
+  setDashboardEndDate?: (v: string) => void
+  filteredResponseCount?: number
 }
 
 export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
@@ -28,6 +35,13 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
   activeTab,
   setActiveTab,
   totalResponses,
+  dashboardPeriod = 'all',
+  setDashboardPeriod,
+  dashboardStartDate = '',
+  setDashboardStartDate,
+  dashboardEndDate = '',
+  setDashboardEndDate,
+  filteredResponseCount = 0,
 }) => {
   const navItems = [
     { id: 'ringkasan', label: 'Ringkasan IKM', icon: IconTrendingUp, desc: 'Indeks & Mutu Layanan' },
@@ -113,6 +127,54 @@ export const DashboardSidebar: React.FC<DashboardSidebarProps> = ({
           })}
 
           <div className="pt-3 my-2 border-t border-gray-100"></div>
+
+          {/* FILTER PERIODE SECTION */}
+          {isSidebarOpen && setDashboardPeriod && (
+            <div className="px-3 py-3 rounded-xl border border-gray-200 bg-white space-y-2.5">
+              <div className="text-xs font-bold text-teal-700 uppercase tracking-wider">Filter Periode</div>
+              
+              <select
+                value={dashboardPeriod}
+                onChange={(e) => setDashboardPeriod(e.target.value as any)}
+                className="w-full px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 hover:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition cursor-pointer"
+              >
+                <option value="all">Seluruh Data</option>
+                <option value="tw1">Triwulan I (Jan-Mar)</option>
+                <option value="tw2">Triwulan II (Apr-Jun)</option>
+                <option value="tw3">Triwulan III (Jul-Sep)</option>
+                <option value="tw4">Triwulan IV (Okt-Des)</option>
+                <option value="sem1">Semester I (Jan-Jun)</option>
+                <option value="sem2">Semester II (Jul-Des)</option>
+                <option value="1y">1 Tahun Penuh</option>
+                <option value="custom">Rentang Kustom</option>
+              </select>
+
+              {dashboardPeriod === 'custom' && setDashboardStartDate && setDashboardEndDate && (
+                <div className="space-y-2">
+                  <input
+                    type="date"
+                    value={dashboardStartDate}
+                    onChange={(e) => setDashboardStartDate(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                    placeholder="Tanggal Mulai"
+                  />
+                  <div className="text-xs text-gray-500 text-center font-semibold">sampai</div>
+                  <input
+                    type="date"
+                    value={dashboardEndDate}
+                    onChange={(e) => setDashboardEndDate(e.target.value)}
+                    className="w-full px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                    placeholder="Tanggal Akhir"
+                  />
+                </div>
+              )}
+
+              <div className="flex items-center gap-2 px-2.5 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
+                <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
+                <span>{filteredResponseCount} Responden</span>
+              </div>
+            </div>
+          )}
 
           {/* External Links inside sidebar */}
           <Link

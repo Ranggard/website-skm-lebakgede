@@ -58,6 +58,32 @@ function parseScore(val: any): number {
   return 3
 }
 
+// Helper function to convert period state to display text
+function getPeriodDisplayText(period: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'): string {
+  switch (period) {
+    case 'tw1':
+      return 'TW1'
+    case 'tw2':
+      return 'TW2'
+    case 'tw3':
+      return 'TW3'
+    case 'tw4':
+      return 'TW4'
+    case 'sem1':
+      return 'Semester 1'
+    case 'sem2':
+      return 'Semester 2'
+    case '1y':
+      return '1 Tahun'
+    case 'all':
+      return 'Seluruh Data'
+    case 'custom':
+      return 'Kustom'
+    default:
+      return 'Seluruh Data'
+  }
+}
+
 export default function DashboardPage() {
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
@@ -877,12 +903,7 @@ export default function DashboardPage() {
         loading={loading}
         fetchData={() => fetchData(token)}
         handleLogout={handleLogout}
-        dashboardPeriod={dashboardPeriod}
-        setDashboardPeriod={setDashboardPeriod}
-        dashboardStartDate={dashboardStartDate}
-        setDashboardStartDate={setDashboardStartDate}
-        dashboardEndDate={dashboardEndDate}
-        setDashboardEndDate={setDashboardEndDate}
+        currentPeriod={getPeriodDisplayText(dashboardPeriod)}
         filteredResponseCount={dashboardFilteredResponses.length}
       />
       <div className="flex-1 flex overflow-hidden relative">
@@ -892,6 +913,13 @@ export default function DashboardPage() {
           activeTab={activeTab}
           setActiveTab={setActiveTab}
           totalResponses={allResponses.length}
+          dashboardPeriod={dashboardPeriod}
+          setDashboardPeriod={setDashboardPeriod}
+          dashboardStartDate={dashboardStartDate}
+          setDashboardStartDate={setDashboardStartDate}
+          dashboardEndDate={dashboardEndDate}
+          setDashboardEndDate={setDashboardEndDate}
+          filteredResponseCount={dashboardFilteredResponses.length}
         />
         <main className="flex-1 overflow-y-auto p-4 sm:p-6 lg:p-8 space-y-6">
           {activeTab === 'ringkasan' && (

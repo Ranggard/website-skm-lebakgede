@@ -9,12 +9,7 @@ interface DashboardHeaderProps {
   loading: boolean
   fetchData: () => void
   handleLogout: () => void
-  dashboardPeriod: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'
-  setDashboardPeriod: (v: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom') => void
-  dashboardStartDate: string
-  setDashboardStartDate: (v: string) => void
-  dashboardEndDate: string
-  setDashboardEndDate: (v: string) => void
+  currentPeriod: string
   filteredResponseCount: number
 }
 
@@ -25,12 +20,7 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
   loading,
   fetchData,
   handleLogout,
-  dashboardPeriod,
-  setDashboardPeriod,
-  dashboardStartDate,
-  setDashboardStartDate,
-  dashboardEndDate,
-  setDashboardEndDate,
+  currentPeriod,
   filteredResponseCount,
 }) => {
   return (
@@ -97,50 +87,9 @@ export const DashboardHeader: React.FC<DashboardHeaderProps> = ({
         </div>
       </div>
 
-      {/* Dashboard Period Filter Row */}
-      <div className="flex items-center gap-3 flex-wrap pb-2 border-t border-gray-200/50 pt-3">
-        <label className="text-xs font-bold text-gray-600 uppercase tracking-wider">Filter Periode:</label>
-        
-        <select
-          value={dashboardPeriod}
-          onChange={(e) => setDashboardPeriod(e.target.value as any)}
-          className="px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 hover:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition cursor-pointer"
-        >
-          <option value="all">Seluruh Data</option>
-          <option value="tw1">Triwulan I (Jan-Mar)</option>
-          <option value="tw2">Triwulan II (Apr-Jun)</option>
-          <option value="tw3">Triwulan III (Jul-Sep)</option>
-          <option value="tw4">Triwulan IV (Okt-Des)</option>
-          <option value="sem1">Semester I (Jan-Jun)</option>
-          <option value="sem2">Semester II (Jul-Des)</option>
-          <option value="1y">1 Tahun Penuh</option>
-          <option value="custom">Rentang Kustom</option>
-        </select>
-
-        {dashboardPeriod === 'custom' && (
-          <>
-            <input
-              type="date"
-              value={dashboardStartDate}
-              onChange={(e) => setDashboardStartDate(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-              placeholder="Tanggal Mulai"
-            />
-            <span className="text-xs text-gray-500 font-semibold">sampai</span>
-            <input
-              type="date"
-              value={dashboardEndDate}
-              onChange={(e) => setDashboardEndDate(e.target.value)}
-              className="px-3 py-1.5 rounded-lg bg-white border border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-              placeholder="Tanggal Akhir"
-            />
-          </>
-        )}
-
-        <div className="ml-auto flex items-center gap-2 px-3 py-1.5 rounded-lg bg-emerald-50 border border-emerald-200 text-xs font-bold text-emerald-800">
-          <span className="w-2 h-2 rounded-full bg-emerald-600 animate-pulse"></span>
-          <span>{filteredResponseCount} Responden</span>
-        </div>
+      {/* Current Period Indicator - Minimal, Text Only */}
+      <div className="flex items-center gap-2 px-3 py-1.5 rounded-lg text-xs font-semibold text-gray-600">
+        <span>📊 {currentPeriod} ({filteredResponseCount} responden)</span>
       </div>
     </header>
   )
