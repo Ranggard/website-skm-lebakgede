@@ -93,10 +93,34 @@ export default function DashboardPage() {
   // Modal Detail Responden
   const [selectedRespondent, setSelectedRespondent] = useState<ResponseRow | null>(null)
 
-  // DASHBOARD PERIOD FILTER STATE
+  // DASHBOARD PERIOD FILTER STATE (persisted to localStorage)
   const [dashboardPeriod, setDashboardPeriod] = useState<'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'>('all')
   const [dashboardStartDate, setDashboardStartDate] = useState<string>('')
   const [dashboardEndDate, setDashboardEndDate] = useState<string>('')
+
+  // Restore dashboard filter state from localStorage on mount
+  useEffect(() => {
+    const savedPeriod = localStorage.getItem('dashboardPeriod') as any
+    const savedStartDate = localStorage.getItem('dashboardStartDate') || ''
+    const savedEndDate = localStorage.getItem('dashboardEndDate') || ''
+    
+    if (savedPeriod) setDashboardPeriod(savedPeriod)
+    if (savedStartDate) setDashboardStartDate(savedStartDate)
+    if (savedEndDate) setDashboardEndDate(savedEndDate)
+  }, [])
+
+  // Persist dashboard filter state to localStorage whenever it changes
+  useEffect(() => {
+    localStorage.setItem('dashboardPeriod', dashboardPeriod)
+  }, [dashboardPeriod])
+
+  useEffect(() => {
+    localStorage.setItem('dashboardStartDate', dashboardStartDate)
+  }, [dashboardStartDate])
+
+  useEffect(() => {
+    localStorage.setItem('dashboardEndDate', dashboardEndDate)
+  }, [dashboardEndDate])
 
   // EXPORT SUB-MENU STATE & PREVIEW CONTROLS
   const [exportPreset, setExportPreset] = useState<'tw1' | 'tw2' | 'tw3' | 'tw4' | '1m' | '6m' | '1y' | 'all' | 'custom'>('all')
@@ -233,6 +257,11 @@ export default function DashboardPage() {
     return analytics?.responses || []
   }, [analytics])
 
+  // Helper function to get the last day of a month (programmatically)
+  const getLastDayOfMonth = (year: number, month: number): Date => {
+    return new Date(year, month + 1, 0, 23, 59, 59, 999)
+  }
+
   // DASHBOARD FILTERED RESPONSES based on period
   const dashboardFilteredResponses = useMemo(() => {
     let start: Date | null = null
@@ -242,33 +271,42 @@ export default function DashboardPage() {
 
     if (dashboardPeriod === 'tw1') {
       start = new Date(currentYear, 0, 1, 0, 0, 0, 0) // 1 Jan
-      end = new Date(currentYear, 2, 31, 23, 59, 59, 999) // 31 Mar
+      end = getLastDayOfMonth(currentYear, 2) // Last day of March
     } else if (dashboardPeriod === 'tw2') {
       start = new Date(currentYear, 3, 1, 0, 0, 0, 0) // 1 Apr
-      end = new Date(currentYear, 5, 30, 23, 59, 59, 999) // 30 Jun
+      end = getLastDayOfMonth(currentYear, 5) // Last day of June
     } else if (dashboardPeriod === 'tw3') {
       start = new Date(currentYear, 6, 1, 0, 0, 0, 0) // 1 Jul
-      end = new Date(currentYear, 8, 30, 23, 59, 59, 999) // 30 Sep
+      end = getLastDayOfMonth(currentYear, 8) // Last day of September
     } else if (dashboardPeriod === 'tw4') {
-      start = new Date(currentYear, 9, 1, 0, 0, 0, 0) // 1 Okt
-      end = new Date(currentYear, 11, 31, 23, 59, 59, 999) // 31 Des
+      start = new Date(currentYear, 9, 1, 0, 0, 0, 0) // 1 Oct
+      end = getLastDayOfMonth(currentYear, 11) // Last day of December
     } else if (dashboardPeriod === 'sem1') {
       start = new Date(currentYear, 0, 1, 0, 0, 0, 0) // 1 Jan
-      end = new Date(currentYear, 5, 30, 23, 59, 59, 999) // 30 Jun
+      end = getLastDayOfMonth(currentYear, 5) // Last day of June
     } else if (dashboardPeriod === 'sem2') {
       start = new Date(currentYear, 6, 1, 0, 0, 0, 0) // 1 Jul
-      end = new Date(currentYear, 11, 31, 23, 59, 59, 999) // 31 Des
+      end = getLastDayOfMonth(currentYear, 11) // Last day of December
     } else if (dashboardPeriod === '1y') {
       start = new Date(currentYear, 0, 1, 0, 0, 0, 0)
-      end = new Date(currentYear, 11, 31, 23, 59, 59, 999)
+      end = getLastDayOfMonth(currentYear, 11) // Last day of December
     } else if (dashboardPeriod === 'all') {
       start = null
       end = null
     } else if (dashboardPeriod === 'custom') {
-      if (dashboardStartDate) start = new Date(dashboardStartDate)
+      if (dashboardStartDate) {
+        // Parse custom date assuming it's in local timezone (not UTC)
+        const parts = dashboardStartDate.split('-')
+        if (parts.length === 3) {
+          start = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0)
+        }
+      }
       if (dashboardEndDate) {
-        end = new Date(dashboardEndDate)
-        end.setHours(23, 59, 59, 999)
+        // Parse custom date assuming it's in local timezone (not UTC)
+        const parts = dashboardEndDate.split('-')
+        if (parts.length === 3) {
+          end = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23, 59, 59, 999)
+        }
       }
     }
 
@@ -323,20 +361,22 @@ export default function DashboardPage() {
         else if (filterAgeGroup === 'above_60') matchesAge = numAge > 60
       }
 
-      // Filter Rentang Tanggal
+      // Filter Rentang Tanggal (using local timezone parsing)
       let matchesDate = true
       if (filterStartDate || filterEndDate) {
         const itemDateStr = item.timestamp || item.waktu
         const itemDate = new Date(itemDateStr)
         if (!isNaN(itemDate.getTime())) {
           if (filterStartDate) {
-            const start = new Date(filterStartDate)
-            start.setHours(0, 0, 0, 0)
+            // Parse custom date assuming it's in local timezone (not UTC)
+            const startParts = filterStartDate.split('-')
+            const start = new Date(parseInt(startParts[0]), parseInt(startParts[1]) - 1, parseInt(startParts[2]), 0, 0, 0, 0)
             if (itemDate < start) matchesDate = false
           }
           if (filterEndDate) {
-            const end = new Date(filterEndDate)
-            end.setHours(23, 59, 59, 999)
+            // Parse custom date assuming it's in local timezone (not UTC)
+            const endParts = filterEndDate.split('-')
+            const end = new Date(parseInt(endParts[0]), parseInt(endParts[1]) - 1, parseInt(endParts[2]), 23, 59, 59, 999)
             if (itemDate > end) matchesDate = false
           }
         }
@@ -455,35 +495,44 @@ export default function DashboardPage() {
 
     if (exportPreset === 'tw1') {
       start = new Date(currentYear, 0, 1, 0, 0, 0, 0) // 1 Jan
-      end = new Date(currentYear, 2, 31, 23, 59, 59, 999) // 31 Mar
+      end = getLastDayOfMonth(currentYear, 2) // Last day of March
     } else if (exportPreset === 'tw2') {
       start = new Date(currentYear, 3, 1, 0, 0, 0, 0) // 1 Apr
-      end = new Date(currentYear, 5, 30, 23, 59, 59, 999) // 30 Jun
+      end = getLastDayOfMonth(currentYear, 5) // Last day of June
     } else if (exportPreset === 'tw3') {
       start = new Date(currentYear, 6, 1, 0, 0, 0, 0) // 1 Jul
-      end = new Date(currentYear, 8, 30, 23, 59, 59, 999) // 30 Sep
+      end = getLastDayOfMonth(currentYear, 8) // Last day of September
     } else if (exportPreset === 'tw4') {
-      start = new Date(currentYear, 9, 1, 0, 0, 0, 0) // 1 Okt
-      end = new Date(currentYear, 11, 31, 23, 59, 59, 999) // 31 Des
+      start = new Date(currentYear, 9, 1, 0, 0, 0, 0) // 1 Oct
+      end = getLastDayOfMonth(currentYear, 11) // Last day of December
     } else if (exportPreset === '1m') {
       const now = new Date()
       start = new Date(now.getFullYear(), now.getMonth(), 1, 0, 0, 0, 0)
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+      end = getLastDayOfMonth(now.getFullYear(), now.getMonth())
     } else if (exportPreset === '6m') {
       const now = new Date()
       start = new Date(now.getFullYear(), now.getMonth() - 5, 1, 0, 0, 0, 0)
-      end = new Date(now.getFullYear(), now.getMonth() + 1, 0, 23, 59, 59, 999)
+      end = getLastDayOfMonth(now.getFullYear(), now.getMonth())
     } else if (exportPreset === '1y') {
       start = new Date(currentYear, 0, 1, 0, 0, 0, 0)
-      end = new Date(currentYear, 11, 31, 23, 59, 59, 999)
+      end = getLastDayOfMonth(currentYear, 11) // Last day of December
     } else if (exportPreset === 'all') {
       start = null
       end = null
     } else if (exportPreset === 'custom') {
-      if (exportStartDate) start = new Date(exportStartDate)
+      if (exportStartDate) {
+        // Parse custom date assuming it's in local timezone (not UTC)
+        const parts = exportStartDate.split('-')
+        if (parts.length === 3) {
+          start = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 0, 0, 0, 0)
+        }
+      }
       if (exportEndDate) {
-        end = new Date(exportEndDate)
-        end.setHours(23, 59, 59, 999)
+        // Parse custom date assuming it's in local timezone (not UTC)
+        const parts = exportEndDate.split('-')
+        if (parts.length === 3) {
+          end = new Date(parseInt(parts[0]), parseInt(parts[1]) - 1, parseInt(parts[2]), 23, 59, 59, 999)
+        }
       }
     }
 
@@ -848,6 +897,7 @@ export default function DashboardPage() {
           {activeTab === 'ringkasan' && (
             <TabRingkasan
               derivedStats={derivedStats}
+              dashboardPeriod={dashboardPeriod}
               isAuthenticated={isAuthenticated}
               setIsLoginModalOpen={setIsLoginModalOpen}
               setActiveTab={setActiveTab}

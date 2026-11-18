@@ -4,6 +4,7 @@ import { TabId } from '../DashboardSidebar'
 
 interface TabRingkasanProps {
   derivedStats: any
+  dashboardPeriod: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | 'sem2' | '1y' | 'all' | 'custom'
   isAuthenticated: boolean
   setIsLoginModalOpen: (v: boolean) => void
   setActiveTab: (t: TabId) => void
@@ -11,6 +12,7 @@ interface TabRingkasanProps {
 
 export const TabRingkasan: React.FC<TabRingkasanProps> = ({
   derivedStats,
+  dashboardPeriod,
   isAuthenticated,
   setIsLoginModalOpen,
   setActiveTab,
