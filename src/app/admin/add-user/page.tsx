@@ -45,7 +45,17 @@ export default function AddUserPage() {
     setLoading(true)
 
     try {
+      // Get caller info from storage
+      const userStr = localStorage.getItem('adminUser')
+      if (!userStr) {
+        setError('Session tidak ditemukan. Silakan login kembali.')
+        setLoading(false)
+        return
+      }
+
+      const user = JSON.parse(userStr)
       const token = localStorage.getItem('adminToken') || ''
+      
       const response = await fetch('/api/admin/users/add', {
         method: 'POST',
         headers: {
@@ -58,6 +68,7 @@ export default function AddUserPage() {
           email: email.trim() || undefined,
           password: password,
           role: role,
+          callerRole: user.role,
         }),
       })
 

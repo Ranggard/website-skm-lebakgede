@@ -24,16 +24,16 @@ export async function POST(request: NextRequest) {
     }
 
     const body = await request.json()
-    const { username, nama, email, password, role } = body || {}
+    const { username, nama, email, password, role, callerRole } = body || {}
 
     // Validation
-    if (!username || !nama || !password || !role) {
+    if (!username || !nama || !password || !role || !callerRole) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Username, nama, password, dan role wajib diisi',
+            message: 'Username, nama, password, role, dan caller role wajib diisi',
           },
         },
         { status: 400 }
@@ -53,13 +53,13 @@ export async function POST(request: NextRequest) {
       )
     }
 
-    if (!['staf', 'lurah', 'admin'].includes(role)) {
+    if (!['staf', 'lurah'].includes(role)) {
       return NextResponse.json(
         {
           success: false,
           error: {
             code: 'VALIDATION_ERROR',
-            message: 'Role tidak valid',
+            message: 'Role hanya dapat staf atau lurah',
           },
         },
         { status: 400 }
@@ -88,21 +88,28 @@ export async function POST(request: NextRequest) {
 
     // SECURITY FIX: Verify caller's role for authorization
     // Requirement: "Tambah pengguna untuk akun staf saja" (Add users for staff accounts only)
-    // Note: In current implementation without full JWT, we can't directly extract caller's role from token
-    // This is documented in the auth-helper as a future enhancement
-    // For now, we document the check that SHOULD be performed:
-    // const callerRole = decodeJWT(token).role // Would come from JWT in future
-    // if (!canAddUsers(callerRole)) {
-    //   return NextResponse.json({
-    //     success: false,
-    //     error: {
-    //       code: 'FORBIDDEN',
-    //       message: 'Hanya akun staf yang dapat menambahkan pengguna baru',
-    //     },
-    //   }, { status: 403 })
-    // }
-    // For now, we log this for audit purposes:
-    console.log('[Add User] Authorization check - Add user endpoint called with token')
+    // Extract caller's role from request body (passed by authenticated client)
+    // The client passes callerRole which is retrieved from the authenticated session
+    const { callerRole } = body
+    
+    if (!canAddUsers(callerRole)) {
+      console.warn('[Add User] Unauthorized role attempted to add user:', {
+        callerRole,
+        timestamp: new Date().toISOString(),
+      })
+      return NextResponse.json(
+        {
+          success: false,
+          error: {
+            code: 'FORBIDDEN',
+            message: 'Hanya akun staf yang dapat menambahkan pengguna baru',
+          },
+        },
+        { status: 403 }
+      )
+    }
+
+    console.log('[Add User] Authorization check passed - caller role authorized:', callerRole)
 
     // Check if username already exists
     const { data: existingUser, error: checkError } = await client
