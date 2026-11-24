@@ -255,9 +255,12 @@ export default function DashboardPage() {
       setError(null)
 
       // REDIRECT based on user role
-      if (data.user.role === 'admin' || data.user.role === 'staf') {
-        // Redirect admin and staff to admin dashboard
+      if (data.user.role === 'admin') {
+        // Redirect admin to admin dashboard
         router.push('/admin')
+      } else if (data.user.role === 'staf') {
+        // Redirect staff to staff dashboard
+        router.push('/staf')
       } else {
         // Keep regular users on dashboard
         await fetchData(data.token)
