@@ -1,6 +1,7 @@
 'use client'
 
 import React, { useState, useEffect, useMemo } from 'react'
+import { useRouter } from 'next/navigation'
 import {
   calculateIKM,
   letterToScore,
@@ -85,6 +86,7 @@ function getPeriodDisplayText(period: 'tw1' | 'tw2' | 'tw3' | 'tw4' | 'sem1' | '
 }
 
 export default function DashboardPage() {
+  const router = useRouter()
   const [username, setUsername] = useState('')
   const [password, setPassword] = useState('')
   const [showPassword, setShowPassword] = useState(false)
@@ -252,7 +254,14 @@ export default function DashboardPage() {
       setIsLoginModalOpen(false)
       setError(null)
 
-      await fetchData(data.token)
+      // REDIRECT based on user role
+      if (data.user.role === 'admin' || data.user.role === 'staf') {
+        // Redirect admin and staff to admin dashboard
+        router.push('/admin')
+      } else {
+        // Keep regular users on dashboard
+        await fetchData(data.token)
+      }
     } catch (err: any) {
       console.error('Dashboard login error:', err)
       setError(err.message || 'Gagal login. Periksa kembali username dan password Anda.')
