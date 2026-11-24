@@ -32,8 +32,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       return
     }
 
-    // Check if user is admin
-    if (storageUser.role !== 'admin') {
+    // Check if user has admin or staff role
+    if (!['admin', 'staf'].includes(storageUser.role)) {
       router.push('/dashboard')
       return
     }
