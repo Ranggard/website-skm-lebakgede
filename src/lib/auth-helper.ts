@@ -200,7 +200,6 @@ export function canModifyProfile(currentUser: AuthUser | null, targetUsername: s
  * @returns true if authorized to add users, false otherwise
  */
 export function canAddUsers(userRole: UserRole | null): boolean {
-  // For the requirements, interpret "staff only" as only 'staf' role can add users
-  // If the requirement means all admins can add users, change this to: return ['staf', 'admin'].includes(userRole)
-  return userRole === 'staf'
+  if (!userRole) return false
+  return ['staf', 'admin'].includes(userRole)
 }

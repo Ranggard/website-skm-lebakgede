@@ -2,8 +2,17 @@
 
 import React, { useState, useEffect } from 'react'
 import { useRouter } from 'next/navigation'
+import Link from 'next/link'
 import { getUserFromStorage, getTokenFromStorage, clearSessionFromStorage } from '@/src/lib/auth-helper'
-import { IconLogout, IconEye, IconEyeOff } from '@/src/components/icons'
+import {
+  IconLogout,
+  IconEye,
+  IconEyeOff,
+  IconUsers,
+  IconActivity,
+  IconCheck,
+  IconX,
+} from '@/src/components/icons'
 
 export default function ProfilePage() {
   const router = useRouter()
@@ -84,7 +93,7 @@ export default function ProfilePage() {
         throw new Error(data.error?.message || 'Gagal memperbarui profil')
       }
 
-      setSuccess('Profil berhasil diperbarui')
+      setSuccess('Profil dan informasi akun berhasil diperbarui!')
       setPassword('')
       setNewPassword('')
       setConfirmPassword('')
@@ -110,12 +119,17 @@ export default function ProfilePage() {
     router.push('/dashboard')
   }
 
+  const getDashboardBackUrl = () => {
+    if (user?.role === 'admin') return '/admin'
+    return '/staf'
+  }
+
   if (loading) {
     return (
-      <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white flex items-center justify-center">
+      <div className="min-h-screen bg-[#F8FAFC] flex items-center justify-center">
         <div className="text-center">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Loading...</p>
+          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-teal-600"></div>
+          <p className="mt-4 text-sm font-semibold text-gray-600">Memuat profil pengguna...</p>
         </div>
       </div>
     )
@@ -126,184 +140,275 @@ export default function ProfilePage() {
   }
 
   return (
-    <div className="min-h-screen bg-gradient-to-b from-blue-50 to-white py-8 px-4 sm:px-6 lg:px-8">
-      <div className="max-w-2xl mx-auto">
-        {/* Header */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">Profil Pengguna</h1>
-          <p className="mt-2 text-gray-600">Kelola informasi akun Anda</p>
+    <div className="min-h-screen bg-[#F8FAFC] py-8 px-4 sm:px-6 lg:px-8">
+      <div className="max-w-3xl mx-auto space-y-6 fade-in">
+        {/* Top Navigation & Back Button */}
+        <div className="flex items-center justify-between">
+          <button
+            onClick={() => router.push(getDashboardBackUrl())}
+            className="inline-flex items-center gap-2 px-3.5 py-1.5 rounded-xl bg-white border border-gray-200 text-xs font-bold text-gray-700 hover:text-teal-700 hover:bg-teal-50 transition cursor-pointer shadow-xs"
+          >
+            ← Kembali ke {user.role === 'admin' ? 'Admin Panel' : 'Dashboard Staf'}
+          </button>
+          
+          <div className="flex items-center gap-2">
+            <span className="text-[11px] font-semibold text-gray-500">Kelurahan Lebakgede</span>
+            <span className="w-1.5 h-1.5 rounded-full bg-emerald-500"></span>
+          </div>
         </div>
 
-        {/* Error Message */}
+        {/* Hero Header Banner */}
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+          <div className="flex items-center gap-4">
+            <div className="w-16 h-16 rounded-2xl bg-white/10 backdrop-blur-md border border-white/20 flex items-center justify-center text-2xl font-extrabold text-emerald-300 font-display shadow-inner">
+              {(user.nama || user.username).charAt(0).toUpperCase()}
+            </div>
+            <div>
+              <div className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full bg-white/10 text-emerald-200 text-[11px] font-semibold backdrop-blur-sm border border-white/10">
+                <span className="w-1.5 h-1.5 rounded-full bg-emerald-400 animate-pulse"></span>
+                <span>Role: {user.role.toUpperCase()}</span>
+              </div>
+              <h1 className="text-xl sm:text-2xl font-extrabold mt-1.5 font-display text-white">
+                {user.nama || user.username}
+              </h1>
+              <p className="text-emerald-100/80 text-xs mt-0.5">
+                Akun Terdaftar: <span className="font-mono text-emerald-200">@{user.username}</span>
+              </p>
+            </div>
+          </div>
+
+          <div className="flex items-center gap-2">
+            <button
+              onClick={handleLogout}
+              className="inline-flex items-center gap-2 px-4 py-2 bg-rose-500/20 hover:bg-rose-500/30 text-rose-200 hover:text-white border border-rose-400/30 rounded-xl text-xs font-bold transition cursor-pointer"
+            >
+              <IconLogout className="w-4 h-4" />
+              <span>Keluar Akun</span>
+            </button>
+          </div>
+        </div>
+
+        {/* Alerts */}
         {error && (
-          <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-            <p className="text-red-800">{error}</p>
+          <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between text-xs text-rose-800 font-medium animate-shake">
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center font-bold">!</span>
+              <span>{error}</span>
+            </div>
+            <button onClick={() => setError(null)} className="text-rose-500 hover:text-rose-700 cursor-pointer">
+              <IconX className="w-4 h-4" />
+            </button>
           </div>
         )}
 
-        {/* Success Message */}
         {success && (
-          <div className="mb-6 p-4 bg-green-50 border border-green-200 rounded-lg">
-            <p className="text-green-800">{success}</p>
+          <div className="p-4 bg-emerald-50 border border-emerald-200 rounded-2xl flex items-center justify-between text-xs text-emerald-800 font-semibold">
+            <div className="flex items-center gap-2">
+              <span className="w-5 h-5 rounded-full bg-emerald-200 text-emerald-800 flex items-center justify-center">
+                <IconCheck className="w-3.5 h-3.5 text-emerald-800" />
+              </span>
+              <span>{success}</span>
+            </div>
+            <button onClick={() => setSuccess(null)} className="text-emerald-600 hover:text-emerald-800 cursor-pointer">
+              <IconX className="w-4 h-4" />
+            </button>
           </div>
         )}
 
-        {/* Profile Card */}
-        <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6 mb-6">
-          {/* User Info */}
-          <div className="mb-6 pb-6 border-b border-gray-200">
-            <div className="flex items-center justify-between">
-              <div>
-                <p className="text-sm text-gray-600">Username</p>
-                <p className="text-lg font-semibold text-gray-900">{user.username}</p>
-              </div>
-              <div>
-                <p className="text-sm text-gray-600">Role</p>
-                <p className="text-lg font-semibold text-blue-600 capitalize">{user.role}</p>
-              </div>
-            </div>
-          </div>
-
-          {/* Edit Form */}
+        {/* Main Profile Form Card */}
+        <div className="bg-white rounded-2xl border border-gray-200 shadow-xs p-6 sm:p-8">
           <form onSubmit={handleUpdateProfile} className="space-y-6">
-            {/* Nama */}
+            {/* Section 1: Informasi Dasar */}
             <div>
-              <label htmlFor="nama" className="block text-sm font-medium text-gray-700 mb-2">
-                Nama <span className="text-red-500">*</span>
-              </label>
-              <input
-                id="nama"
-                type="text"
-                value={nama}
-                onChange={(e) => setNama(e.target.value)}
-                placeholder="Masukkan nama lengkap"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Email */}
-            <div>
-              <label htmlFor="email" className="block text-sm font-medium text-gray-700 mb-2">
-                Email
-              </label>
-              <input
-                id="email"
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="Masukkan email (opsional)"
-                className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-              />
-            </div>
-
-            {/* Password Section */}
-            <div className="bg-gray-50 p-4 rounded-lg border border-gray-200">
-              <h3 className="text-sm font-semibold text-gray-900 mb-4">Ubah Password</h3>
-
-              {/* Current Password */}
-              <div className="mb-4">
-                <label htmlFor="current-password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password Saat Ini
-                </label>
-                <div className="relative">
-                  <input
-                    id="current-password"
-                    type={showCurrentPassword ? 'text' : 'password'}
-                    value={password}
-                    onChange={(e) => setPassword(e.target.value)}
-                    placeholder="Masukkan password saat ini (jika ingin mengubah)"
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowCurrentPassword(!showCurrentPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showCurrentPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
-                  </button>
-                </div>
+              <div className="border-b border-gray-100 pb-3 mb-5">
+                <h2 className="text-sm font-extrabold text-gray-900 font-display flex items-center gap-2">
+                  <IconUsers className="w-4 h-4 text-teal-600" />
+                  <span>Informasi Data Diri</span>
+                </h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Perbarui nama lengkap dan email resmi yang terhubung dengan akun Anda
+                </p>
               </div>
 
-              {/* New Password */}
-              <div className="mb-4">
-                <label htmlFor="new-password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Password Baru
-                </label>
-                <div className="relative">
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Username (Read Only) */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                    Username
+                  </label>
                   <input
-                    id="new-password"
-                    type={showNewPassword ? 'text' : 'password'}
-                    value={newPassword}
-                    onChange={(e) => setNewPassword(e.target.value)}
-                    placeholder="Masukkan password baru (minimal 6 karakter)"
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+                    type="text"
+                    disabled
+                    value={user.username}
+                    className="w-full px-3.5 py-2.5 bg-gray-100/80 border border-gray-200 rounded-xl text-xs font-semibold text-gray-500 cursor-not-allowed"
                   />
-                  <button
-                    type="button"
-                    onClick={() => setShowNewPassword(!showNewPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showNewPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
-                  </button>
+                  <span className="text-[10px] text-gray-400 mt-1 block">Username bersifat permanen dan tidak dapat diubah</span>
+                </div>
+
+                {/* Role (Read Only) */}
+                <div>
+                  <label className="block text-xs font-bold text-gray-600 mb-1.5">
+                    Tingkat Akses / Role
+                  </label>
+                  <div className="flex items-center h-[42px] px-3.5 bg-gray-100/80 border border-gray-200 rounded-xl">
+                    <span className="inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold bg-teal-100 text-teal-800">
+                      <span className="w-1.5 h-1.5 rounded-full bg-teal-600"></span>
+                      <span className="capitalize">{user.role}</span>
+                    </span>
+                  </div>
+                </div>
+
+                {/* Nama Lengkap */}
+                <div>
+                  <label htmlFor="nama" className="block text-xs font-bold text-gray-700 mb-1.5">
+                    Nama Lengkap <span className="text-rose-500">*</span>
+                  </label>
+                  <input
+                    id="nama"
+                    type="text"
+                    required
+                    value={nama}
+                    onChange={(e) => setNama(e.target.value)}
+                    placeholder="Masukkan nama lengkap Anda"
+                    className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition"
+                  />
+                </div>
+
+                {/* Email */}
+                <div>
+                  <label htmlFor="email" className="block text-xs font-bold text-gray-700 mb-1.5">
+                    Alamat Email (Opsional)
+                  </label>
+                  <input
+                    id="email"
+                    type="email"
+                    value={email}
+                    onChange={(e) => setEmail(e.target.value)}
+                    placeholder="contoh@lebakgede.go.id"
+                    className="w-full px-3.5 py-2.5 bg-white border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition"
+                  />
                 </div>
               </div>
+            </div>
 
-              {/* Confirm Password */}
-              <div>
-                <label htmlFor="confirm-password" className="block text-sm font-medium text-gray-700 mb-2">
-                  Konfirmasi Password Baru
-                </label>
-                <div className="relative">
-                  <input
-                    id="confirm-password"
-                    type={showConfirmPassword ? 'text' : 'password'}
-                    value={confirmPassword}
-                    onChange={(e) => setConfirmPassword(e.target.value)}
-                    placeholder="Konfirmasi password baru"
-                    className="w-full px-4 py-2 pr-10 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
-                  />
-                  <button
-                    type="button"
-                    onClick={() => setShowConfirmPassword(!showConfirmPassword)}
-                    className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-500 hover:text-gray-700"
-                  >
-                    {showConfirmPassword ? <IconEyeOff className="w-5 h-5" /> : <IconEye className="w-5 h-5" />}
-                  </button>
+            {/* Section 2: Ganti Password */}
+            <div className="pt-2">
+              <div className="border-b border-gray-100 pb-3 mb-5">
+                <h2 className="text-sm font-extrabold text-gray-900 font-display flex items-center gap-2">
+                  <IconActivity className="w-4 h-4 text-emerald-600" />
+                  <span>Keamanan Akun & Kata Sandi</span>
+                </h2>
+                <p className="text-[11px] text-gray-500 mt-0.5">
+                  Kosongkan bagian ini jika Anda tidak berniat mengganti password
+                </p>
+              </div>
+
+              <div className="bg-gray-50/70 p-5 rounded-2xl border border-gray-200/80 space-y-4">
+                {/* Current Password */}
+                <div>
+                  <label htmlFor="current-password" className="block text-xs font-bold text-gray-700 mb-1.5">
+                    Password Saat Ini
+                  </label>
+                  <div className="relative">
+                    <input
+                      id="current-password"
+                      type={showCurrentPassword ? 'text' : 'password'}
+                      value={password}
+                      onChange={(e) => setPassword(e.target.value)}
+                      placeholder="Masukkan password saat ini untuk verifikasi"
+                      className="w-full px-3.5 py-2.5 pr-10 bg-white border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition"
+                    />
+                    <button
+                      type="button"
+                      onClick={() => setShowCurrentPassword(!showCurrentPassword)}
+                      className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                      title={showCurrentPassword ? 'Sembunyikan' : 'Tampilkan'}
+                    >
+                      {showCurrentPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
+                    </button>
+                  </div>
+                </div>
+
+                <div className="grid grid-cols-1 md:grid-cols-2 gap-4 pt-1">
+                  {/* New Password */}
+                  <div>
+                    <label htmlFor="new-password" className="block text-xs font-bold text-gray-700 mb-1.5">
+                      Password Baru
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="new-password"
+                        type={showNewPassword ? 'text' : 'password'}
+                        value={newPassword}
+                        onChange={(e) => setNewPassword(e.target.value)}
+                        placeholder="Minimal 6 karakter"
+                        className="w-full px-3.5 py-2.5 pr-10 bg-white border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowNewPassword(!showNewPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        title={showNewPassword ? 'Sembunyikan' : 'Tampilkan'}
+                      >
+                        {showNewPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
+
+                  {/* Confirm Password */}
+                  <div>
+                    <label htmlFor="confirm-password" className="block text-xs font-bold text-gray-700 mb-1.5">
+                      Konfirmasi Password Baru
+                    </label>
+                    <div className="relative">
+                      <input
+                        id="confirm-password"
+                        type={showConfirmPassword ? 'text' : 'password'}
+                        value={confirmPassword}
+                        onChange={(e) => setConfirmPassword(e.target.value)}
+                        placeholder="Ulangi password baru"
+                        className="w-full px-3.5 py-2.5 pr-10 bg-white border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500/20 focus:border-teal-600 transition"
+                      />
+                      <button
+                        type="button"
+                        onClick={() => setShowConfirmPassword(!showConfirmPassword)}
+                        className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 cursor-pointer"
+                        title={showConfirmPassword ? 'Sembunyikan' : 'Tampilkan'}
+                      >
+                        {showConfirmPassword ? <IconEyeOff className="w-4 h-4" /> : <IconEye className="w-4 h-4" />}
+                      </button>
+                    </div>
+                  </div>
                 </div>
               </div>
             </div>
 
             {/* Action Buttons */}
-            <div className="flex gap-4 pt-4">
+            <div className="flex flex-col sm:flex-row items-center gap-3 pt-4 border-t border-gray-100">
               <button
                 type="submit"
                 disabled={isSaving}
-                className="flex-1 px-6 py-2 bg-blue-600 hover:bg-blue-700 disabled:bg-gray-400 text-white font-medium rounded-lg transition-colors"
+                className="w-full sm:flex-1 py-3 px-5 bg-gradient-to-r from-teal-600 to-emerald-600 hover:from-teal-700 hover:to-emerald-700 text-white font-extrabold text-xs rounded-xl shadow-md shadow-teal-700/20 transition cursor-pointer flex items-center justify-center gap-2 disabled:opacity-50"
               >
-                {isSaving ? 'Menyimpan...' : 'Simpan Perubahan'}
+                {isSaving ? (
+                  <>
+                    <div className="w-4 h-4 border-2 border-white/40 border-t-white rounded-full animate-spin"></div>
+                    <span>Menyimpan Perubahan...</span>
+                  </>
+                ) : (
+                  <span>Simpan Perubahan Profil</span>
+                )}
               </button>
+
               <button
                 type="button"
-                onClick={() => router.back()}
-                className="flex-1 px-6 py-2 bg-gray-200 hover:bg-gray-300 text-gray-900 font-medium rounded-lg transition-colors"
+                onClick={() => router.push(getDashboardBackUrl())}
+                className="w-full sm:w-auto py-3 px-6 bg-gray-100 hover:bg-gray-200 text-gray-700 font-bold text-xs rounded-xl transition cursor-pointer"
               >
-                Batal
+                Kembali
               </button>
             </div>
           </form>
-        </div>
-
-        {/* Logout Section */}
-        <div className="bg-red-50 rounded-lg border border-red-200 p-6">
-          <h3 className="text-lg font-semibold text-gray-900 mb-2">Keluar Akun</h3>
-          <p className="text-gray-600 mb-4">Anda akan keluar dari akun dan kembali ke halaman login.</p>
-          <button
-            onClick={handleLogout}
-            className="flex items-center gap-2 px-4 py-2 bg-red-600 hover:bg-red-700 text-white font-medium rounded-lg transition-colors"
-          >
-            <IconLogout className="w-5 h-5" />
-            Keluar
-          </button>
         </div>
       </div>
     </div>

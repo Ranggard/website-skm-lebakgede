@@ -104,7 +104,6 @@ export const PublicDashboard: React.FC<PublicDashboardProps> = ({
 }) => {
   const [publicTab, setPublicTab] = useState<'unsur' | 'grafik' | 'demografi' | 'standar'>('unsur')
   const [publicChartView, setPublicChartView] = useState<'bar' | 'radar'>('bar')
-  const [filterExpanded, setFilterExpanded] = useState(false)
 
   return (
     <div className="min-h-screen bg-slate-50 flex flex-col font-sans text-gray-900">
@@ -152,112 +151,19 @@ export const PublicDashboard: React.FC<PublicDashboardProps> = ({
         </div>
       </header>
 
-      {/* PUBLIC PERIOD FILTER SECTION - COLLAPSIBLE CARD */}
-      <div 
-        className="sticky top-[72px] z-20 px-4 sm:px-8 py-2"
-        onMouseEnter={() => setFilterExpanded(true)}
-        onMouseLeave={() => setFilterExpanded(false)}
-      >
-        <div className="max-w-7xl mx-auto">
-          {/* Collapsed State - Compact Card */}
-          {!filterExpanded && (
-            <button
-              onClick={() => setFilterExpanded(true)}
-              className="w-full px-4 py-2.5 bg-gradient-to-r from-teal-50 to-emerald-50 border-2 border-teal-200 rounded-xl hover:border-teal-400 hover:shadow-md transition flex items-center justify-between cursor-pointer group"
-            >
-              <div className="flex items-center gap-2">
-                <span className="text-sm font-bold text-teal-700 group-hover:text-teal-900">📊 Filter Periode</span>
-                <span className="px-2.5 py-0.5 rounded-full text-xs font-bold bg-white text-teal-700 border border-teal-200">
-                  {filteredResponseCount} Responden
-                </span>
-              </div>
-              <span className="text-xs font-bold text-gray-500 group-hover:text-gray-700">Arahkan kursor untuk membuka →</span>
-            </button>
-          )}
-
-          {/* Expanded State - Full Filter Controls */}
-          {filterExpanded && (
-            <div className="bg-white border-2 border-teal-300 rounded-xl shadow-lg p-4 space-y-3 backdrop-blur-sm bg-white/95">
-              <div className="flex items-center justify-between pb-2 border-b border-gray-200">
-                <span className="text-xs font-bold text-gray-700 uppercase tracking-wider">Atur Periode Statistik</span>
-                <button
-                  onClick={() => setFilterExpanded(false)}
-                  className="text-gray-500 hover:text-gray-700 text-lg font-bold cursor-pointer"
-                >
-                  ✕
-                </button>
-              </div>
-
-              <div className="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                <div>
-                  <label className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5 block">Pilih Periode:</label>
-                  <select
-                    value={dashboardPeriod}
-                    onChange={(e) => setDashboardPeriod(e.target.value as any)}
-                    className="w-full px-3 py-2 rounded-lg bg-white border-2 border-gray-300 text-xs font-semibold text-gray-700 hover:border-teal-400 focus:outline-none focus:ring-2 focus:ring-teal-500 transition cursor-pointer"
-                  >
-                    <option value="all">Seluruh Data (Semua Waktu)</option>
-                    <option value="tw1">Triwulan I (Jan-Mar)</option>
-                    <option value="tw2">Triwulan II (Apr-Jun)</option>
-                    <option value="tw3">Triwulan III (Jul-Sep)</option>
-                    <option value="tw4">Triwulan IV (Okt-Des)</option>
-                    <option value="sem1">Semester I (Jan-Jun)</option>
-                    <option value="sem2">Semester II (Jul-Des)</option>
-                    <option value="1y">1 Tahun Penuh</option>
-                    <option value="custom">Rentang Kustom (Tanggal Manual)</option>
-                  </select>
-                </div>
-
-                {dashboardPeriod === 'custom' && (
-                  <>
-                    <div>
-                      <label className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5 block">Tanggal Mulai:</label>
-                      <input
-                        type="date"
-                        value={dashboardStartDate}
-                        onChange={(e) => setDashboardStartDate(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-white border-2 border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-                      />
-                    </div>
-                    <div>
-                      <label className="text-xs font-bold text-gray-600 uppercase tracking-wider mb-1.5 block">Tanggal Akhir:</label>
-                      <input
-                        type="date"
-                        value={dashboardEndDate}
-                        onChange={(e) => setDashboardEndDate(e.target.value)}
-                        className="w-full px-3 py-2 rounded-lg bg-white border-2 border-gray-300 text-xs font-semibold text-gray-700 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
-                      />
-                    </div>
-                  </>
-                )}
-              </div>
-
-              <div className="pt-2 border-t border-gray-200 flex items-center justify-between">
-                <div className="flex items-center gap-2 px-3 py-2 rounded-lg bg-teal-50 border border-teal-200 text-xs font-bold text-teal-800">
-                  <span className="w-2 h-2 rounded-full bg-teal-600 animate-pulse"></span>
-                  <span>{filteredResponseCount} Responden Cocok</span>
-                </div>
-                <button
-                  onClick={() => setFilterExpanded(false)}
-                  className="text-xs font-bold text-teal-700 hover:text-teal-900 cursor-pointer bg-teal-50 px-3 py-1.5 rounded-lg border border-teal-200 hover:bg-teal-100 transition"
-                >
-                  Tutup Filter ✕
-                </button>
-              </div>
-            </div>
-          )}
-        </div>
-      </div>
-
       {/* MAIN PUBLIC CONTENT */}
-      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-8 space-y-8">
+      <main className="flex-1 max-w-7xl w-full mx-auto px-4 sm:px-8 py-6 space-y-6">
 
         {/* HERO SUMMARY CARD */}
-        <div className="bg-gradient-to-br from-teal-800 via-teal-700 to-emerald-800 rounded-3xl p-6 sm:p-10 text-white shadow-xl relative overflow-hidden">
+        <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl relative overflow-hidden">
           <div className="absolute right-0 top-0 translate-x-12 -translate-y-12 w-96 h-96 bg-white/5 rounded-full blur-2xl pointer-events-none"></div>
 
           <div className="relative z-10 flex flex-col lg:flex-row lg:items-center justify-between gap-8">
             <div className="space-y-3 max-w-2xl">
+              <div className="inline-flex items-center gap-2 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold backdrop-blur-sm border border-white/10 font-display">
+                <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+                Hasil Publikasi Survei Kepuasan Masyarakat (SKM)
+              </div>
               <h1 className="text-2xl sm:text-4xl font-extrabold tracking-tight font-display leading-tight text-white">
                 Indeks Kepuasan Masyarakat (IKM) Pelayanan Publik
               </h1>
@@ -315,10 +221,101 @@ export const PublicDashboard: React.FC<PublicDashboardProps> = ({
                 <IconCheckCircle className="w-5 h-5" />
               </div>
               <div>
-                <div className="text-lg font-extrabold text-white font-display">Terverifikasi</div>
-                <div className="text-[11px] text-teal-200">Data Pelayanan Sah</div>
+                <div className="text-lg font-extrabold text-white font-display">Status Data</div>
+                <div className="text-[11px] text-teal-200">Terverifikasi Real-Time</div>
               </div>
             </div>
+          </div>
+        </div>
+
+        {/* IN-PAGE FILTER CONTROL PANEL (Sama persis dengan gaya filter Admin) */}
+        <div className="bg-white rounded-2xl p-5 border border-gray-200 shadow-xs space-y-4">
+          <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-3 border-b border-gray-100 pb-3">
+            <div className="flex items-center gap-2">
+              <div className="p-1.5 rounded-lg bg-teal-50 text-teal-700">
+                <IconActivity className="w-4 h-4" />
+              </div>
+              <div>
+                <h2 className="text-xs sm:text-sm font-bold text-gray-900 font-display">Filter Periode Statistik</h2>
+                <p className="text-[11px] text-gray-500">Sesuaikan rentang waktu evaluasi pelayanan masyarakat yang ingin dilihat</p>
+              </div>
+            </div>
+
+            <div className="flex items-center gap-2">
+              <span className="text-[11px] font-semibold text-gray-500">
+                Menampilkan: <strong className="text-teal-700">{filteredResponseCount}</strong> responden
+              </span>
+              {(dashboardPeriod !== 'all' || dashboardStartDate || dashboardEndDate) && (
+                <button
+                  onClick={() => {
+                    setDashboardPeriod('all')
+                    setDashboardStartDate('')
+                    setDashboardEndDate('')
+                  }}
+                  className="px-2.5 py-1 text-[11px] font-bold text-rose-600 hover:bg-rose-50 rounded-lg transition border border-rose-200 cursor-pointer"
+                >
+                  Reset Filter
+                </button>
+              )}
+            </div>
+          </div>
+
+          <div className={`grid grid-cols-1 sm:grid-cols-2 ${dashboardPeriod === 'custom' ? 'lg:grid-cols-3' : 'lg:grid-cols-2'} gap-4`}>
+            {/* Filter: Periode / Triwulan */}
+            <div>
+              <label className="block text-[11px] font-bold text-gray-600 mb-1.5 uppercase tracking-wider font-display">
+                Periode Waktu
+              </label>
+              <select
+                value={dashboardPeriod}
+                onChange={(e) => setDashboardPeriod(e.target.value as any)}
+                className="w-full px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 transition cursor-pointer"
+              >
+                <option value="all">Seluruh Data (Semua Waktu)</option>
+                <option value="tw1">Triwulan I (Jan - Mar)</option>
+                <option value="tw2">Triwulan II (Apr - Jun)</option>
+                <option value="tw3">Triwulan III (Jul - Sep)</option>
+                <option value="tw4">Triwulan IV (Okt - Des)</option>
+                <option value="sem1">Semester I (Jan - Jun)</option>
+                <option value="sem2">Semester II (Jul - Des)</option>
+                <option value="1y">1 Tahun Penuh</option>
+                <option value="custom">Rentang Tanggal Kustom</option>
+              </select>
+            </div>
+
+            {/* Filter: Tanggal Kustom (Jika memilih custom) */}
+            {dashboardPeriod === 'custom' ? (
+              <>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-600 mb-1.5 uppercase tracking-wider font-display">
+                    Tanggal Mulai
+                  </label>
+                  <input
+                    type="date"
+                    value={dashboardStartDate}
+                    onChange={(e) => setDashboardStartDate(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  />
+                </div>
+                <div>
+                  <label className="block text-[11px] font-bold text-gray-600 mb-1.5 uppercase tracking-wider font-display">
+                    Tanggal Selesai
+                  </label>
+                  <input
+                    type="date"
+                    value={dashboardEndDate}
+                    onChange={(e) => setDashboardEndDate(e.target.value)}
+                    className="w-full px-3 py-1.5 bg-gray-50 border border-gray-300 rounded-xl text-xs font-semibold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 transition"
+                  />
+                </div>
+              </>
+            ) : (
+              <div className="flex items-center px-4 py-2 bg-teal-50/40 border border-teal-100 rounded-xl">
+                <span className="text-[11px] text-teal-800 leading-tight">
+                  Status data terpilih: <strong>{dashboardPeriod === 'all' ? 'Seluruh Waktu' : dashboardPeriod.toUpperCase()}</strong> ({filteredResponseCount} responden).
+                </span>
+              </div>
+            )}
           </div>
         </div>
 

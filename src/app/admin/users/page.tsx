@@ -1,6 +1,15 @@
 'use client'
 
 import React, { useState, useEffect } from 'react'
+import Link from 'next/link'
+import {
+  IconUsers,
+  IconPlusCircle,
+  IconRefresh,
+  IconCheck,
+  IconX,
+} from '@/src/components/icons'
+import { fetchAdminCached } from '@/src/lib/analytics-cache'
 
 interface User {
   id: string
@@ -16,35 +25,25 @@ export default function UsersPage() {
   const [users, setUsers] = useState<User[]>([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState<string | null>(null)
-  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'staf' | 'lurah'>('all')
+  const [filterRole, setFilterRole] = useState<'all' | 'admin' | 'staf'>('all')
 
   useEffect(() => {
     fetchUsers()
   }, [])
 
-  const fetchUsers = async () => {
+  const fetchUsers = async (forceRefresh = false) => {
     try {
       setLoading(true)
       setError(null)
 
       const token = localStorage.getItem('adminToken') || ''
-      const response = await fetch('/api/admin/users/list', {
-        headers: {
-          Authorization: `Bearer ${token}`,
-        },
-      })
-
-      if (!response.ok) {
-        throw new Error('Gagal mengambil daftar pengguna')
-      }
-
-      const data = await response.json()
-      if (data.data) {
-        setUsers(data.data)
+      const data = await fetchAdminCached<User[]>('/api/admin/users/list', token, forceRefresh)
+      if (data) {
+        setUsers(data)
       }
     } catch (err: any) {
       console.error('Fetch users error:', err)
-      setError(err.message || 'Gagal mengambil daftar pengguna')
+      setError(err.message || 'Gagal mengambil daftar pengguna.')
     } finally {
       setLoading(false)
     }
@@ -69,120 +68,168 @@ export default function UsersPage() {
       })
 
       if (!response.ok) {
-        throw new Error('Gagal mengubah status pengguna')
+        throw new Error('Gagal mengubah status pengguna.')
       }
 
       // Refresh user list
-      fetchUsers()
+      fetchUsers(true)
     } catch (err) {
       console.error('Toggle user error:', err)
-      alert('Gagal mengubah status pengguna')
+      alert('Gagal mengubah status pengguna.')
     }
   }
 
-  if (loading) {
-    return (
-      <div className="p-6 sm:p-8">
-        <div className="text-center py-12">
-          <div className="inline-block animate-spin rounded-full h-12 w-12 border-b-2 border-blue-600"></div>
-          <p className="mt-4 text-gray-600">Memuat daftar pengguna...</p>
-        </div>
-      </div>
-    )
-  }
-
   return (
-    <div className="p-6 sm:p-8">
-      {/* Header */}
-      <div className="mb-8">
-        <h1 className="text-3xl font-bold text-gray-900">Kelola Pengguna</h1>
-        <p className="mt-2 text-gray-600">Lihat dan kelola semua akun pengguna sistem</p>
+    <div className="p-4 sm:p-6 lg:p-8 space-y-6 fade-in">
+      {/* Header Banner */}
+      <div className="bg-gradient-to-r from-emerald-800 via-teal-800 to-slate-900 rounded-3xl p-6 md:p-8 text-white shadow-xl flex flex-col sm:flex-row justify-between items-start sm:items-center gap-6">
+        <div>
+          <div className="inline-flex items-center gap-1.5 px-3 py-1 rounded-full bg-white/10 text-emerald-200 text-xs font-semibold backdrop-blur-sm border border-white/10 font-display">
+            <span className="w-2 h-2 rounded-full bg-emerald-400 animate-pulse"></span>
+            Manajemen Akun Terdaftar
+          </div>
+          <h1 className="text-2xl md:text-3xl font-extrabold mt-2 font-display text-white">
+            Kelola Pengguna Sistem
+          </h1>
+          <p className="text-emerald-100/80 text-xs sm:text-sm mt-1 max-w-2xl">
+            Atur status aktif/nonaktif akun staf dan administrator yang memiliki akses ke sistem SKM Kelurahan Lebakgede.
+          </p>
+        </div>
+
+        <div className="flex items-center gap-3">
+          <Link
+            href="/admin/add-user"
+            className="inline-flex items-center gap-2 px-4 py-2.5 bg-emerald-500 hover:bg-emerald-400 text-teal-950 font-extrabold text-xs rounded-xl shadow-md transition cursor-pointer"
+          >
+            <IconPlusCircle className="w-4 h-4" />
+            <span>Tambah Staf</span>
+          </Link>
+          <button
+            onClick={() => fetchUsers(true)}
+            className="p-2.5 bg-white/10 hover:bg-white/20 text-white rounded-xl transition cursor-pointer"
+            title="Segarkan Data"
+          >
+            <IconRefresh className="w-4 h-4" />
+          </button>
+        </div>
       </div>
 
       {error && (
-        <div className="mb-6 p-4 bg-red-50 border border-red-200 rounded-lg">
-          <p className="text-red-800">{error}</p>
+        <div className="p-4 bg-rose-50 border border-rose-200 rounded-2xl flex items-center justify-between text-xs text-rose-800 font-medium">
+          <div className="flex items-center gap-2.5">
+            <span className="w-5 h-5 rounded-full bg-rose-200 text-rose-700 flex items-center justify-center font-bold">!</span>
+            <span>{error}</span>
+          </div>
+          <button onClick={() => setError(null)} className="text-rose-500 hover:text-rose-700 cursor-pointer">
+            <IconX className="w-4 h-4" />
+          </button>
         </div>
       )}
 
-      {/* Filters and Stats */}
-      <div className="mb-6 grid grid-cols-1 md:grid-cols-5 gap-4">
-        <div>
+      {/* KPI Cards & Filters */}
+      <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider font-display">Total Pengguna</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-teal-700 mt-2 font-display">{users.length}</p>
+          <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-teal-50 text-teal-700">
+            Seluruh Akun
+          </span>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider font-display">Pengguna Aktif</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-emerald-600 mt-2 font-display">
+            {users.filter((u) => u.is_active).length}
+          </p>
+          <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-emerald-50 text-emerald-700">
+            Dapat Login
+          </span>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider font-display">Nonaktif</p>
+          <p className="text-2xl sm:text-3xl font-extrabold text-rose-600 mt-2 font-display">
+            {users.filter((u) => !u.is_active).length}
+          </p>
+          <span className="inline-block mt-2 px-2 py-0.5 rounded-full text-[10px] font-semibold bg-rose-50 text-rose-700">
+            Akses Diblokir
+          </span>
+        </div>
+
+        <div className="bg-white rounded-2xl p-4 sm:p-5 shadow-xs border border-gray-200 flex flex-col justify-between">
+          <p className="text-xs font-bold text-gray-500 uppercase tracking-wider font-display">Filter Role</p>
           <select
             value={filterRole}
             onChange={(e) => setFilterRole(e.target.value as any)}
-            className="w-full px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 focus:border-transparent"
+            className="w-full mt-2 px-3 py-2 bg-gray-50 border border-gray-300 rounded-xl text-xs font-bold text-gray-800 focus:outline-none focus:ring-2 focus:ring-teal-500 transition cursor-pointer"
           >
-            <option value="all">Semua Role</option>
-            <option value="admin">Admin</option>
-            <option value="staf">Staf</option>
-            <option value="lurah">Lurah</option>
+            <option value="all">Semua Role ({users.length})</option>
+            <option value="admin">Administrator ({users.filter((u) => u.role === 'admin').length})</option>
+            <option value="staf">Staf Kelurahan ({users.filter((u) => u.role === 'staf').length})</option>
           </select>
-        </div>
-        <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Total Pengguna</p>
-          <p className="text-2xl font-bold text-blue-600">{users.length}</p>
-        </div>
-        <div className="bg-green-50 border border-green-200 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Aktif</p>
-          <p className="text-2xl font-bold text-green-600">{users.filter((u) => u.is_active).length}</p>
-        </div>
-        <div className="bg-orange-50 border border-orange-200 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Nonaktif</p>
-          <p className="text-2xl font-bold text-orange-600">{users.filter((u) => !u.is_active).length}</p>
-        </div>
-        <div className="bg-purple-50 border border-purple-200 rounded-lg p-4">
-          <p className="text-sm text-gray-600">Hasil Filter</p>
-          <p className="text-2xl font-bold text-purple-600">{filteredUsers.length}</p>
         </div>
       </div>
 
-      {/* Table */}
-      <div className="bg-white rounded-lg shadow-sm border border-gray-200 overflow-hidden">
+      {/* Table Card */}
+      <div className="bg-white rounded-2xl border border-gray-200 shadow-xs overflow-hidden">
+        <div className="p-4 sm:p-6 border-b border-gray-100 flex items-center justify-between">
+          <div>
+            <h2 className="text-sm font-extrabold text-gray-900 font-display">Daftar Akun Pengguna</h2>
+            <p className="text-xs text-gray-500">Menampilkan {filteredUsers.length} pengguna sesuai filter</p>
+          </div>
+        </div>
+
         <div className="overflow-x-auto">
-          <table className="w-full text-sm">
-            <thead>
-              <tr className="bg-gray-50 border-b border-gray-200">
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Username</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Nama</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Email</th>
-                <th className="px-4 py-3 text-left font-semibold text-gray-700">Role</th>
-                <th className="px-4 py-3 text-center font-semibold text-gray-700">Status</th>
-                <th className="px-4 py-3 text-center font-semibold text-gray-700">Aksi</th>
+          <table className="w-full text-xs text-left">
+            <thead className="bg-gray-50/80 border-b border-gray-200 text-gray-600 uppercase tracking-wider font-display text-[11px]">
+              <tr>
+                <th className="px-5 py-3.5 font-bold">Username</th>
+                <th className="px-5 py-3.5 font-bold">Nama Lengkap</th>
+                <th className="px-5 py-3.5 font-bold">Email</th>
+                <th className="px-5 py-3.5 font-bold">Role</th>
+                <th className="px-5 py-3.5 text-center font-bold">Status</th>
+                <th className="px-5 py-3.5 text-center font-bold">Aksi</th>
               </tr>
             </thead>
-            <tbody>
+            <tbody className="divide-y divide-gray-100">
               {filteredUsers.length > 0 ? (
                 filteredUsers.map((user) => (
-                  <tr key={user.id} className="border-b border-gray-200 hover:bg-gray-50">
-                    <td className="px-4 py-3 font-mono text-xs text-gray-900">{user.username}</td>
-                    <td className="px-4 py-3 text-gray-900 font-medium">{user.nama}</td>
-                    <td className="px-4 py-3 text-gray-700 text-xs">{user.email || '-'}</td>
-                    <td className="px-4 py-3">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold capitalize ${
-                        user.role === 'admin' ? 'bg-red-100 text-red-800' :
-                        user.role === 'staf' ? 'bg-blue-100 text-blue-800' :
-                        'bg-purple-100 text-purple-800'
+                  <tr key={user.id} className="hover:bg-teal-50/40 transition-colors">
+                    <td className="px-5 py-3.5 font-mono font-semibold text-gray-900">
+                      @{user.username}
+                    </td>
+                    <td className="px-5 py-3.5 font-bold text-gray-900">
+                      {user.nama}
+                    </td>
+                    <td className="px-5 py-3.5 text-gray-600">
+                      {user.email || '-'}
+                    </td>
+                    <td className="px-5 py-3.5">
+                      <span className={`inline-flex items-center gap-1.5 px-2.5 py-0.5 rounded-full text-[11px] font-bold ${
+                        user.role === 'admin'
+                          ? 'bg-purple-100 text-purple-800 border border-purple-200'
+                          : 'bg-teal-100 text-teal-800 border border-teal-200'
                       }`}>
-                        {user.role}
+                        <span className={`w-1.5 h-1.5 rounded-full ${user.role === 'admin' ? 'bg-purple-600' : 'bg-teal-600'}`}></span>
+                        <span className="capitalize">{user.role}</span>
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
-                      <span className={`inline-block px-3 py-1 rounded-full text-xs font-semibold ${
+                    <td className="px-5 py-3.5 text-center">
+                      <span className={`inline-block px-2.5 py-0.5 rounded-full text-[10px] font-extrabold ${
                         user.is_active
-                          ? 'bg-green-100 text-green-800'
-                          : 'bg-gray-100 text-gray-800'
+                          ? 'bg-emerald-100 text-emerald-800 border border-emerald-200'
+                          : 'bg-gray-100 text-gray-700 border border-gray-200'
                       }`}>
                         {user.is_active ? 'Aktif' : 'Nonaktif'}
                       </span>
                     </td>
-                    <td className="px-4 py-3 text-center">
+                    <td className="px-5 py-3.5 text-center">
                       <button
                         onClick={() => handleToggleActive(user.id, user.is_active)}
-                        className={`px-3 py-1 rounded text-sm font-medium transition-colors ${
+                        className={`px-3 py-1 rounded-xl text-xs font-bold transition-all cursor-pointer ${
                           user.is_active
-                            ? 'bg-red-100 text-red-700 hover:bg-red-200'
-                            : 'bg-green-100 text-green-700 hover:bg-green-200'
+                            ? 'bg-rose-50 text-rose-700 hover:bg-rose-100 border border-rose-200'
+                            : 'bg-emerald-50 text-emerald-700 hover:bg-emerald-100 border border-emerald-200'
                         }`}
                       >
                         {user.is_active ? 'Nonaktifkan' : 'Aktifkan'}
@@ -192,24 +239,14 @@ export default function UsersPage() {
                 ))
               ) : (
                 <tr>
-                  <td colSpan={6} className="px-4 py-8 text-center text-gray-500">
-                    Tidak ada pengguna
+                  <td colSpan={6} className="px-5 py-12 text-center text-gray-500">
+                    Tidak ada data pengguna yang sesuai dengan filter.
                   </td>
                 </tr>
               )}
             </tbody>
           </table>
         </div>
-      </div>
-
-      {/* Refresh button */}
-      <div className="mt-6">
-        <button
-          onClick={fetchUsers}
-          className="px-4 py-2 bg-blue-600 hover:bg-blue-700 text-white font-medium rounded-lg transition-colors"
-        >
-          Muat Ulang
-        </button>
       </div>
     </div>
   )

@@ -86,12 +86,7 @@ export async function POST(request: NextRequest) {
     const { createClient } = require('@supabase/supabase-js')
     const client = createClient(supabaseUrl, supabaseKey)
 
-    // SECURITY FIX: Verify caller's role for authorization
-    // Requirement: "Tambah pengguna untuk akun staf saja" (Add users for staff accounts only)
-    // Extract caller's role from request body (passed by authenticated client)
-    // The client passes callerRole which is retrieved from the authenticated session
-    const { callerRole } = body
-    
+    // Verify caller's role for authorization
     if (!canAddUsers(callerRole)) {
       console.warn('[Add User] Unauthorized role attempted to add user:', {
         callerRole,
@@ -102,7 +97,7 @@ export async function POST(request: NextRequest) {
           success: false,
           error: {
             code: 'FORBIDDEN',
-            message: 'Hanya akun staf yang dapat menambahkan pengguna baru',
+            message: 'Hanya akun admin atau staf yang dapat menambahkan pengguna baru',
           },
         },
         { status: 403 }

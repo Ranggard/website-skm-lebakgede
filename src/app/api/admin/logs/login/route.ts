@@ -47,9 +47,8 @@ export async function GET(request: NextRequest) {
       .order('login_time', { ascending: false })
       .limit(100)
 
-    if (error && error.code !== 'PGRST116') {
+    if (error && error.code !== 'PGRST116' && error.code !== 'PGRST205') {
       console.warn('[Login Logs] Error:', error)
-      // If table doesn't exist, return mock data
     }
 
     // If logs exist, use them, otherwise return mock data

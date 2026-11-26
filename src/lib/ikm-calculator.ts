@@ -370,3 +370,43 @@ export function generateIKMExcelWorkbook(
   const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx', cellStyles: true })
   return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer)
 }
+
+export const UNSUR_NAMES = [
+  { key: 'u1', label: '1. Persyaratan Pelayanan', short: 'Persyaratan' },
+  { key: 'u2', label: '2. Prosedur Pelayanan', short: 'Prosedur' },
+  { key: 'u3', label: '3. Waktu Pelayanan', short: 'Waktu' },
+  { key: 'u4', label: '4. Biaya / Tarif', short: 'Biaya / Tarif' },
+  { key: 'u5', label: '5. Produk Spesifikasi Layanan', short: 'Produk Layanan' },
+  { key: 'u6', label: '6. Kompetensi Petugas', short: 'Kompetensi' },
+  { key: 'u7', label: '7. Perilaku / Keramahan Petugas', short: 'Perilaku Petugas' },
+  { key: 'u8', label: '8. Kualitas Sarana & Prasarana', short: 'Sarana & Prasarana' },
+  { key: 'u9', label: '9. Penanganan Pengaduan', short: 'Pengaduan' },
+]
+
+const TEXT_TO_SCORE: Record<string, number> = {
+  'tidak sesuai': 1, 'tidak mudah': 1, 'sangat lambat': 1, 'sangat mahal': 1,
+  'tidak kompeten': 1, 'sangat tidak kompeten': 1, 'tidak sopan': 1, 'sangat buruk': 1, 'tidak ada': 1,
+  'a': 1, '1': 1,
+  'kurang sesuai': 2, 'kurang mudah': 2, 'lambat': 2, 'kurang cepat': 2, 'cukup mahal': 2,
+  'kurang kompeten': 2, 'kurang sopan': 2, 'buruk': 2, 'cukup': 2, 'ada tapi tidak berfungsi': 2, 'ada tetapi tidak berfungsi': 2,
+  'b': 2, '2': 2,
+  'sesuai': 3, 'mudah': 3, 'cepat': 3, 'murah': 3,
+  'kompeten': 3, 'sopan': 3, 'sopan dan ramah': 3, 'baik': 3, 'berfungsi kurang maksimal': 3,
+  'c': 3, '3': 3,
+  'sangat sesuai': 4, 'sangat mudah': 4, 'sangat cepat': 4, 'gratis': 4,
+  'sangat kompeten': 4, 'sangat sopan': 4, 'sangat sopan dan ramah': 4, 'sangat baik': 4, 'dikelola dengan baik': 4,
+  'd': 4, '4': 4,
+}
+
+/**
+ * Mengonversi nilai jawaban (angka atau teks pilihan ganda) menjadi skor numerik 1-4.
+ */
+export function parseScore(val: any): number {
+  if (typeof val === 'number' && !isNaN(val)) return val
+  if (!val) return 3
+  const str = String(val).trim().toLowerCase()
+  if (TEXT_TO_SCORE[str] !== undefined) return TEXT_TO_SCORE[str]
+  const parsed = parseFloat(str)
+  if (!isNaN(parsed) && parsed >= 1 && parsed <= 4) return parsed
+  return 3
+}

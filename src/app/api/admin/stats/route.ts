@@ -42,12 +42,12 @@ export async function GET(request: NextRequest) {
 
     // Fetch analytics data
     const { data: analyticsData, error: analyticsError } = await client
-      .from('responses')
+      .from('survey_responses')
       .select('*')
       .order('created_at', { ascending: false })
       .limit(1000)
 
-    if (analyticsError && analyticsError.code !== 'PGRST116') {
+    if (analyticsError && analyticsError.code !== 'PGRST116' && analyticsError.code !== 'PGRST205') {
       console.warn('[Admin Stats] Analytics fetch warning:', analyticsError)
     }
 
