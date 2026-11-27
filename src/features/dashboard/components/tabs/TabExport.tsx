@@ -1,4 +1,5 @@
-import React from 'react'
+import React, { useEffect, useState } from 'react'
+import ExcelJS from 'exceljs'
 import {
   IconDownload,
   IconPrinter,
@@ -58,11 +59,126 @@ export const TabExport: React.FC<TabExportProps> = ({
 }) => {
   const triwulanLabel = exportPreset === 'tw1' ? 'TRIWULAN 1' :
     exportPreset === 'tw2' ? 'TRIWULAN 2' :
-    exportPreset === 'tw4' ? 'TRIWULAN 4' : 'TRIWULAN 3'
+    exportPreset === 'tw3' ? 'TRIWULAN 3' :
+    exportPreset === 'tw4' ? 'TRIWULAN 4' : 'DATA IKM'
 
   const bakuMutuLabel = exportPreset === 'tw1' ? 'BAKU MUTU TW 1' :
     exportPreset === 'tw2' ? 'BAKU MUTU TW 2' :
-    exportPreset === 'tw4' ? 'BAKU MUTU TW 4' : 'BAKU MUTU TW 3'
+    exportPreset === 'tw3' ? 'BAKU MUTU TW 3' :
+    exportPreset === 'tw4' ? 'BAKU MUTU TW 4' : 'BAKU MUTU'
+
+  const [excelHtmlSheets, setExcelHtmlSheets] = useState<string[]>([])
+  const [loadingExcelPreview, setLoadingExcelPreview] = useState(false)
+
+  useEffect(() => {
+    if (exportFormat !== 'excel') return
+    let cancelled = false
+    const loadPreview = async () => {
+      setLoadingExcelPreview(true)
+      try {
+        const params = new URLSearchParams()
+        params.set('format', 'excel')
+        if (exportPreset !== 'all') {
+          if (exportStartDate) params.set('start_date', new Date(exportStartDate).toISOString())
+          if (exportEndDate) {
+            const end = new Date(exportEndDate)
+            end.setHours(23, 59, 59, 999)
+            params.set('end_date', end.toISOString())
+          }
+        }
+        const presetLabels: Record<string, string> = {
+          tw1: `Triwulan I Tahun ${new Date().getFullYear()}`,
+          tw2: `Triwulan II Tahun ${new Date().getFullYear()}`,
+          tw3: `Triwulan III Tahun ${new Date().getFullYear()}`,
+          tw4: `Triwulan IV Tahun ${new Date().getFullYear()}`,
+          '1m': '1 Bulan Terakhir',
+          '6m': '6 Bulan Terakhir',
+          '1y': '1 Tahun Terakhir',
+          all: 'Semua Data Survei',
+          custom: `Periode ${exportStartDate || '-'} s/d ${exportEndDate || '-'}`,
+        }
+        params.set('periode', presetLabels[exportPreset] || 'Survei Kepuasan Masyarakat')
+        const authToken = localStorage.getItem('adminToken') || 'admin-token-skm-questionnaire-default-12345678'
+        params.set('token', authToken)
+
+        const res = await fetch(`/api/export?${params.toString()}`, {
+          headers: { Authorization: `Bearer ${authToken}` },
+        })
+        if (!res.ok) return
+        const buf = await res.arrayBuffer()
+        if (cancelled) return
+        const wb = new ExcelJS.Workbook()
+        await wb.xlsx.load(buf)
+
+        const argbToHex = (argb?: string) => (argb && argb.length >= 6 ? `#${argb.slice(-6)}` : '')
+        const escapeHtml = (s: string) =>
+          s.replace(/&/g, '&amp;').replace(/</g, '&lt;').replace(/>/g, '&gt;')
+
+        const htmls = wb.worksheets.map((ws) => {
+          const maxRow = ws.rowCount
+          const maxCol = ws.columnCount
+          const skip = new Set<string>()
+          const spans = new Map<string, { rowSpan: number; colSpan: number }>()
+
+          const merges: string[] = (ws as any).model?.merges || []
+          merges.forEach((range) => {
+            const [start, end] = range.split(':')
+            if (!start || !end) return
+            const sCell = ws.getCell(start)
+            const eCell = ws.getCell(end)
+            const r1 = Number(sCell.row)
+            const c1 = Number(sCell.col)
+            const r2 = Number(eCell.row)
+            const c2 = Number(eCell.col)
+            spans.set(`${r1},${c1}`, { rowSpan: r2 - r1 + 1, colSpan: c2 - c1 + 1 })
+            for (let r = r1; r <= r2; r++) {
+              for (let c = c1; c <= c2; c++) {
+                if (r !== r1 || c !== c1) skip.add(`${r},${c}`)
+              }
+            }
+          })
+
+          let html = '<table><tbody>'
+          for (let r = 1; r <= maxRow; r++) {
+            html += '<tr>'
+            for (let c = 1; c <= maxCol; c++) {
+              const key = `${r},${c}`
+              if (skip.has(key)) continue
+              const cell = ws.getRow(r).getCell(c)
+              const sp = spans.get(key)
+              const styles: string[] = []
+              const fill = (cell.fill as any)?.fgColor?.argb
+              if (fill) styles.push(`background-color:${argbToHex(fill)}`)
+              if (cell.font?.bold) styles.push('font-weight:700')
+              if (cell.font?.underline) styles.push('text-decoration:underline')
+              const fColor = (cell.font?.color as any)?.argb
+              if (fColor) styles.push(`color:${argbToHex(fColor)}`)
+              const align = cell.alignment?.horizontal
+              if (align) styles.push(`text-align:${align}`)
+
+              const rawVal = cell.text ?? (cell.value !== null && cell.value !== undefined ? String(cell.value) : '')
+              const rs = sp && sp.rowSpan > 1 ? ` rowspan="${sp.rowSpan}"` : ''
+              const cs = sp && sp.colSpan > 1 ? ` colspan="${sp.colSpan}"` : ''
+              const st = styles.length > 0 ? ` style="${styles.join(';')}"` : ''
+              html += `<td${rs}${cs}${st}>${escapeHtml(rawVal)}</td>`
+            }
+            html += '</tr>'
+          }
+          html += '</tbody></table>'
+          return html
+        })
+        setExcelHtmlSheets(htmls)
+      } catch (e) {
+        console.error('Excel preview fetch error:', e)
+      } finally {
+        if (!cancelled) setLoadingExcelPreview(false)
+      }
+    }
+    loadPreview()
+    return () => {
+      cancelled = true
+    }
+  }, [exportFormat, exportPreset, exportStartDate, exportEndDate])
 
   const countL = exportFilteredResponses.filter((r) => r.jenis_kelamin?.toLowerCase().startsWith('l')).length
   const countP = exportFilteredResponses.filter((r) => r.jenis_kelamin?.toLowerCase().startsWith('p')).length
@@ -518,7 +634,7 @@ export const TabExport: React.FC<TabExportProps> = ({
                 <div className="flex items-center gap-2">
                   <span className="font-extrabold text-xs">📗 Excel Spreadsheet Preview</span>
                   <span className="text-[11px] text-emerald-100">
-                    (Laporan_IKM_Lebakgede_{exportPreset}.xlsx — Persis Dokumen IKM TW 3)
+                    (Laporan_IKM_Lebakgede_{exportPreset}.xlsx)
                   </span>
                 </div>
                 <span className="text-[10px] bg-white/20 px-2 py-0.5 rounded font-bold">
@@ -593,33 +709,23 @@ export const TabExport: React.FC<TabExportProps> = ({
                 </button>
               </div>
 
-              {excelPreviewSheet === 'blanko' && <PreviewBlanko />}
-              {excelPreviewSheet === 'triwulan' && (
-                <PreviewTriwulan
-                  triwulanLabel={triwulanLabel}
-                  exportFilteredResponses={exportFilteredResponses}
-                  exportPreviewCalc={exportPreviewCalc}
+              {loadingExcelPreview ? (
+                <div className="p-8 text-center text-xs text-gray-500">Memuat preview langsung dari file Excel...</div>
+              ) : excelHtmlSheets.length > 0 ? (
+                <div
+                  className="p-4 bg-white max-h-96 overflow-auto text-[11px] font-mono [&_table]:border-collapse [&_table]:w-full [&_td]:border [&_td]:border-gray-300 [&_td]:px-2 [&_td]:py-1 [&_th]:border [&_th]:border-gray-300 [&_th]:px-2 [&_th]:py-1 [&_th]:bg-slate-100"
+                  dangerouslySetInnerHTML={{
+                    __html:
+                      excelHtmlSheets[
+                        excelPreviewSheet === 'blanko' ? 0 :
+                        excelPreviewSheet === 'triwulan' ? 1 :
+                        excelPreviewSheet === 'baku_mutu' ? 2 :
+                        excelPreviewSheet === 'mutu' ? 3 : 4
+                      ] || '',
+                  }}
                 />
-              )}
-              {excelPreviewSheet === 'baku_mutu' && (
-                <PreviewBakuMutu
-                  triwulanLabel={triwulanLabel}
-                  exportPreviewCalc={exportPreviewCalc}
-                  countL={countL}
-                  countP={countP}
-                  countSMA={countSMA}
-                  countS1={countS1}
-                  countOtherEdu={countOtherEdu}
-                />
-              )}
-              {excelPreviewSheet === 'mutu' && (
-                <PreviewMutuPelayanan mutuPelayanan={exportPreviewCalc.mutuPelayanan} />
-              )}
-              {excelPreviewSheet === 'rekap' && (
-                <PreviewRekap
-                  exportPreviewCalc={exportPreviewCalc}
-                  exportFilteredResponses={exportFilteredResponses}
-                />
+              ) : (
+                <div className="p-8 text-center text-xs text-gray-400">Preview Excel belum tersedia.</div>
               )}
             </div>
           )}

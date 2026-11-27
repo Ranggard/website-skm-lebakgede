@@ -85,6 +85,7 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
 
     const queryParams = queryResult.data as ExportQueryInput
     const format = queryParams.format || 'csv'
+    const periode = request.nextUrl.searchParams.get('periode') || undefined
 
     // Convert ISO strings to Date objects if provided
     const startDate = queryParams.start_date ? new Date(queryParams.start_date) : undefined
@@ -112,7 +113,7 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
     // Export data from backend with fallback to IKM TW 3 2026 dataset
     let fileBuffer: Buffer
     try {
-      fileBuffer = await backend.exportResponses(format, startDate, endDate)
+      fileBuffer = await (backend as any).exportResponses(format, startDate, endDate, periode)
       if (!fileBuffer || fileBuffer.length === 0) {
         fileBuffer = await generateFallbackExportBuffer(format)
       }

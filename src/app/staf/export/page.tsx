@@ -131,6 +131,19 @@ export default function StaffExportPage() {
         }
       }
 
+      const presetLabels: Record<string, string> = {
+        tw1: `Triwulan I Tahun ${new Date().getFullYear()}`,
+        tw2: `Triwulan II Tahun ${new Date().getFullYear()}`,
+        tw3: `Triwulan III Tahun ${new Date().getFullYear()}`,
+        tw4: `Triwulan IV Tahun ${new Date().getFullYear()}`,
+        '1m': '1 Bulan Terakhir',
+        '6m': '6 Bulan Terakhir',
+        '1y': '1 Tahun Terakhir',
+        all: 'Semua Data Survei',
+        custom: `Periode ${exportStartDate || '-'} s/d ${exportEndDate || '-'}`,
+      }
+      params.set('periode', presetLabels[exportPreset] || 'Survei Kepuasan Masyarakat')
+
       const authToken = token || localStorage.getItem('adminToken') || 'admin-token-skm-questionnaire-default-12345678'
       params.set('token', authToken)
       const response = await fetch(`/api/export?${params.toString()}`, {

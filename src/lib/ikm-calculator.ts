@@ -485,13 +485,21 @@ export async function generateIKMExcelWorkbook(
   // Blok Tanda Tangan Lurah + Kotak Ringkasan IKM + Tabel Nilai Mutu Pelayanan di BLANKO
   const bSigStart = bKinerjaRow + 2
   const bTodayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-  wsBlanko.getCell(`K${bSigStart}`).value = `Bandung, ${bTodayStr}`
-  wsBlanko.getCell(`K${bSigStart + 1}`).value = 'LURAH LEBAKGEDE,'
-  wsBlanko.getCell(`K${bSigStart + 1}`).font = { name: 'Calibri', size: 10, bold: true }
-  wsBlanko.getCell(`K${bSigStart + 5}`).value = pejabat
-  wsBlanko.getCell(`K${bSigStart + 5}`).font = { name: 'Calibri', size: 10, bold: true, underline: true }
-  wsBlanko.getCell(`K${bSigStart + 6}`).value = 'Penata Tk.I'
-  wsBlanko.getCell(`K${bSigStart + 7}`).value = `NIP. ${nip}`
+  const sigLines: [number, string, { bold?: boolean; underline?: boolean }?][] = [
+    [0, `Bandung, ${bTodayStr}`],
+    [1, 'LURAH LEBAKGEDE,', { bold: true }],
+    [5, pejabat, { bold: true, underline: true }],
+    [6, 'Penata Tk.I'],
+    [7, `NIP. ${nip}`],
+  ]
+  sigLines.forEach(([offset, text, opts]) => {
+    const rowIdx = bSigStart + offset
+    wsBlanko.mergeCells(`K${rowIdx}:N${rowIdx}`)
+    const cell = wsBlanko.getCell(`K${rowIdx}`)
+    cell.value = text
+    cell.font = { name: 'Calibri', size: 10, bold: !!opts?.bold, underline: !!opts?.underline }
+    cell.alignment = { horizontal: 'center', vertical: 'middle' }
+  })
 
   const bBoxRows: [number, string, number | string, string?][] = [
     [1, 'Bobot Nilai Tertimbang', 0.1111, '0.00'],
@@ -500,12 +508,15 @@ export async function generateIKMExcelWorkbook(
     [4, 'Nilai Pelayanan', kinerja],
   ]
   bBoxRows.forEach(([no, label, val, fmt], idx) => {
-    const r = wsBlanko.getRow(bSigStart + 1 + idx)
+    const rowIdx = bSigStart + 1 + idx
+    const r = wsBlanko.getRow(rowIdx)
+    wsBlanko.mergeCells(`P${rowIdx}:Q${rowIdx}`)
     r.getCell(15).value = no
     r.getCell(16).value = label
     r.getCell(18).value = val
     styleCell(r.getCell(15), { align: 'center' })
     styleCell(r.getCell(16), { align: 'left' })
+    styleCell(r.getCell(17), { align: 'left' })
     styleCell(r.getCell(18), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
   })
 
@@ -530,9 +541,12 @@ export async function generateIKMExcelWorkbook(
   })
 
   // ==========================================
-  // SHEET 2: TRIWULAN 3
+  // SHEET 2: DATA IKM (nama sheet menyesuaikan filter periode)
   // ==========================================
-  const wsTW = wb.addWorksheet('TRIWULAN 3')
+  const twSheetName = periode.toUpperCase().includes('TRIWULAN')
+    ? periode.toUpperCase().replace(/TAHUN\s+\d{4}/i, '').trim().slice(0, 31)
+    : 'DATA IKM'
+  const wsTW = wb.addWorksheet(twSheetName)
   wsTW.columns = [
     { width: 6 },  // A: No
     { width: 14 }, // B: Tgl

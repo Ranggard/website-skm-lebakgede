@@ -345,7 +345,8 @@ export class SupabaseBackend implements BackendStrategy {
   async exportResponses(
     format: 'csv' | 'excel',
     startDate?: Date,
-    endDate?: Date
+    endDate?: Date,
+    periode?: string
   ): Promise<Buffer> {
     try {
       let query = this.client
@@ -409,7 +410,7 @@ export class SupabaseBackend implements BackendStrategy {
         return await generateIKMExcelWorkbook(records, {
           unitPelayanan: 'Kelurahan Lebakgede Kecamatan Coblong',
           alamat: 'Jl. Tubagus Ismail Bawah No. 5 Bandung',
-          periode: 'Data Survei Kepuasan Masyarakat Terverifikasi Supabase',
+          periode: periode || 'Data Survei Kepuasan Masyarakat Terverifikasi Supabase',
         })
       }
 
