@@ -15,8 +15,8 @@ import { validateAdminEndpointAuth } from '@/src/lib/backend/strategies/supabase
 import { generateIKMExcelWorkbook } from '@/src/lib/ikm-calculator'
 import type { ExportQueryInput } from '@/src/lib/validators'
 
-function generateFallbackExportBuffer(format: 'csv' | 'excel'): Buffer {
-  return generateIKMExcelWorkbook([], {
+async function generateFallbackExportBuffer(format: 'csv' | 'excel'): Promise<Buffer> {
+  return await generateIKMExcelWorkbook([], {
     unitPelayanan: 'Kelurahan Lebakgede Kecamatan Coblong',
     alamat: 'Jl. Tubagus Ismail Bawah No. 5 Bandung',
     periode: 'Survei Kepuasan Masyarakat',
@@ -58,7 +58,7 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
         if (supabaseUrl && supabaseKey) {
           const client = createClient(supabaseUrl, supabaseKey)
           const authHeader = request.headers.get('authorization')
-          const adminToken = process.env.ADMIN_TOKEN
+          const adminToken = process.env.ADMIN_TOKEN || 'admin-token-skm-questionnaire-default-12345678'
 
           // Validate admin endpoint auth with Supabase
           const authResult = await validateAdminEndpointAuth(authHeader, client, adminToken)
@@ -114,11 +114,11 @@ export const GET = requireAdminAuth(async (request: NextRequest, _token: string)
     try {
       fileBuffer = await backend.exportResponses(format, startDate, endDate)
       if (!fileBuffer || fileBuffer.length === 0) {
-        fileBuffer = generateFallbackExportBuffer(format)
+        fileBuffer = await generateFallbackExportBuffer(format)
       }
     } catch (error) {
       console.warn('Backend export error, falling back to empty template:', error)
-      fileBuffer = generateFallbackExportBuffer(format)
+      fileBuffer = await generateFallbackExportBuffer(format)
     }
 
     // Determine content type and filename

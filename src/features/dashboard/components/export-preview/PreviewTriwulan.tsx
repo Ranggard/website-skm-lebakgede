@@ -69,22 +69,22 @@ export const PreviewTriwulan: React.FC<PreviewTriwulanProps> = ({
         <tfoot className="bg-slate-100 font-bold border-t-2 border-gray-400">
           <tr className="border-b border-gray-300">
             <td colSpan={6} className="p-2 border border-gray-300 text-right uppercase">Total Dari Nilai Persepsi Per Unit:</td>
-            {exportPreviewCalc.unsurAverages.map((u) => (
-              <td key={u.code} className="p-2 border border-gray-300 text-center text-teal-800">{u.totalNilai}</td>
+            {exportPreviewCalc.unsurAverages.map((u, idx) => (
+              <td key={`total-${u.code ?? idx}`} className="p-2 border border-gray-300 text-center text-teal-800">{u.totalNilai}</td>
             ))}
             <td colSpan={2} className="p-2 border border-gray-300 bg-slate-200"></td>
           </tr>
           <tr className="border-b border-gray-300">
             <td colSpan={6} className="p-2 border border-gray-300 text-right uppercase">NRR Per Unsur:</td>
-            {exportPreviewCalc.unsurAverages.map((u) => (
-              <td key={u.code} className="p-2 border border-gray-300 text-center font-bold">{Number(u.nrr ?? 0).toFixed(3)}</td>
+            {exportPreviewCalc.unsurAverages.map((u, idx) => (
+              <td key={`nrr-${u.code ?? idx}`} className="p-2 border border-gray-300 text-center font-bold">{Number(u.nrr ?? 0).toFixed(3)}</td>
             ))}
             <td colSpan={2} className="p-2 border border-gray-300 bg-slate-200"></td>
           </tr>
           <tr className="border-b border-gray-300">
             <td colSpan={6} className="p-2 border border-gray-300 text-right uppercase">NRR Tertimbang Per Unsur (x 0.111):</td>
-            {exportPreviewCalc.unsurAverages.map((u) => (
-              <td key={u.code} className="p-2 border border-gray-300 text-center text-emerald-800">{Number(u.nrrTertimbang ?? 0).toFixed(3)}</td>
+            {exportPreviewCalc.unsurAverages.map((u, idx) => (
+              <td key={`tertimbang-${u.code ?? idx}`} className="p-2 border border-gray-300 text-center text-emerald-800">{Number(u.nrrTertimbang ?? 0).toFixed(3)}</td>
             ))}
             <td colSpan={2} className="p-2 border border-gray-300 bg-slate-200"></td>
           </tr>

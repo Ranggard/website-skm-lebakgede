@@ -406,7 +406,7 @@ export class SupabaseBackend implements BackendStrategy {
       }))
 
       if (format === 'excel') {
-        return generateIKMExcelWorkbook(records, {
+        return await generateIKMExcelWorkbook(records, {
           unitPelayanan: 'Kelurahan Lebakgede Kecamatan Coblong',
           alamat: 'Jl. Tubagus Ismail Bawah No. 5 Bandung',
           periode: 'Data Survei Kepuasan Masyarakat Terverifikasi Supabase',
@@ -416,7 +416,7 @@ export class SupabaseBackend implements BackendStrategy {
       // CSV format fallback
       // eslint-disable-next-line global-require
       const xlsx = require('xlsx')
-      const buffer = generateIKMExcelWorkbook(records)
+      const buffer = await generateIKMExcelWorkbook(records)
       const wb = xlsx.read(buffer, { type: 'buffer' })
       const ws = wb.Sheets['DATA_RESPONDEN'] || wb.Sheets[wb.SheetNames[0]]
       const csv = xlsx.utils.sheet_to_csv(ws)

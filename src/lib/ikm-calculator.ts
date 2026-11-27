@@ -254,7 +254,7 @@ function jsDateToExcelSerial(d: Date): number {
  * - 5 sheet: BLANKO, TRIWULAN 3, BAKU MUTU TW 3, NILAI MUTU PELAYANAN, REKAP
  * - Semua cell merges, rumus Excel asli (SUM, COUNTIF, IF, cross-sheet references), styles, dan layout terjaga 100%
  */
-export function generateIKMExcelWorkbook(
+export async function generateIKMExcelWorkbook(
   responses: IKMRespondentRecord[],
   metadataInfo?: {
     unitPelayanan?: string
@@ -263,111 +263,350 @@ export function generateIKMExcelWorkbook(
     pejabat?: string
     nip?: string
   }
-): Buffer {
+): Promise<Buffer> {
   // eslint-disable-next-line global-require
-  const xlsx = require('xlsx')
+  const ExcelJS = require('exceljs')
+  const wb = new ExcelJS.Workbook()
+  wb.creator = 'Website SKM Kelurahan Lebakgede'
+  wb.created = new Date()
 
-  // Baca template master yang sudah tersemat secara permanen (aman untuk serverless, docker, maupun client-side bundle)
-  const templateBuf = Buffer.from(IKM_MASTER_TEMPLATE_BASE64, 'base64')
-  const wb = xlsx.read(templateBuf, { type: 'buffer', cellStyles: true })
+  const unitPelayanan = metadataInfo?.unitPelayanan || 'Kelurahan Lebakgede Kecamatan Coblong'
+  const alamat = metadataInfo?.alamat || 'Jl. Tubagus Ismail Bawah No. 5 Bandung'
+  const periode = metadataInfo?.periode || 'Survei Kepuasan Masyarakat'
+  const pejabat = metadataInfo?.pejabat || 'USMAN ADIREJA, S.Sos'
+  const nip = metadataInfo?.nip || '19721209 199901 1 001'
 
-  const wsTW = wb.Sheets['TRIWULAN 3']
+  const thinBorder = {
+    top: { style: 'thin', color: { argb: 'FF9CA3AF' } },
+    left: { style: 'thin', color: { argb: 'FF9CA3AF' } },
+    bottom: { style: 'thin', color: { argb: 'FF9CA3AF' } },
+    right: { style: 'thin', color: { argb: 'FF9CA3AF' } },
+  }
+  const headerFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFF1F5F9' } }
+  const tealFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFCCFBF1' } }
+  const emeraldFill = { type: 'pattern', pattern: 'solid', fgColor: { argb: 'FFD1FAE5' } }
+
+  const styleCell = (cell: any, opts?: { bold?: boolean; align?: string; fill?: any; numFmt?: string; size?: number; color?: string }) => {
+    cell.border = thinBorder
+    cell.font = {
+      name: 'Calibri',
+      size: opts?.size || 10,
+      bold: !!opts?.bold,
+      color: opts?.color ? { argb: opts.color } : undefined,
+    }
+    cell.alignment = {
+      vertical: 'middle',
+      horizontal: opts?.align || 'left',
+      wrapText: true,
+    }
+    if (opts?.fill) cell.fill = opts.fill
+    if (opts?.numFmt) cell.numFmt = opts.numFmt
+  }
+
   const count = responses.length
+  const unsurKeys: (keyof IKMRespondentRecord)[] = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7', 'u8', 'u9']
 
-  // 2. Inject respondent data ke sheet 'TRIWULAN 3' (baris 9 s/d 103 = index r: 8 s/d 102)
-  for (let i = 0; i < 95; i++) {
-    const rowNum = 9 + i // row 9, 10, ..., 103
-    if (i < count) {
-      const resp = responses[i]
-      
-      // Kolom A: Nomor Responden (A9 = 1, A10 = A9+1, dst)
-      if (i === 0) {
-        wsTW[`A${rowNum}`] = { t: 'n', v: 1, z: 'General', w: '1', s: { patternType: 'none' } }
-      } else {
-        const prevRow = rowNum - 1
-        wsTW[`A${rowNum}`] = { t: 'n', v: i + 1, f: `A${prevRow}+1`, z: 'General', w: String(i + 1), s: { patternType: 'none' } }
+  // Hitung statistik aktual
+  let lakiCount = 0
+  let perempuanCount = 0
+  const eduCounts: Record<string, number> = { SD: 0, SMP: 0, SMA: 0, D3: 0, S1: 0, S2: 0, S3: 0 }
+  const unsurTotals = new Array(9).fill(0)
+  const unsurOptionCounts = Array.from({ length: 9 }, () => [0, 0, 0, 0])
+
+  const normalizedRows = responses.map((resp, idx) => {
+    let jk = (resp.jenis_kelamin || 'Laki-laki').trim()
+    if (jk.toLowerCase().startsWith('l')) {
+      jk = 'Laki-laki'
+      lakiCount++
+    } else if (jk.toLowerCase().startsWith('p')) {
+      jk = 'Perempuan'
+      perempuanCount++
+    }
+
+    let edu = (resp.pendidikan || 'SMA').trim().toUpperCase()
+    if (['D1', 'D2', 'D3', 'D1-D3', 'DIII'].includes(edu)) edu = 'D3'
+    if (eduCounts[edu] !== undefined) eduCounts[edu]++
+
+    const scores = unsurKeys.map((k, uIdx) => {
+      const s = letterToScore(resp[k] as any)
+      unsurTotals[uIdx] += s
+      if (s >= 1 && s <= 4) unsurOptionCounts[uIdx][s - 1]++
+      return s
+    })
+    const avg = scores.reduce((a, b) => a + b, 0) / 9
+
+    const rawDate = resp.timestamp || resp.created_at || resp.waktu
+    let dateStr = '-'
+    if (rawDate) {
+      const d = new Date(rawDate as string)
+      if (!isNaN(d.getTime())) {
+        dateStr = d.toLocaleDateString('id-ID', { day: '2-digit', month: '2-digit', year: 'numeric' })
       }
+    }
 
-      // Kolom B: Tanggal Survey (format m/d/yy h:mm)
-      let dateSerial = 46060.384247685186
-      let dateStr = '2/7/26 9:13'
-      if (resp.timestamp || resp.waktu || resp.created_at) {
-        const d = new Date((resp.timestamp || resp.created_at || resp.waktu) as string)
-        if (!isNaN(d.getTime())) {
-          dateSerial = jsDateToExcelSerial(d)
-          dateStr = xlsx.SSF.format('m/d/yy h:mm', dateSerial)
-        }
-      }
-      wsTW[`B${rowNum}`] = { t: 'n', v: dateSerial, z: 'm/d/yy h:mm', w: dateStr, s: { patternType: 'none' } }
+    return {
+      no: idx + 1,
+      dateStr,
+      jk,
+      age: Number(resp.usia) || 0,
+      edu,
+      svc: resp.jenis_layanan || 'Lainnya',
+      scores,
+      avg,
+    }
+  })
 
-      // Kolom C: Jenis Kelamin (Laki-laki / Perempuan)
-      let jk = (resp.jenis_kelamin || 'Laki-laki').trim()
-      if (jk.toLowerCase().startsWith('l')) jk = 'Laki-laki'
-      else if (jk.toLowerCase().startsWith('p')) jk = 'Perempuan'
-      wsTW[`C${rowNum}`] = { t: 's', v: jk, r: `<t>${jk}</t>`, h: jk, z: 'General', w: jk, s: { patternType: 'none' } }
+  let sumNrrTertimbang = 0
+  const unsurStats = unsurTotals.map((total) => {
+    const nrr = count > 0 ? total / count : 0
+    const nrrTertimbang = nrr * (1 / 9)
+    sumNrrTertimbang += nrrTertimbang
+    return { total, nrr, nrrTertimbang }
+  })
 
-      // Kolom D: Usia (number)
-      const age = Number(resp.usia) || 30
-      wsTW[`D${rowNum}`] = { t: 'n', v: age, z: 'General', w: String(age), s: { patternType: 'none' } }
+  const ikmSkala4 = sumNrrTertimbang
+  const ikmKonversi = ikmSkala4 * 25
+  let mutu = 'D'
+  let kinerja = 'TIDAK BAIK'
+  if (ikmKonversi >= 88.31) {
+    mutu = 'A'
+    kinerja = 'SANGAT BAIK'
+  } else if (ikmKonversi >= 76.61) {
+    mutu = 'B'
+    kinerja = 'BAIK'
+  } else if (ikmKonversi >= 65.0) {
+    mutu = 'C'
+    kinerja = 'KURANG BAIK'
+  }
 
-      // Kolom E: Pendidikan (SD, SMP, SMA, D1-D3, S1, S2, S3)
-      let edu = (resp.pendidikan || 'SMA').trim().toUpperCase()
-      if (['D1', 'D2', 'D3'].includes(edu)) edu = 'D3'
-      wsTW[`E${rowNum}`] = { t: 's', v: edu, r: `<t>${edu}</t>`, h: edu, z: 'General', w: edu, s: { patternType: 'none' } }
+  // ==========================================
+  // SHEET 1: Blanko
+  // ==========================================
+  const wsBlanko = wb.addWorksheet('Blanko')
+  wsBlanko.columns = [{ width: 6 }, { width: 32 }, { width: 12 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 14 }]
+  wsBlanko.mergeCells('A1:G1')
+  wsBlanko.getCell('A1').value = 'BLANKO KUESIONER SURVEI KEPUASAN MASYARAKAT (SKM)'
+  wsBlanko.getCell('A1').font = { name: 'Calibri', size: 13, bold: true }
+  wsBlanko.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' }
+  wsBlanko.mergeCells('A2:G2')
+  wsBlanko.getCell('A2').value = `${unitPelayanan.toUpperCase()} - ${alamat}`
+  wsBlanko.getCell('A2').font = { name: 'Calibri', size: 10, italic: true }
+  wsBlanko.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
 
-      // Kolom F: Pekerjaan / Jenis Layanan
-      const svc = resp.jenis_layanan || 'Lainnya'
-      wsTW[`F${rowNum}`] = { t: 's', v: svc, r: `<t>${svc}</t>`, h: svc, z: 'General', w: svc, s: { patternType: 'none' } }
+  const blankoHeaders = ['No', 'Unsur Pelayanan (U1 - U9)', 'Kode', 'Skor 1', 'Skor 2', 'Skor 3', 'Skor 4']
+  const bHeaderRow = wsBlanko.addRow(blankoHeaders)
+  bHeaderRow.eachCell((c: any) => styleCell(c, { bold: true, align: 'center', fill: headerFill }))
+  UNSUR_NAMES.forEach((u, idx) => {
+    const r = wsBlanko.addRow([idx + 1, u.label, `U${idx + 1}`, 'Tidak Baik', 'Kurang Baik', 'Baik', 'Sangat Baik'])
+    r.eachCell((c: any, col: number) => styleCell(c, { align: col === 2 ? 'left' : 'center' }))
+  })
 
-      // Kolom G-O: Nilai Per Unsur Pelayanan (U1 - U9)
-      const unsurs: (keyof IKMRespondentRecord)[] = ['u1', 'u2', 'u3', 'u4', 'u5', 'u6', 'u7', 'u8', 'u9']
-      unsurs.forEach((key, uIdx) => {
-        const colLetter = String.fromCharCode(71 + uIdx) // 71 = 'G'
-        const score = letterToScore(resp[key] as any)
-        wsTW[`${colLetter}${rowNum}`] = { t: 'n', v: score, z: 'General', w: String(score), s: { patternType: 'none' } }
-      })
-    } else {
-      // Baris kosong filler (baris count + 9 sampai 103)
-      if (i === count) {
-        wsTW[`A${rowNum}`] = { t: 'e', v: 23, f: '#REF!+1', w: '#REF!', z: 'General', s: { patternType: 'none' } }
-      } else {
-        const prevRow = rowNum - 1
-        wsTW[`A${rowNum}`] = { t: 'e', v: 23, f: `A${prevRow}+1`, w: '#REF!', z: 'General', s: { patternType: 'none' } }
-      }
-      wsTW[`B${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
-      wsTW[`C${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
-      wsTW[`D${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
-      wsTW[`E${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
-      wsTW[`F${rowNum}`] = { t: 'z', z: 'General', s: { patternType: 'none' } }
-      for (let uIdx = 0; uIdx < 9; uIdx++) {
-        const colLetter = String.fromCharCode(71 + uIdx)
-        wsTW[`${colLetter}${rowNum}`] = {
-          t: 'n',
-          v: 0,
-          z: '_-* #,##0_-;\\-* #,##0_-;_-* "-"_-;_-@_-',
-          w: ' - ',
-          s: { patternType: 'none' }
-        }
-      }
+  // ==========================================
+  // SHEET 2: TRIWULAN 3
+  // ==========================================
+  const wsTW = wb.addWorksheet('TRIWULAN 3')
+  wsTW.columns = [
+    { width: 6 },  // A: No
+    { width: 14 }, // B: Tgl
+    { width: 13 }, // C: JK
+    { width: 8 },  // D: Usia
+    { width: 12 }, // E: Pendidikan
+    { width: 28 }, // F: Layanan
+    { width: 7 }, { width: 7 }, { width: 7 }, { width: 7 }, { width: 7 },
+    { width: 7 }, { width: 7 }, { width: 7 }, { width: 7 }, // G-O: U1-U9
+    { width: 10 }, // P: Rata-rata
+  ]
+
+  wsTW.mergeCells('A1:P1')
+  wsTW.getCell('A1').value = 'PENGOLAHAN INDEKS KEPUASAN MASYARAKAT PER RESPONDEN DAN PER UNSUR PELAYANAN'
+  wsTW.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+  wsTW.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' }
+
+  wsTW.mergeCells('A2:P2')
+  wsTW.getCell('A2').value = periode.toUpperCase()
+  wsTW.getCell('A2').font = { name: 'Calibri', size: 11, bold: true }
+  wsTW.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
+
+  wsTW.getCell('A4').value = `UNIT PELAYANAN : ${unitPelayanan}`
+  wsTW.getCell('A4').font = { name: 'Calibri', size: 10, bold: true }
+  wsTW.getCell('A5').value = `ALAMAT : ${alamat}`
+  wsTW.getCell('A5').font = { name: 'Calibri', size: 10 }
+
+  wsTW.mergeCells('A7:A8')
+  wsTW.mergeCells('B7:B8')
+  wsTW.mergeCells('C7:C8')
+  wsTW.mergeCells('D7:D8')
+  wsTW.mergeCells('E7:E8')
+  wsTW.mergeCells('F7:F8')
+  wsTW.mergeCells('G7:O7')
+  wsTW.mergeCells('P7:P8')
+
+  const h7Labels: Record<string, string> = {
+    A7: 'NO', B7: 'TGL SURVEY', C7: 'JENIS KELAMIN', D7: 'USIA',
+    E7: 'PENDIDIKAN', F7: 'JENIS LAYANAN', G7: 'NILAI PER UNSUR PELAYANAN', P7: 'RATA-RATA',
+  }
+  Object.entries(h7Labels).forEach(([addr, text]) => {
+    wsTW.getCell(addr).value = text
+  })
+  for (let i = 0; i < 9; i++) {
+    wsTW.getCell(`${String.fromCharCode(71 + i)}8`).value = `U${i + 1}`
+  }
+  for (let r = 7; r <= 8; r++) {
+    for (let c = 1; c <= 16; c++) {
+      styleCell(wsTW.getRow(r).getCell(c), { bold: true, align: 'center', fill: headerFill })
     }
   }
 
-  // 3. Baris 105: Update "Total yang Terisi" di kolom G-O dengan jumlah responden aktual
-  for (let c = 6; c <= 14; c++) {
-    const addr = xlsx.utils.encode_cell({ r: 104, c })
-    wsTW[addr] = { t: 'n', v: count, z: '#,##0', w: String(count), s: { patternType: 'none' } }
+  normalizedRows.forEach((row) => {
+    const r = wsTW.addRow([
+      row.no, row.dateStr, row.jk, row.age || '-', row.edu, row.svc,
+      ...row.scores, row.avg,
+    ])
+    r.eachCell((c: any, col: number) => {
+      if (col === 16) {
+        styleCell(c, { bold: true, align: 'center', fill: tealFill, numFmt: '0.00' })
+      } else {
+        styleCell(c, { align: col === 6 ? 'left' : 'center' })
+      }
+    })
+  })
+
+  // Ringkasan Footer
+  const addSummaryRow = (label: string, values: (number | string)[], opts?: { fill?: any; numFmt?: string; bold?: boolean }) => {
+    const startRow = wsTW.rowCount + 1
+    wsTW.mergeCells(`A${startRow}:F${startRow}`)
+    wsTW.getCell(`A${startRow}`).value = label
+    for (let c = 1; c <= 6; c++) {
+      styleCell(wsTW.getRow(startRow).getCell(c), { bold: true, align: 'right', fill: opts?.fill || headerFill })
+    }
+    values.forEach((v, idx) => {
+      const cell = wsTW.getRow(startRow).getCell(7 + idx)
+      cell.value = v
+      styleCell(cell, { bold: opts?.bold ?? true, align: 'center', fill: opts?.fill || headerFill, numFmt: opts?.numFmt })
+    })
+    const lastCell = wsTW.getRow(startRow).getCell(16)
+    styleCell(lastCell, { bold: true, align: 'center', fill: opts?.fill || headerFill })
   }
 
-  // 4. Update Pejabat dan NIP jika disediakan
-  if (metadataInfo?.pejabat) {
-    wsTW['L116'] = { t: 's', v: metadataInfo.pejabat, r: `<t>${metadataInfo.pejabat}</t>`, h: metadataInfo.pejabat, z: 'General', w: metadataInfo.pejabat, s: { patternType: 'none' } }
-  }
-  if (metadataInfo?.nip) {
-    wsTW['L118'] = { t: 's', v: `NIP. ${metadataInfo.nip}`, r: `<t>NIP. ${metadataInfo.nip}</t>`, h: `NIP. ${metadataInfo.nip}`, z: 'General', w: `NIP. ${metadataInfo.nip}`, s: { patternType: 'none' } }
+  addSummaryRow('Total Dari Nilai Persepsi Per Unit:', unsurStats.map((u) => u.total), { numFmt: '#,##0' })
+  addSummaryRow('Total yang Terisi:', unsurStats.map(() => count), { numFmt: '#,##0' })
+  addSummaryRow('NRR / Unsur:', unsurStats.map((u) => u.nrr), { numFmt: '0.000' })
+  addSummaryRow('NRR Tertimbang / Unsur:', unsurStats.map((u) => u.nrrTertimbang), { fill: emeraldFill, numFmt: '0.000' })
+
+  const ikmRow = wsTW.rowCount + 1
+  wsTW.mergeCells(`A${ikmRow}:F${ikmRow}`)
+  wsTW.mergeCells(`G${ikmRow}:P${ikmRow}`)
+  wsTW.getCell(`A${ikmRow}`).value = 'IKM UNIT PELAYANAN (Konversi / Mutu / Kinerja):'
+  wsTW.getCell(`G${ikmRow}`).value = `${ikmKonversi.toFixed(2)}  |  Mutu: ${mutu}  |  Kinerja: ${kinerja}`
+  for (let c = 1; c <= 16; c++) {
+    styleCell(wsTW.getRow(ikmRow).getCell(c), { bold: true, align: c <= 6 ? 'right' : 'center', fill: emeraldFill })
   }
 
-  // 5. Generate buffer dengan cellStyles: true agar format visual, garis, warna persis template master
-  const buffer = xlsx.write(wb, { type: 'buffer', bookType: 'xlsx', cellStyles: true })
+  // Tabel Demografi di sebelah kanan (Kolom R-S, mulai baris 9)
+  wsTW.getColumn(18).width = 18
+  wsTW.getColumn(19).width = 10
+  const demoItems: [string, number | string, boolean?][] = [
+    ['JENIS KELAMIN :', '', true],
+    ['Laki-laki', lakiCount],
+    ['Perempuan', perempuanCount],
+    ['Total', count, true],
+    ['PENDIDIKAN :', '', true],
+    ['SD', eduCounts.SD],
+    ['SMP', eduCounts.SMP],
+    ['SMA', eduCounts.SMA],
+    ['D3', eduCounts.D3],
+    ['S1', eduCounts.S1],
+    ['S2', eduCounts.S2],
+    ['S3', eduCounts.S3],
+    ['Total', Object.values(eduCounts).reduce((a, b) => a + b, 0), true],
+  ]
+  demoItems.forEach(([label, val, isBold], idx) => {
+    const rIdx = 9 + idx
+    const cLabel = wsTW.getRow(rIdx).getCell(18)
+    const cVal = wsTW.getRow(rIdx).getCell(19)
+    cLabel.value = label
+    cVal.value = val
+    styleCell(cLabel, { bold: !!isBold, fill: isBold ? headerFill : undefined })
+    styleCell(cVal, { bold: !!isBold, align: 'center', fill: isBold ? headerFill : undefined, numFmt: typeof val === 'number' ? '#,##0' : undefined })
+  })
+
+  // Blok Tanda Tangan Lurah (bawah tabel)
+  const sigStart = ikmRow + 2
+  const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+  wsTW.getCell(`L${sigStart}`).value = `Bandung, ${todayStr}`
+  wsTW.getCell(`L${sigStart + 1}`).value = 'LURAH LEBAKGEDE,'
+  wsTW.getCell(`L${sigStart + 1}`).font = { name: 'Calibri', size: 10, bold: true }
+  wsTW.getCell(`L${sigStart + 5}`).value = pejabat
+  wsTW.getCell(`L${sigStart + 5}`).font = { name: 'Calibri', size: 10, bold: true, underline: true }
+  wsTW.getCell(`L${sigStart + 6}`).value = 'Penata Tk.I'
+  wsTW.getCell(`L${sigStart + 7}`).value = `NIP. ${nip}`
+
+  // ==========================================
+  // SHEET 3: Baku Mutu
+  // ==========================================
+  const wsBaku = wb.addWorksheet('Baku Mutu')
+  wsBaku.columns = [{ width: 28 }, { width: 18 }, { width: 18 }, { width: 20 }]
+  wsBaku.mergeCells('A1:D1')
+  wsBaku.getCell('A1').value = `RINGKASAN INDEKS KEPUASAN MASYARAKAT (IKM) - ${unitPelayanan.toUpperCase()}`
+  wsBaku.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+
+  const bakuRows: [string, any][] = [
+    ['Periode Survei', periode],
+    ['Jumlah Responden', `${count} orang`],
+    ['Jenis Kelamin', `Laki-laki: ${lakiCount} | Perempuan: ${perempuanCount}`],
+    ['Pendidikan', `SD: ${eduCounts.SD}, SMP: ${eduCounts.SMP}, SMA: ${eduCounts.SMA}, D3: ${eduCounts.D3}, S1: ${eduCounts.S1}, S2: ${eduCounts.S2}, S3: ${eduCounts.S3}`],
+    ['Nilai IKM Konversi', Number(ikmKonversi.toFixed(2))],
+    ['Mutu Pelayanan', mutu],
+    ['Kinerja Unit Pelayanan', kinerja],
+    ['Penanggung Jawab', `${pejabat} (NIP. ${nip})`],
+  ]
+  bakuRows.forEach(([k, v]) => {
+    const r = wsBaku.addRow([k, v])
+    styleCell(r.getCell(1), { bold: true, fill: headerFill })
+    styleCell(r.getCell(2), { bold: k.includes('IKM') || k.includes('Mutu') })
+  })
+
+  // ==========================================
+  // SHEET 4: Mutu Pelayanan
+  // ==========================================
+  const wsMutu = wb.addWorksheet('Mutu Pelayanan')
+  wsMutu.columns = [{ width: 16 }, { width: 22 }, { width: 24 }, { width: 18 }, { width: 22 }]
+  wsMutu.mergeCells('A1:E1')
+  wsMutu.getCell('A1').value = 'TABEL PERSEPSI & MUTU PELAYANAN (PERMENPAN-RB NO. 14 TAHUN 2017)'
+  wsMutu.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+
+  const mHeader = wsMutu.addRow(['Nilai Persepsi', 'Nilai Interval (N)', 'Nilai Interval Konversi (NK)', 'Mutu Pelayanan', 'Kinerja Unit'])
+  mHeader.eachCell((c: any) => styleCell(c, { bold: true, align: 'center', fill: headerFill }))
+  const mutuData = [
+    [1, '1.00 - 2.5996', '25.00 - 64.99', 'D', 'Tidak Baik'],
+    [2, '2.60 - 3.064', '65.00 - 76.60', 'C', 'Kurang Baik'],
+    [3, '3.0644 - 3.532', '76.61 - 88.30', 'B', 'Baik'],
+    [4, '3.5324 - 4.00', '88.31 - 100.00', 'A', 'Sangat Baik'],
+  ]
+  mutuData.forEach((row) => {
+    const isCurrent = row[3] === mutu
+    const r = wsMutu.addRow(row)
+    r.eachCell((c: any) => styleCell(c, { align: 'center', bold: isCurrent, fill: isCurrent ? emeraldFill : undefined }))
+  })
+
+  // ==========================================
+  // SHEET 5: Rekapitulasi
+  // ==========================================
+  const wsRekap = wb.addWorksheet('Rekapitulasi')
+  wsRekap.columns = [{ width: 6 }, { width: 42 }, { width: 12 }, { width: 14 }, { width: 12 }, { width: 14 }]
+  wsRekap.mergeCells('A1:F1')
+  wsRekap.getCell('A1').value = `REKAPITULASI JAWABAN RESPONDEN PER UNSUR (${count} RESPONDEN)`
+  wsRekap.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+
+  const rHeader = wsRekap.addRow(['No', 'Unsur Pelayanan', 'Skor 1', 'Skor 2', 'Skor 3', 'Skor 4'])
+  rHeader.eachCell((c: any) => styleCell(c, { bold: true, align: 'center', fill: headerFill }))
+  UNSUR_NAMES.forEach((u, idx) => {
+    const counts = unsurOptionCounts[idx]
+    const r = wsRekap.addRow([idx + 1, u.label, counts[0], counts[1], counts[2], counts[3]])
+    r.eachCell((c: any, col: number) => styleCell(c, { align: col === 2 ? 'left' : 'center', numFmt: col >= 3 ? '#,##0' : undefined }))
+  })
+
+  const buffer = await wb.xlsx.writeBuffer()
   return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer)
 }
 
