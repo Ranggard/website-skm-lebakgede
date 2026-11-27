@@ -77,21 +77,21 @@ export const PreviewTriwulan: React.FC<PreviewTriwulanProps> = ({
           <tr className="border-b border-gray-300">
             <td colSpan={6} className="p-2 border border-gray-300 text-right uppercase">NRR Per Unsur:</td>
             {exportPreviewCalc.unsurAverages.map((u) => (
-              <td key={u.code} className="p-2 border border-gray-300 text-center font-bold">{u.nrr.toFixed(3)}</td>
+              <td key={u.code} className="p-2 border border-gray-300 text-center font-bold">{Number(u.nrr ?? 0).toFixed(3)}</td>
             ))}
             <td colSpan={2} className="p-2 border border-gray-300 bg-slate-200"></td>
           </tr>
           <tr className="border-b border-gray-300">
             <td colSpan={6} className="p-2 border border-gray-300 text-right uppercase">NRR Tertimbang Per Unsur (x 0.111):</td>
             {exportPreviewCalc.unsurAverages.map((u) => (
-              <td key={u.code} className="p-2 border border-gray-300 text-center text-emerald-800">{u.nrrTertimbang.toFixed(3)}</td>
+              <td key={u.code} className="p-2 border border-gray-300 text-center text-emerald-800">{Number(u.nrrTertimbang ?? 0).toFixed(3)}</td>
             ))}
             <td colSpan={2} className="p-2 border border-gray-300 bg-slate-200"></td>
           </tr>
           <tr className="bg-emerald-50 text-emerald-950 text-sm">
             <td colSpan={6} className="p-2.5 border border-gray-300 text-right font-extrabold uppercase">IKM UNIT PELAYANAN (KONVERSI):</td>
             <td colSpan={9} className="p-2.5 border border-gray-300 text-center font-extrabold text-base text-emerald-700">
-              {exportPreviewCalc.ikmKonversi.toFixed(2)}
+              {Number(exportPreviewCalc.ikmKonversi ?? 0).toFixed(2)}
             </td>
             <td colSpan={2} className="p-2.5 border border-gray-300 text-center font-extrabold text-emerald-800">
               {exportPreviewCalc.mutuPelayanan} ({exportPreviewCalc.kinerjaUnit})
