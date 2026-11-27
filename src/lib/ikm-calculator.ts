@@ -590,21 +590,84 @@ export async function generateIKMExcelWorkbook(
   })
 
   // ==========================================
-  // SHEET 5: Rekapitulasi
+  // SHEET 5: Rekapitulasi (sesuai desain tabel bulanan JAN-DES & opsi a-d)
   // ==========================================
   const wsRekap = wb.addWorksheet('Rekapitulasi')
-  wsRekap.columns = [{ width: 6 }, { width: 42 }, { width: 12 }, { width: 14 }, { width: 12 }, { width: 14 }]
-  wsRekap.mergeCells('A1:F1')
-  wsRekap.getCell('A1').value = `REKAPITULASI JAWABAN RESPONDEN PER UNSUR (${count} RESPONDEN)`
-  wsRekap.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+  wsRekap.columns = [
+    { width: 6 },  // A: NO
+    { width: 58 }, // B: UNSUR PELAYANAN
+    ...Array.from({ length: 12 }, () => ({ width: 7 })), // C-N: JAN-DES
+  ]
 
-  const rHeader = wsRekap.addRow(['No', 'Unsur Pelayanan', 'Skor 1', 'Skor 2', 'Skor 3', 'Skor 4'])
-  rHeader.eachCell((c: any) => styleCell(c, { bold: true, align: 'center', fill: headerFill }))
-  UNSUR_NAMES.forEach((u, idx) => {
-    const counts = unsurOptionCounts[idx]
-    const r = wsRekap.addRow([idx + 1, u.label, counts[0], counts[1], counts[2], counts[3]])
-    r.eachCell((c: any, col: number) => styleCell(c, { align: col === 2 ? 'left' : 'center', numFmt: col >= 3 ? '#,##0' : undefined }))
+  wsRekap.mergeCells('A1:N1')
+  wsRekap.getCell('A1').value = 'REKAPITULASI HASIL SURVEY KEPUASAN MASYARAKAT TERHADAP PELAYANAN PUBLIK'
+  wsRekap.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
+  wsRekap.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' }
+
+  wsRekap.mergeCells('A2:N2')
+  wsRekap.getCell('A2').value = `${unitPelayanan.toUpperCase()} KOTA BANDUNG`
+  wsRekap.getCell('A2').font = { name: 'Calibri', size: 11, bold: true }
+  wsRekap.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
+
+  wsRekap.mergeCells('A4:A5')
+  wsRekap.mergeCells('B4:B5')
+  wsRekap.mergeCells('C4:N4')
+  wsRekap.getCell('A4').value = 'NO'
+  wsRekap.getCell('B4').value = 'UNSUR PELAYANAN YANG DINILAI'
+  wsRekap.getCell('C4').value = 'JAWABAN RESPONDEN'
+  const months = ['JAN', 'FEB', 'MAR', 'APR', 'MEI', 'JUN', 'JUL', 'AGS', 'SEP', 'OKT', 'NOP', 'DES']
+  months.forEach((m, idx) => {
+    wsRekap.getRow(5).getCell(3 + idx).value = m
   })
+  for (let r = 4; r <= 5; r++) {
+    for (let c = 1; c <= 14; c++) {
+      styleCell(wsRekap.getRow(r).getCell(c), { bold: true, align: 'center', fill: headerFill })
+    }
+  }
+
+  // Hitung distribusi per bulan (0..11) untuk setiap unsur (0..8) dan skor (1..4)
+  const monthlyCounts = Array.from({ length: 9 }, () =>
+    Array.from({ length: 4 }, () => new Array(12).fill(0))
+  )
+  const monthlyRespondents = new Array(12).fill(0)
+  responses.forEach((resp) => {
+    const rawDate = resp.timestamp || resp.created_at || resp.waktu
+    let mIdx = new Date().getMonth()
+    if (rawDate) {
+      const d = new Date(rawDate as string)
+      if (!isNaN(d.getTime())) mIdx = d.getMonth()
+    }
+    monthlyRespondents[mIdx]++
+    unsurKeys.forEach((k, uIdx) => {
+      const s = letterToScore(resp[k] as any)
+      if (s >= 1 && s <= 4) monthlyCounts[uIdx][s - 1][mIdx]++
+    })
+  })
+
+  const rekapQuestions: { q: string; opts: [string, string, string, string] }[] = [
+    { q: 'Bagaimana pendapat Saudara tentang kesesuaian persyaratan pelayanan dengan jenis pelayanannya', opts: ['a. Tidak sesuai', 'b. Kurang sesuai', 'c. Sesuai', 'd. Sangat sesuai'] },
+    { q: 'Bagaimana pemahaman Saudara tentang kemudahan prosedur pelayanan di unit ini', opts: ['a. Tidak mudah', 'b. Kurang mudah', 'c. Mudah', 'd. Sangat mudah'] },
+    { q: 'Bagaimana pendapat Saudara tentang kecepatan waktu dalam memberikan pelayanan', opts: ['a. Tidak cepat', 'b. Kurang cepat', 'c. Cepat', 'd. Sangat cepat'] },
+    { q: 'Bagaimana pendapat Saudara tentang kewajaran/tarif dalam pelayanan', opts: ['a. Sangat mahal', 'b. Cukup mahal', 'c. Murah', 'd. Gratis'] },
+    { q: 'Bagaimana pendapat Saudara tentang kesesuaian produk pelayanan antara yang tercantum dalam standar dengan hasil yang diberikan', opts: ['a. Tidak sesuai', 'b. Kurang sesuai', 'c. Sesuai', 'd. Sangat sesuai'] },
+    { q: 'Bagaimana pendapat Saudara tentang kompetensi/kemampuan petugas dalam pelayanan', opts: ['a. Tidak kompeten', 'b. Kurang kompeten', 'c. Kompeten', 'd. Sangat kompeten'] },
+    { q: 'Bagaimana pendapat Saudara perilaku petugas dalam pelayanan terkait kesopanan dan keramahan', opts: ['a. Tidak sopan dan ramah', 'b. Kurang sopan dan ramah', 'c. Sopan dan ramah', 'd. Sangat sopan dan ramah'] },
+    { q: 'Bagaimana pendapat Saudara tentang kualitas sarana dan prasarana', opts: ['a. Buruk', 'b. Cukup', 'c. Baik', 'd. Sangat baik'] },
+    { q: 'Bagaimana pendapat Saudara tentang penanganan pengaduan pengguna layanan', opts: ['a. Tidak ada', 'b. Ada tetapi tidak berfungsi', 'c. Berfungsi kurang maksimal', 'd. Dikelola dengan baik'] },
+  ]
+
+  rekapQuestions.forEach((item, uIdx) => {
+    const qRow = wsRekap.addRow([uIdx + 1, item.q, ...new Array(12).fill('')])
+    qRow.eachCell((c: any, col: number) => styleCell(c, { bold: true, align: col === 1 ? 'center' : 'left', fill: headerFill }))
+    item.opts.forEach((optLabel, sIdx) => {
+      const mVals = monthlyCounts[uIdx][sIdx].map((v) => (v > 0 ? v : ''))
+      const oRow = wsRekap.addRow(['', optLabel, ...mVals])
+      oRow.eachCell((c: any, col: number) => styleCell(c, { align: col <= 2 ? 'left' : 'center', numFmt: col >= 3 ? '#,##0' : undefined }))
+    })
+  })
+
+  const totalRekapRow = wsRekap.addRow(['', 'JUMLAH RESPONDEN', ...monthlyRespondents.map((v) => (v > 0 ? v : ''))])
+  totalRekapRow.eachCell((c: any, col: number) => styleCell(c, { bold: true, align: col === 2 ? 'left' : 'center', fill: emeraldFill, numFmt: col >= 3 ? '#,##0' : undefined }))
 
   const buffer = await wb.xlsx.writeBuffer()
   return Buffer.isBuffer(buffer) ? buffer : Buffer.from(buffer)
