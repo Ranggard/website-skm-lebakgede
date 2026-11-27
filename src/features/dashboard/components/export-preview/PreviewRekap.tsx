@@ -34,7 +34,7 @@ export const PreviewRekap: React.FC<PreviewRekapProps> = ({
             const countC = exportFilteredResponses.filter((r) => Number((r as any)[u.key]) === 3).length
             const countD = exportFilteredResponses.filter((r) => Number((r as any)[u.key]) === 4).length
             return (
-              <React.Fragment key={u.code}>
+              <React.Fragment key={`${u.code ?? 'unsur'}-${i}`}>
                 <tr className="bg-slate-50 font-bold border-t border-gray-300">
                   <td className="p-1.5 border border-gray-300 text-center">{i + 1}</td>
                   <td colSpan={3} className="p-1.5 border border-gray-300 text-teal-900">{u.name} ({u.code})</td>

@@ -380,25 +380,153 @@ export async function generateIKMExcelWorkbook(
   }
 
   // ==========================================
-  // SHEET 1: Blanko
+  // SHEET 1: BLANKO (sesuai Data/IKM TW 3 2026.xlsx)
   // ==========================================
-  const wsBlanko = wb.addWorksheet('Blanko')
-  wsBlanko.columns = [{ width: 6 }, { width: 32 }, { width: 12 }, { width: 14 }, { width: 14 }, { width: 14 }, { width: 14 }]
-  wsBlanko.mergeCells('A1:G1')
-  wsBlanko.getCell('A1').value = 'BLANKO KUESIONER SURVEI KEPUASAN MASYARAKAT (SKM)'
-  wsBlanko.getCell('A1').font = { name: 'Calibri', size: 13, bold: true }
+  const wsBlanko = wb.addWorksheet('BLANKO')
+  wsBlanko.columns = [
+    { width: 18 }, // A: NOMOR RESPONDEN
+    { width: 14 }, // B: JENIS KELAMIN (L/P)
+    { width: 8 },  // C: USIA
+    { width: 14 }, // D: PENDIDIKAN
+    { width: 24 }, // E: PEKERJAAN
+    ...Array.from({ length: 9 }, () => ({ width: 7 })), // F-N: U1-U9
+  ]
+  wsBlanko.mergeCells('A1:N1')
+  wsBlanko.getCell('A1').value = 'PENGOLAHAN INDEKS KEPUASAN MASYARAKAT PER RESPONDEN DAN PER UNSUR PELAYANAN'
+  wsBlanko.getCell('A1').font = { name: 'Bookman Old Style', size: 11, bold: true }
   wsBlanko.getCell('A1').alignment = { horizontal: 'center', vertical: 'middle' }
-  wsBlanko.mergeCells('A2:G2')
-  wsBlanko.getCell('A2').value = `${unitPelayanan.toUpperCase()} - ${alamat}`
-  wsBlanko.getCell('A2').font = { name: 'Calibri', size: 10, italic: true }
+  wsBlanko.mergeCells('A2:N2')
+  wsBlanko.getCell('A2').value = 'BLANKO SURVEY EVALUASI'
+  wsBlanko.getCell('A2').font = { name: 'Bookman Old Style', size: 10, bold: true }
   wsBlanko.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
 
-  const blankoHeaders = ['No', 'Unsur Pelayanan (U1 - U9)', 'Kode', 'Skor 1', 'Skor 2', 'Skor 3', 'Skor 4']
-  const bHeaderRow = wsBlanko.addRow(blankoHeaders)
-  bHeaderRow.eachCell((c: any) => styleCell(c, { bold: true, align: 'center', fill: headerFill }))
-  UNSUR_NAMES.forEach((u, idx) => {
-    const r = wsBlanko.addRow([idx + 1, u.label, `U${idx + 1}`, 'Tidak Baik', 'Kurang Baik', 'Baik', 'Sangat Baik'])
-    r.eachCell((c: any, col: number) => styleCell(c, { align: col === 2 ? 'left' : 'center' }))
+  wsBlanko.getCell('A4').value = 'UNIT PELAYANAN'
+  wsBlanko.getCell('C4').value = `: ${unitPelayanan}`
+  wsBlanko.getCell('A5').value = 'ALAMAT'
+  wsBlanko.getCell('C5').value = `: ${alamat}`
+
+  wsBlanko.mergeCells('A7:A8')
+  wsBlanko.mergeCells('B7:B8')
+  wsBlanko.mergeCells('C7:C8')
+  wsBlanko.mergeCells('D7:D8')
+  wsBlanko.mergeCells('E7:E8')
+  wsBlanko.mergeCells('F7:N7')
+  wsBlanko.getCell('A7').value = 'NOMOR RESPONDEN'
+  wsBlanko.getCell('B7').value = 'JENIS KELAMIN (L/P)'
+  wsBlanko.getCell('C7').value = 'USIA'
+  wsBlanko.getCell('D7').value = 'PENDIDIKAN'
+  wsBlanko.getCell('E7').value = 'PEKERJAAN'
+  wsBlanko.getCell('F7').value = 'NILAI PER UNSUR PELAYANAN'
+  for (let i = 0; i < 9; i++) {
+    wsBlanko.getCell(`${String.fromCharCode(70 + i)}8`).value = `U${i + 1}`
+  }
+  for (let r = 7; r <= 8; r++) {
+    for (let c = 1; c <= 14; c++) {
+      styleCell(wsBlanko.getRow(r).getCell(c), { bold: true, align: 'center', fill: headerFill })
+    }
+  }
+  normalizedRows.forEach((resp) => {
+    const r = wsBlanko.addRow([
+      resp.no,
+      resp.jk.startsWith('L') ? 'L' : 'P',
+      resp.age || '',
+      resp.edu,
+      resp.svc,
+      ...resp.scores,
+    ])
+    r.eachCell((c: any, col: number) => styleCell(c, { align: col === 5 ? 'left' : 'center' }))
+  })
+
+  const addBlankoSummary = (label: string, values: (number | string)[], opts?: { fill?: any; numFmt?: string }) => {
+    const startRow = wsBlanko.rowCount + 1
+    wsBlanko.mergeCells(`A${startRow}:E${startRow}`)
+    wsBlanko.getCell(`A${startRow}`).value = label
+    for (let c = 1; c <= 5; c++) {
+      styleCell(wsBlanko.getRow(startRow).getCell(c), { bold: true, align: 'right', fill: opts?.fill || headerFill })
+    }
+    values.forEach((v, idx) => {
+      const cell = wsBlanko.getRow(startRow).getCell(6 + idx)
+      cell.value = v
+      styleCell(cell, { bold: true, align: 'center', fill: opts?.fill || headerFill, numFmt: opts?.numFmt })
+    })
+  }
+  addBlankoSummary('Total Dari Nilai Persepsi Per Unit', unsurStats.map((u) => u.total), { numFmt: '#,##0' })
+  addBlankoSummary('Total yang Terisi', unsurStats.map(() => count), { numFmt: '#,##0' })
+  addBlankoSummary('NRR/Unsur', unsurStats.map((u) => u.nrr), { numFmt: '0.00' })
+  addBlankoSummary('NRR Tertimbang/Unsur', unsurStats.map((u) => u.nrrTertimbang), { numFmt: '0.00' })
+
+  const bIkmRow = wsBlanko.rowCount + 1
+  wsBlanko.mergeCells(`A${bIkmRow}:E${bIkmRow}`)
+  wsBlanko.mergeCells(`F${bIkmRow}:N${bIkmRow}`)
+  wsBlanko.getCell(`A${bIkmRow}`).value = 'IKM UNIT PELAYANAN'
+  wsBlanko.getCell(`F${bIkmRow}`).value = Number(ikmKonversi.toFixed(2))
+  for (let c = 1; c <= 14; c++) {
+    styleCell(wsBlanko.getRow(bIkmRow).getCell(c), { bold: true, align: c <= 5 ? 'left' : 'center', numFmt: c >= 6 ? '0.00' : undefined })
+  }
+
+  const bMutuRow = wsBlanko.rowCount + 1
+  wsBlanko.mergeCells(`A${bMutuRow}:E${bMutuRow}`)
+  wsBlanko.mergeCells(`F${bMutuRow}:N${bMutuRow}`)
+  wsBlanko.getCell(`A${bMutuRow}`).value = 'MUTU PELAYANAN'
+  wsBlanko.getCell(`F${bMutuRow}`).value = mutu
+  for (let c = 1; c <= 14; c++) {
+    styleCell(wsBlanko.getRow(bMutuRow).getCell(c), { bold: true, align: c <= 5 ? 'left' : 'center', fill: c >= 6 ? tealFill : undefined })
+  }
+
+  const bKinerjaRow = wsBlanko.rowCount + 1
+  wsBlanko.mergeCells(`A${bKinerjaRow}:E${bKinerjaRow}`)
+  wsBlanko.mergeCells(`F${bKinerjaRow}:N${bKinerjaRow}`)
+  wsBlanko.getCell(`A${bKinerjaRow}`).value = 'KINERJA UNIT PELAYANAN'
+  wsBlanko.getCell(`F${bKinerjaRow}`).value = kinerja
+  for (let c = 1; c <= 14; c++) {
+    styleCell(wsBlanko.getRow(bKinerjaRow).getCell(c), { bold: true, align: c <= 5 ? 'left' : 'center', fill: c >= 6 ? tealFill : undefined })
+  }
+
+  // Blok Tanda Tangan Lurah + Kotak Ringkasan IKM + Tabel Nilai Mutu Pelayanan di BLANKO
+  const bSigStart = bKinerjaRow + 2
+  const bTodayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
+  wsBlanko.getCell(`K${bSigStart}`).value = `Bandung, ${bTodayStr}`
+  wsBlanko.getCell(`K${bSigStart + 1}`).value = 'LURAH LEBAKGEDE,'
+  wsBlanko.getCell(`K${bSigStart + 1}`).font = { name: 'Calibri', size: 10, bold: true }
+  wsBlanko.getCell(`K${bSigStart + 5}`).value = pejabat
+  wsBlanko.getCell(`K${bSigStart + 5}`).font = { name: 'Calibri', size: 10, bold: true, underline: true }
+  wsBlanko.getCell(`K${bSigStart + 6}`).value = 'Penata Tk.I'
+  wsBlanko.getCell(`K${bSigStart + 7}`).value = `NIP. ${nip}`
+
+  const bBoxRows: [number, string, number | string, string?][] = [
+    [1, 'Bobot Nilai Tertimbang', 0.1111, '0.00'],
+    [2, 'IKM', ikmSkala4, '0.00'],
+    [3, 'Konfersi IKM', ikmKonversi, '0.00'],
+    [4, 'Nilai Pelayanan', kinerja],
+  ]
+  bBoxRows.forEach(([no, label, val, fmt], idx) => {
+    const r = wsBlanko.getRow(bSigStart + 1 + idx)
+    r.getCell(15).value = no
+    r.getCell(16).value = label
+    r.getCell(18).value = val
+    styleCell(r.getCell(15), { align: 'center' })
+    styleCell(r.getCell(16), { align: 'left' })
+    styleCell(r.getCell(18), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
+  })
+
+  wsBlanko.getCell(`T${bSigStart}`).value = 'NILAI MUTU PELAYANAN'
+  wsBlanko.getCell(`T${bSigStart}`).font = { name: 'Calibri', size: 10, bold: true }
+  const bMutuLegend: [number, number, string, string][] = [
+    [25, 64.99, 'D', 'TIDAK BAIK'],
+    [65, 76.6, 'C', 'KURANG BAIK'],
+    [76.61, 88.3, 'B', 'BAIK'],
+    [88.31, 100, 'A', 'SANGAT BAIK'],
+  ]
+  bMutuLegend.forEach(([minV, maxV, grade, desc], idx) => {
+    const r = wsBlanko.getRow(bSigStart + 1 + idx)
+    r.getCell(20).value = minV
+    r.getCell(21).value = maxV
+    r.getCell(22).value = grade
+    r.getCell(23).value = desc
+    styleCell(r.getCell(20), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(21), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(22), { align: 'center', bold: true })
+    styleCell(r.getCell(23), { align: 'left' })
   })
 
   // ==========================================
@@ -541,6 +669,43 @@ export async function generateIKMExcelWorkbook(
   wsTW.getCell(`L${sigStart + 6}`).value = 'Penata Tk.I'
   wsTW.getCell(`L${sigStart + 7}`).value = `NIP. ${nip}`
 
+  // Kotak Ringkasan IKM & Tabel Nilai Mutu Pelayanan di sebelah kanan blok tanda tangan
+  const boxRows: [number, string, number | string, string?][] = [
+    [1, 'Bobot Nilai Tertimbang', 0.1111, '0.00'],
+    [2, 'IKM', ikmSkala4, '0.00'],
+    [3, 'Konfersi IKM', ikmKonversi, '0.00'],
+    [4, 'Nilai Pelayanan', kinerja],
+  ]
+  boxRows.forEach(([no, label, val, fmt], idx) => {
+    const r = wsTW.getRow(sigStart + 1 + idx)
+    r.getCell(15).value = no
+    r.getCell(16).value = label
+    r.getCell(18).value = val
+    styleCell(r.getCell(15), { align: 'center' })
+    styleCell(r.getCell(16), { align: 'left' })
+    styleCell(r.getCell(18), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
+  })
+
+  wsTW.getCell(`T${sigStart}`).value = 'NILAI MUTU PELAYANAN'
+  wsTW.getCell(`T${sigStart}`).font = { name: 'Calibri', size: 10, bold: true }
+  const mutuLegend: [number, number, string, string][] = [
+    [25, 64.99, 'D', 'TIDAK BAIK'],
+    [65, 76.6, 'C', 'KURANG BAIK'],
+    [76.61, 88.3, 'B', 'BAIK'],
+    [88.31, 100, 'A', 'SANGAT BAIK'],
+  ]
+  mutuLegend.forEach(([minV, maxV, grade, desc], idx) => {
+    const r = wsTW.getRow(sigStart + 1 + idx)
+    r.getCell(20).value = minV
+    r.getCell(21).value = maxV
+    r.getCell(22).value = grade
+    r.getCell(23).value = desc
+    styleCell(r.getCell(20), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(21), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(22), { align: 'center', bold: true })
+    styleCell(r.getCell(23), { align: 'left' })
+  })
+
   // ==========================================
   // SHEET 3: Baku Mutu
   // ==========================================
@@ -572,7 +737,7 @@ export async function generateIKMExcelWorkbook(
   const wsMutu = wb.addWorksheet('Mutu Pelayanan')
   wsMutu.columns = [{ width: 16 }, { width: 22 }, { width: 24 }, { width: 18 }, { width: 22 }]
   wsMutu.mergeCells('A1:E1')
-  wsMutu.getCell('A1').value = 'TABEL PERSEPSI & MUTU PELAYANAN (PERMENPAN-RB NO. 14 TAHUN 2017)'
+  wsMutu.getCell('A1').value = 'TABEL PERSEPSI & MUTU PELAYANAN'
   wsMutu.getCell('A1').font = { name: 'Calibri', size: 12, bold: true }
 
   const mHeader = wsMutu.addRow(['Nilai Persepsi', 'Nilai Interval (N)', 'Nilai Interval Konversi (NK)', 'Mutu Pelayanan', 'Kinerja Unit'])

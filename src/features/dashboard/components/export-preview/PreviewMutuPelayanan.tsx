@@ -8,8 +8,7 @@ export const PreviewMutuPelayanan: React.FC<PreviewMutuPelayananProps> = ({ mutu
   return (
     <div className="p-6 bg-white max-h-80 overflow-y-auto font-mono text-xs">
       <div className="mb-3 font-bold text-gray-800">
-        <span className="text-sm font-extrabold uppercase">TABEL NILAI MUTU PELAYANAN</span>
-        <p className="text-[11px] text-gray-500 font-normal">Sesuai Peraturan Menteri PAN-RB Republik Indonesia No. 14 Tahun 2017</p>
+        <span className="text-sm font-extrabold uppercase">TABEL PERSEPSI &amp; MUTU PELAYANAN</span>
       </div>
       <table className="w-full text-xs text-left border-collapse border border-gray-300">
         <thead className="bg-[#107c41] text-white font-bold">
