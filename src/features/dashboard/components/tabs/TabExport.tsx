@@ -5,13 +5,6 @@ import {
   IconPrinter,
 } from '@/src/components/icons'
 import { ResponseRow } from '@/src/lib/types/dashboard'
-import {
-  PreviewBlanko,
-  PreviewTriwulan,
-  PreviewBakuMutu,
-  PreviewMutuPelayanan,
-  PreviewRekap,
-} from '../export-preview'
 
 interface TabExportProps {
   exportPreset: 'tw1' | 'tw2' | 'tw3' | 'tw4' | '1m' | '6m' | '1y' | 'all' | 'custom'
