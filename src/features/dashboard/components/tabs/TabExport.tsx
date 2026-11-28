@@ -156,7 +156,11 @@ export const TabExport: React.FC<TabExportProps> = ({
               const align = cell.alignment?.horizontal
               if (align) styles.push(`text-align:${align}`)
 
-              const rawVal = cell.text ?? (cell.value !== null && cell.value !== undefined ? String(cell.value) : '')
+              let rawVal = cell.text ?? (cell.value !== null && cell.value !== undefined ? String(cell.value) : '')
+              if (typeof cell.value === 'number' && cell.numFmt) {
+                if (cell.numFmt.includes('0.000')) rawVal = cell.value.toFixed(3)
+                else if (cell.numFmt.includes('0.00')) rawVal = cell.value.toFixed(2)
+              }
               const rs = sp && sp.rowSpan > 1 ? ` rowspan="${sp.rowSpan}"` : ''
               const cs = sp && sp.colSpan > 1 ? ` colspan="${sp.colSpan}"` : ''
               const st = styles.length > 0 ? ` style="${styles.join(';')}"` : ''
@@ -784,7 +788,7 @@ export const TabExport: React.FC<TabExportProps> = ({
                     className="px-5 py-3.5 rounded-xl bg-slate-900 hover:bg-slate-800 active:scale-95 text-white font-extrabold text-xs sm:text-sm shadow-lg shadow-slate-900/20 transition flex items-center gap-2 font-display disabled:opacity-50 cursor-pointer"
                   >
                     <IconPrinter className="w-4 h-4" />
-                    <span>🖨️ Cetak / Simpan PDF</span>
+                    <span>Cetak / Simpan PDF</span>
                   </button>
 
                   <button
@@ -806,7 +810,7 @@ export const TabExport: React.FC<TabExportProps> = ({
                   className="px-6 py-3.5 rounded-xl bg-[#107c41] hover:bg-[#0d6535] active:scale-95 text-white font-extrabold text-sm shadow-lg shadow-emerald-900/20 transition flex items-center gap-2 font-display disabled:opacity-50 cursor-pointer"
                 >
                   <IconDownload className="w-4 h-4" />
-                  <span>{isExporting ? 'Mengekspor Berkas...' : '📥 Unduh Berkas Excel (.xlsx) Sekarang'}</span>
+                  <span>{isExporting ? 'Mengekspor Berkas...' : 'Unduh Berkas Excel (.xlsx) Sekarang'}</span>
                 </button>
               )}
 
@@ -818,7 +822,7 @@ export const TabExport: React.FC<TabExportProps> = ({
                   className="px-6 py-3.5 rounded-xl bg-teal-700 hover:bg-teal-800 active:scale-95 text-white font-extrabold text-sm shadow-lg shadow-teal-900/20 transition flex items-center gap-2 font-display disabled:opacity-50 cursor-pointer"
                 >
                   <IconDownload className="w-4 h-4" />
-                  <span>📥 Unduh Berkas CSV (.csv) Sekarang</span>
+                  <span>Unduh Berkas CSV (.csv) Sekarang</span>
                 </button>
               )}
             </div>

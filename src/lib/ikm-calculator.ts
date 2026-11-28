@@ -400,8 +400,12 @@ export async function generateIKMExcelWorkbook(
   wsBlanko.getCell('A2').font = { name: 'Bookman Old Style', size: 10, bold: true }
   wsBlanko.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
 
+  wsBlanko.mergeCells('A4:B4')
+  wsBlanko.mergeCells('C4:N4')
   wsBlanko.getCell('A4').value = 'UNIT PELAYANAN'
   wsBlanko.getCell('C4').value = `: ${unitPelayanan}`
+  wsBlanko.mergeCells('A5:B5')
+  wsBlanko.mergeCells('C5:N5')
   wsBlanko.getCell('A5').value = 'ALAMAT'
   wsBlanko.getCell('C5').value = `: ${alamat}`
 
@@ -510,18 +514,18 @@ export async function generateIKMExcelWorkbook(
   bBoxRows.forEach(([no, label, val, fmt], idx) => {
     const rowIdx = bSigStart + 1 + idx
     const r = wsBlanko.getRow(rowIdx)
-    wsBlanko.mergeCells(`P${rowIdx}:Q${rowIdx}`)
-    r.getCell(15).value = no
-    r.getCell(16).value = label
-    r.getCell(18).value = val
-    styleCell(r.getCell(15), { align: 'center' })
-    styleCell(r.getCell(16), { align: 'left' })
-    styleCell(r.getCell(17), { align: 'left' })
-    styleCell(r.getCell(18), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
+    wsBlanko.mergeCells(`R${rowIdx}:S${rowIdx}`)
+    r.getCell(17).value = no
+    r.getCell(18).value = label
+    r.getCell(20).value = val
+    styleCell(r.getCell(17), { align: 'center' })
+    styleCell(r.getCell(18), { align: 'left' })
+    styleCell(r.getCell(19), { align: 'left' })
+    styleCell(r.getCell(20), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
   })
 
-  wsBlanko.getCell(`T${bSigStart}`).value = 'NILAI MUTU PELAYANAN'
-  wsBlanko.getCell(`T${bSigStart}`).font = { name: 'Calibri', size: 10, bold: true }
+  wsBlanko.getCell(`W${bSigStart}`).value = 'NILAI MUTU PELAYANAN'
+  wsBlanko.getCell(`W${bSigStart}`).font = { name: 'Calibri', size: 10, bold: true }
   const bMutuLegend: [number, number, string, string][] = [
     [25, 64.99, 'D', 'TIDAK BAIK'],
     [65, 76.6, 'C', 'KURANG BAIK'],
@@ -530,14 +534,14 @@ export async function generateIKMExcelWorkbook(
   ]
   bMutuLegend.forEach(([minV, maxV, grade, desc], idx) => {
     const r = wsBlanko.getRow(bSigStart + 1 + idx)
-    r.getCell(20).value = minV
-    r.getCell(21).value = maxV
-    r.getCell(22).value = grade
-    r.getCell(23).value = desc
-    styleCell(r.getCell(20), { align: 'center', numFmt: '0.00' })
-    styleCell(r.getCell(21), { align: 'center', numFmt: '0.00' })
-    styleCell(r.getCell(22), { align: 'center', bold: true })
-    styleCell(r.getCell(23), { align: 'left' })
+    r.getCell(23).value = minV
+    r.getCell(24).value = maxV
+    r.getCell(25).value = grade
+    r.getCell(26).value = desc
+    styleCell(r.getCell(23), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(24), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(25), { align: 'center', bold: true })
+    styleCell(r.getCell(26), { align: 'left' })
   })
 
   // ==========================================
@@ -569,10 +573,16 @@ export async function generateIKMExcelWorkbook(
   wsTW.getCell('A2').font = { name: 'Calibri', size: 11, bold: true }
   wsTW.getCell('A2').alignment = { horizontal: 'center', vertical: 'middle' }
 
-  wsTW.getCell('A4').value = `UNIT PELAYANAN : ${unitPelayanan}`
+  wsTW.mergeCells('A4:B4')
+  wsTW.mergeCells('C4:P4')
+  wsTW.getCell('A4').value = 'UNIT PELAYANAN'
   wsTW.getCell('A4').font = { name: 'Calibri', size: 10, bold: true }
-  wsTW.getCell('A5').value = `ALAMAT : ${alamat}`
-  wsTW.getCell('A5').font = { name: 'Calibri', size: 10 }
+  wsTW.getCell('C4').value = `: ${unitPelayanan}`
+  wsTW.mergeCells('A5:B5')
+  wsTW.mergeCells('C5:P5')
+  wsTW.getCell('A5').value = 'ALAMAT'
+  wsTW.getCell('A5').font = { name: 'Calibri', size: 10, bold: true }
+  wsTW.getCell('C5').value = `: ${alamat}`
 
   wsTW.mergeCells('A7:A8')
   wsTW.mergeCells('B7:B8')
@@ -644,9 +654,9 @@ export async function generateIKMExcelWorkbook(
     styleCell(wsTW.getRow(ikmRow).getCell(c), { bold: true, align: c <= 6 ? 'right' : 'center', fill: emeraldFill })
   }
 
-  // Tabel Demografi di sebelah kanan (Kolom R-S, mulai baris 9)
-  wsTW.getColumn(18).width = 18
-  wsTW.getColumn(19).width = 10
+  // Tabel Demografi di sebelah kanan (Kolom S-T, terpisah 2 kolom Q-R dari tabel utama, mulai baris 9)
+  wsTW.getColumn(19).width = 18
+  wsTW.getColumn(20).width = 10
   const demoItems: [string, number | string, boolean?][] = [
     ['JENIS KELAMIN :', '', true],
     ['Laki-laki', lakiCount],
@@ -664,26 +674,34 @@ export async function generateIKMExcelWorkbook(
   ]
   demoItems.forEach(([label, val, isBold], idx) => {
     const rIdx = 9 + idx
-    const cLabel = wsTW.getRow(rIdx).getCell(18)
-    const cVal = wsTW.getRow(rIdx).getCell(19)
+    const cLabel = wsTW.getRow(rIdx).getCell(19)
+    const cVal = wsTW.getRow(rIdx).getCell(20)
     cLabel.value = label
     cVal.value = val
     styleCell(cLabel, { bold: !!isBold, fill: isBold ? headerFill : undefined })
     styleCell(cVal, { bold: !!isBold, align: 'center', fill: isBold ? headerFill : undefined, numFmt: typeof val === 'number' ? '#,##0' : undefined })
   })
 
-  // Blok Tanda Tangan Lurah (bawah tabel)
-  const sigStart = ikmRow + 2
+  // Blok Tanda Tangan Lurah (bawah tabel, pastikan tidak menabrak tabel demografi di baris 9-21)
+  const sigStart = Math.max(ikmRow + 2, 23)
   const todayStr = new Date().toLocaleDateString('id-ID', { day: 'numeric', month: 'long', year: 'numeric' })
-  wsTW.getCell(`L${sigStart}`).value = `Bandung, ${todayStr}`
-  wsTW.getCell(`L${sigStart + 1}`).value = 'LURAH LEBAKGEDE,'
-  wsTW.getCell(`L${sigStart + 1}`).font = { name: 'Calibri', size: 10, bold: true }
-  wsTW.getCell(`L${sigStart + 5}`).value = pejabat
-  wsTW.getCell(`L${sigStart + 5}`).font = { name: 'Calibri', size: 10, bold: true, underline: true }
-  wsTW.getCell(`L${sigStart + 6}`).value = 'Penata Tk.I'
-  wsTW.getCell(`L${sigStart + 7}`).value = `NIP. ${nip}`
+  const twSigLines: [number, string, { bold?: boolean; underline?: boolean }?][] = [
+    [0, `Bandung, ${todayStr}`],
+    [1, 'LURAH LEBAKGEDE,', { bold: true }],
+    [5, pejabat, { bold: true, underline: true }],
+    [6, 'Penata Tk.I'],
+    [7, `NIP. ${nip}`],
+  ]
+  twSigLines.forEach(([offset, text, opts]) => {
+    const rowIdx = sigStart + offset
+    wsTW.mergeCells(`M${rowIdx}:P${rowIdx}`)
+    const cell = wsTW.getCell(`M${rowIdx}`)
+    cell.value = text
+    cell.font = { name: 'Calibri', size: 10, bold: !!opts?.bold, underline: !!opts?.underline }
+    cell.alignment = { horizontal: 'center', vertical: 'middle' }
+  })
 
-  // Kotak Ringkasan IKM & Tabel Nilai Mutu Pelayanan di sebelah kanan blok tanda tangan
+  // Kotak Ringkasan IKM & Tabel Nilai Mutu Pelayanan di sebelah kanan blok tanda tangan (jarak 2 kolom: Q, R)
   const boxRows: [number, string, number | string, string?][] = [
     [1, 'Bobot Nilai Tertimbang', 0.1111, '0.00'],
     [2, 'IKM', ikmSkala4, '0.00'],
@@ -691,17 +709,20 @@ export async function generateIKMExcelWorkbook(
     [4, 'Nilai Pelayanan', kinerja],
   ]
   boxRows.forEach(([no, label, val, fmt], idx) => {
-    const r = wsTW.getRow(sigStart + 1 + idx)
-    r.getCell(15).value = no
-    r.getCell(16).value = label
-    r.getCell(18).value = val
-    styleCell(r.getCell(15), { align: 'center' })
-    styleCell(r.getCell(16), { align: 'left' })
-    styleCell(r.getCell(18), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
+    const rowIdx = sigStart + 1 + idx
+    const r = wsTW.getRow(rowIdx)
+    wsTW.mergeCells(`T${rowIdx}:U${rowIdx}`)
+    r.getCell(19).value = no
+    r.getCell(20).value = label
+    r.getCell(22).value = val
+    styleCell(r.getCell(19), { align: 'center' })
+    styleCell(r.getCell(20), { align: 'left' })
+    styleCell(r.getCell(21), { align: 'left' })
+    styleCell(r.getCell(22), { bold: idx === 3, align: 'center', numFmt: fmt, fill: idx === 3 ? headerFill : undefined })
   })
 
-  wsTW.getCell(`T${sigStart}`).value = 'NILAI MUTU PELAYANAN'
-  wsTW.getCell(`T${sigStart}`).font = { name: 'Calibri', size: 10, bold: true }
+  wsTW.getCell(`Y${sigStart}`).value = 'NILAI MUTU PELAYANAN'
+  wsTW.getCell(`Y${sigStart}`).font = { name: 'Calibri', size: 10, bold: true }
   const mutuLegend: [number, number, string, string][] = [
     [25, 64.99, 'D', 'TIDAK BAIK'],
     [65, 76.6, 'C', 'KURANG BAIK'],
@@ -710,14 +731,14 @@ export async function generateIKMExcelWorkbook(
   ]
   mutuLegend.forEach(([minV, maxV, grade, desc], idx) => {
     const r = wsTW.getRow(sigStart + 1 + idx)
-    r.getCell(20).value = minV
-    r.getCell(21).value = maxV
-    r.getCell(22).value = grade
-    r.getCell(23).value = desc
-    styleCell(r.getCell(20), { align: 'center', numFmt: '0.00' })
-    styleCell(r.getCell(21), { align: 'center', numFmt: '0.00' })
-    styleCell(r.getCell(22), { align: 'center', bold: true })
-    styleCell(r.getCell(23), { align: 'left' })
+    r.getCell(25).value = minV
+    r.getCell(26).value = maxV
+    r.getCell(27).value = grade
+    r.getCell(28).value = desc
+    styleCell(r.getCell(25), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(26), { align: 'center', numFmt: '0.00' })
+    styleCell(r.getCell(27), { align: 'center', bold: true })
+    styleCell(r.getCell(28), { align: 'left' })
   })
 
   // ==========================================
